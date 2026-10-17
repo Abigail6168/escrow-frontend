@@ -11,7 +11,6 @@ import {
   type WalletMultiSigAssemblyResult,
 } from "@/app/lib/wallet_state_context";
 import {
-  AlbedoTransactionAssemblyError,
   type AlbedoMultiSigPart,
   type AlbedoMultiSigAssemblyPlan,
   type AlbedoTransactionStructure,

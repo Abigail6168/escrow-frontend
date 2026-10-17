@@ -936,7 +936,6 @@ import {
   type WalletMultiSigParseOptions,
   type WalletMultiSigAssemblyOptions,
   type WalletMultiSigEnvelopeShape,
-  WalletMultiSigStructureError,
 } from "@/app/lib/wallet_state_context";
 
 export type { WalletMultiSigSplit };
