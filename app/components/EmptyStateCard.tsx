@@ -10,6 +10,11 @@ interface EmptyStateCardProps {
   /** Optional role/context chips rendered beneath the description. */
   badges?: string[];
   className?: string;
+  /**
+   * Optional action element rendered below the badges (e.g. a Retry button).
+   * Callers own the button's styling, disabled state, and test id.
+   */
+  action?: React.ReactNode;
 }
 
 function BriefcaseIcon() {
@@ -44,6 +49,7 @@ export default function EmptyStateCard({
   icon = "briefcase",
   badges,
   className = "",
+  action,
 }: EmptyStateCardProps) {
   return (
     <div
@@ -79,6 +85,8 @@ export default function EmptyStateCard({
           ))}
         </div>
       )}
+
+      {action && <div className="flex justify-center">{action}</div>}
     </div>
   );
 }
