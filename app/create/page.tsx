@@ -1,4 +1,5 @@
 "use client";
+import { isMilestoneCapReached, milestoneLimitHint } from "../lib/milestone_limits";
 import { useEffect, useRef, useState } from "react";
 import { useWallet } from "@/app/context/WalletContext";
 import Navbar from "@/app/components/Navbar";
@@ -127,7 +128,10 @@ export default function CreateJob() {
     setRequirements(updated);
   };
 
-  const addMilestone = () => setMilestones([...milestones, { amount: "" }]);
+  const addMilestone = () => {
+    if (isMilestoneCapReached(milestones.length)) return;
+    setMilestones([...milestones, { amount: "" }]);
+  };
   const removeMilestone = (i: number) =>
     setMilestones(milestones.filter((_, idx) => idx !== i));
   const updateMilestone = (i: number, val: string) => {
@@ -897,11 +901,18 @@ export default function CreateJob() {
                       type="button"
                       onClick={addMilestone}
                       aria-label="Add milestone"
-                      className={`${buttonClassName} text-accent-soft hover:text-accent-soft-hover rounded-sm px-0 py-0 active:scale-95`}
+                      disabled={isMilestoneCapReached(milestones.length)}
+                      className={`${buttonClassName} text-accent-soft hover:text-accent-soft-hover rounded-sm px-0 py-0 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       + Add Milestone
                     </button>
                   </div>
+                  <p
+                    className="mb-2 text-xs text-text-muted"
+                    data-testid="milestone-limit-hint"
+                  >
+                    {milestoneLimitHint()}
+                  </p>
                   {hasNoMilestones ? (
                     <EmptyCollectionState
                       title="No milestones available."
