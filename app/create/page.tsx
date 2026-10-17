@@ -1,12 +1,14 @@
 "use client";
 import { isMilestoneCapReached, milestoneLimitHint } from "../lib/milestone_limits";
 import { validateMilestoneAmount } from "../lib/milestone_amount_validation";
+import { getDefaultArbiter } from "../lib/default_arbiter";
 import { useEffect, useRef, useState } from "react";
 import { useWallet } from "@/app/context/WalletContext";
 import Navbar from "@/app/components/Navbar";
 import ButtonSpinner from "@/app/components/ButtonSpinner";
 import TxStatusBanner from "@/app/components/TxStatusBanner";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   CONTRACT_ID,
   getPhaseLabel,
@@ -65,6 +67,12 @@ export default function CreateJob() {
   const [activeSection, setActiveSection] = useState<WizardSection>("details");
   const [freelancer, setFreelancer] = useState("");
   const [arbiter, setArbiter] = useState("");
+  const [defaultArbiter] = useState(getDefaultArbiter);
+  const [arbiterMode, setArbiterMode] = useState<"default" | "custom">(
+    defaultArbiter ? "default" : "custom"
+  );
+  const effectiveArbiter =
+    arbiterMode === "default" && defaultArbiter ? defaultArbiter : arbiter;
   const [token, setToken] = useState("");
   const [freelancerError, setFreelancerError] = useState("");
   const [arbiterError, setArbiterError] = useState("");
@@ -294,10 +302,10 @@ export default function CreateJob() {
       return;
     }
     validateFreelancer(freelancer);
-    validateArbiter(arbiter);
-    if (!freelancer || !arbiter || !/^G[A-Z2-7]{55}$/.test(freelancer) || !/^G[A-Z2-7]{55}$/.test(arbiter)) {
+    validateArbiter(effectiveArbiter);
+    if (!freelancer || !effectiveArbiter || !/^G[A-Z2-7]{55}$/.test(freelancer) || !/^G[A-Z2-7]{55}$/.test(effectiveArbiter)) {
       if (!freelancer) setFreelancerError("This field is required.");
-      if (!arbiter) setArbiterError("This field is required.");
+      if (!effectiveArbiter) setArbiterError("This field is required.");
       setError("Please fix the address fields before creating a job.");
       return;
     }
@@ -323,7 +331,7 @@ export default function CreateJob() {
           { type: "address", value: address },
           { type: "address", value: address },
           { type: "address", value: freelancer },
-          { type: "address", value: arbiter },
+          { type: "address", value: effectiveArbiter },
           { type: "address", value: token },
           { type: "u64", value: autoReleaseSeconds.toString() },
           {
@@ -542,6 +550,45 @@ export default function CreateJob() {
 
                 {/* Arbiter Address */}
                 <div>
+                  {defaultArbiter && (
+                    <fieldset className="mb-3" disabled={loading}>
+                      <legend className="block text-sm text-text-muted mb-1">
+                        Arbiter
+                      </legend>
+                      <label className="flex items-center gap-2 text-sm text-text-primary">
+                        <input
+                          type="radio"
+                          name="arbiter-mode"
+                          value="default"
+                          checked={arbiterMode === "default"}
+                          onChange={() => {
+                            setArbiterMode("default");
+                            setArbiterError("");
+                          }}
+                        />
+                        Milesto arbitration (recommended)
+                      </label>
+                      <label className="flex items-center gap-2 text-sm text-text-primary">
+                        <input
+                          type="radio"
+                          name="arbiter-mode"
+                          value="custom"
+                          checked={arbiterMode === "custom"}
+                          onChange={() => setArbiterMode("custom")}
+                        />
+                        Custom address
+                      </label>
+                    </fieldset>
+                  )}
+                  <p className="text-xs text-text-muted mb-2">
+                    The arbiter resolves disputes and can split or refund
+                    escrowed funds.{" "}
+                    <Link href="/#security" className="underline hover:text-text-primary">
+                      Learn more
+                    </Link>
+                  </p>
+                  {arbiterMode === "custom" && (
+                  <>
                   <label
                     htmlFor="arbiter-address"
                     className="block text-sm text-text-muted mb-1"
@@ -566,6 +613,8 @@ export default function CreateJob() {
                     required
                     disabled={loading}
                   />
+                  </>
+                  )}
                   {arbiterError && <p className="text-sm text-danger-soft mt-1">{arbiterError}</p>}
                 </div>
 
