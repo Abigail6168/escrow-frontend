@@ -26,6 +26,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "check-test-locations": "node scripts/check-test-locations.mjs",
+    "generate-tokens": "node scripts/generate-tokens.mjs",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

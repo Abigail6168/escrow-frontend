@@ -14,25 +14,35 @@
 // Core Design Variables & Tokens Mapping (Issue #417)
 // =============================================================
 
+import { THEME_TOKENS } from "@/app/lib/generated_tokens";
+
+/**
+ * Design token values for the transaction progress bar.
+ *
+ * Previously these were hardcoded hex literals (a mirror of the `@theme`
+ * block in `app/globals.css`), meaning a design change required updating
+ * both places (issue #680). Now they are derived from the generated
+ * `THEME_TOKENS` map so `globals.css` is the single source of truth.
+ */
 export const TRANSACTION_PROGRESS_TOKENS = {
-  "surface-page": "#030712",
-  "surface-card": "#111827",
-  "surface-field": "#1f2937",
-  "border-strong": "#1f2937",
-  "border-subtle": "#374151",
-  "text-primary": "#f9fafb",
-  "text-secondary": "#d1d5db",
-  "text-muted": "#9ca3af",
-  "text-disabled": "#6b7280",
-  "accent": "#4f46e5",
-  "accent-hover": "#6366f1",
-  "accent-soft": "#818cf8",
-  "success": "#16a34a",
-  "success-soft": "#4ade80",
-  "danger": "#991b1b",
-  "danger-soft": "#f87171",
-  "warning-soft": "#facc15",
-  "partial-soft": "#fdba74",
+  "surface-page": THEME_TOKENS["surface-page"],
+  "surface-card": THEME_TOKENS["surface-card"],
+  "surface-field": THEME_TOKENS["surface-field"],
+  "border-strong": THEME_TOKENS["border-strong"],
+  "border-subtle": THEME_TOKENS["border-subtle"],
+  "text-primary": THEME_TOKENS["text-primary"],
+  "text-secondary": THEME_TOKENS["text-secondary"],
+  "text-muted": THEME_TOKENS["text-muted"],
+  "text-disabled": THEME_TOKENS["text-disabled"],
+  "accent": THEME_TOKENS["accent"],
+  "accent-hover": THEME_TOKENS["accent-hover"],
+  "accent-soft": THEME_TOKENS["accent-soft"],
+  "success": THEME_TOKENS["success"],
+  "success-soft": THEME_TOKENS["success-soft"],
+  "danger": THEME_TOKENS["danger"],
+  "danger-soft": THEME_TOKENS["danger-soft"],
+  "warning-soft": THEME_TOKENS["warning-soft"],
+  "partial-soft": THEME_TOKENS["partial-soft"],
 } as const;
 
 export type TransactionProgressToken = keyof typeof TRANSACTION_PROGRESS_TOKENS;
