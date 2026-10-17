@@ -29,15 +29,9 @@ describe("LedgerUsbBridge component", () => {
     );
 
     expect(screen.getByTestId("ledger-usb-bridge")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Check Ledger network" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Sign via Ledger" })
-    ).toBeInTheDocument();
-    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
-      "idle"
-    );
+    expect(screen.getByRole("button", { name: "Check Ledger network" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign via Ledger" })).toBeInTheDocument();
+    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent("idle");
   });
 
   it("marks network as ok when wallet and app networks match", () => {
@@ -58,9 +52,7 @@ describe("LedgerUsbBridge component", () => {
     fireEvent.click(screen.getByRole("button", { name: "Check Ledger network" }));
 
     expect(onNetworkCheck).toHaveBeenCalledWith(false);
-    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
-      "network-ok"
-    );
+    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent("network-ok");
     expect(showToast).not.toHaveBeenCalled();
   });
 
@@ -82,13 +74,8 @@ describe("LedgerUsbBridge component", () => {
     fireEvent.click(screen.getByRole("button", { name: "Check Ledger network" }));
 
     expect(onNetworkCheck).toHaveBeenCalledWith(true);
-    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
-      "network-mismatch"
-    );
-    expect(showToast).toHaveBeenCalledWith(
-      expect.stringMatching(/Network mismatch/i),
-      "warning"
-    );
+    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent("network-mismatch");
+    expect(showToast).toHaveBeenCalledWith(expect.stringMatching(/Network mismatch/i), "warning");
   });
 
   it("completes signing when the wallet approves", async () => {
@@ -109,14 +96,10 @@ describe("LedgerUsbBridge component", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Sign via Ledger" }));
 
-    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
-      "signing"
-    );
+    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent("signing");
 
     await waitFor(() => {
-      expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
-        "signed"
-      );
+      expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent("signed");
     });
 
     expect(signTransaction).toHaveBeenCalledTimes(1);
@@ -125,9 +108,7 @@ describe("LedgerUsbBridge component", () => {
   });
 
   it("handles user rejection during signing with a warning toast", async () => {
-    const signTransaction = vi
-      .fn()
-      .mockRejectedValue(new Error("user rejected transaction"));
+    const signTransaction = vi.fn().mockRejectedValue(new Error("user rejected transaction"));
     const showToast = vi.fn();
 
     render(
@@ -143,9 +124,7 @@ describe("LedgerUsbBridge component", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign via Ledger" }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
-        "rejected"
-      );
+      expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent("rejected");
     });
 
     expect(showToast).toHaveBeenCalledWith(
@@ -172,9 +151,7 @@ describe("LedgerUsbBridge component", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign via Ledger" }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
-        "error"
-      );
+      expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent("error");
     });
 
     expect(showToast).toHaveBeenCalledWith("USB disconnect", "error");
@@ -203,15 +180,9 @@ describe("LedgerUsbBridge transport availability integration", () => {
       />
     );
 
-    expect(
-      screen.getByTestId("ledger-wallet-warning-banner")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Check Ledger network" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Sign via Ledger" })
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("ledger-wallet-warning-banner")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Check Ledger network" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign via Ledger" })).toBeInTheDocument();
     expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
       "transport-unavailable"
     );
@@ -244,10 +215,8 @@ describe("LedgerUsbBridge transport availability integration", () => {
       available: false,
       status: "unavailable",
       transportType: "none",
-      setupInstruction:
-        "Your browser does not support connecting to Ledger hardware wallets.",
-      warningMessage:
-        "Your browser does not support connecting to Ledger hardware wallets.",
+      setupInstruction: "Your browser does not support connecting to Ledger hardware wallets.",
+      warningMessage: "Your browser does not support connecting to Ledger hardware wallets.",
     };
 
     render(
@@ -301,9 +270,9 @@ describe("LedgerUsbBridge transport availability integration", () => {
 
     const banner = screen.getByTestId("ledger-wallet-warning-banner");
     expect(banner).toBeInTheDocument();
-    expect(
-      screen.getByTestId("ledger-wallet-setup-instruction")
-    ).toHaveTextContent(/browser does not support/i);
+    expect(screen.getByTestId("ledger-wallet-setup-instruction")).toHaveTextContent(
+      /browser does not support/i
+    );
 
     expect(showToast).not.toHaveBeenCalled();
     expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
@@ -330,9 +299,7 @@ describe("LedgerUsbBridge transport availability integration", () => {
 
     expect(signTransaction).not.toHaveBeenCalled();
     expect(showToast).not.toHaveBeenCalled();
-    expect(
-      screen.getByTestId("ledger-wallet-warning-banner")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("ledger-wallet-warning-banner")).toBeInTheDocument();
     expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
       "transport-unavailable"
     );
@@ -349,18 +316,10 @@ describe("LedgerUsbBridge transport availability integration", () => {
       />
     );
 
-    expect(
-      screen.queryByTestId("ledger-wallet-warning-banner")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Check Ledger network" })
-    ).not.toBeDisabled();
-    expect(
-      screen.getByRole("button", { name: "Sign via Ledger" })
-    ).not.toBeDisabled();
-    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
-      "idle"
-    );
+    expect(screen.queryByTestId("ledger-wallet-warning-banner")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Check Ledger network" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Sign via Ledger" })).not.toBeDisabled();
+    expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent("idle");
   });
 
   it("hides the banner and enables buttons when only WebHID transport is available", () => {
@@ -374,15 +333,9 @@ describe("LedgerUsbBridge transport availability integration", () => {
       />
     );
 
-    expect(
-      screen.queryByTestId("ledger-wallet-warning-banner")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Check Ledger network" })
-    ).not.toBeDisabled();
-    expect(
-      screen.getByRole("button", { name: "Sign via Ledger" })
-    ).not.toBeDisabled();
+    expect(screen.queryByTestId("ledger-wallet-warning-banner")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Check Ledger network" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Sign via Ledger" })).not.toBeDisabled();
   });
 
   it("accepts a precomputed unavailable availability state via props", () => {
@@ -390,10 +343,8 @@ describe("LedgerUsbBridge transport availability integration", () => {
       available: false,
       status: "unavailable",
       transportType: "none",
-      setupInstruction:
-        "Your browser does not support connecting to Ledger hardware wallets.",
-      warningMessage:
-        "Your browser does not support connecting to Ledger hardware wallets.",
+      setupInstruction: "Your browser does not support connecting to Ledger hardware wallets.",
+      warningMessage: "Your browser does not support connecting to Ledger hardware wallets.",
     };
 
     render(
@@ -406,15 +357,11 @@ describe("LedgerUsbBridge transport availability integration", () => {
       />
     );
 
-    expect(
-      screen.getByTestId("ledger-wallet-warning-banner")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("ledger-wallet-warning-banner")).toBeInTheDocument();
     expect(screen.getByTestId("ledger-usb-bridge-status")).toHaveTextContent(
       "transport-unavailable"
     );
-    expect(
-      screen.getByRole("button", { name: "Check Ledger network" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Check Ledger network" })).toBeInTheDocument();
   });
 
   it("accepts a precomputed available availability state via props", () => {
@@ -440,16 +387,10 @@ describe("LedgerUsbBridge transport availability integration", () => {
       />
     );
 
-    expect(
-      screen.queryByTestId("ledger-wallet-warning-banner")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Check Ledger network" })
-    ).not.toBeDisabled();
+    expect(screen.queryByTestId("ledger-wallet-warning-banner")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Check Ledger network" })).not.toBeDisabled();
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Check Ledger network" })
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Check Ledger network" }));
     expect(onNetworkCheck).toHaveBeenCalledWith(false);
   });
 
@@ -472,12 +413,10 @@ describe("LedgerUsbBridge transport availability integration", () => {
       />
     );
 
-    expect(
-      screen.queryByTestId("ledger-wallet-warning-banner")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByTestId("ledger-usb-bridge-status")
-    ).not.toHaveTextContent("transport-unavailable");
+    expect(screen.queryByTestId("ledger-wallet-warning-banner")).not.toBeInTheDocument();
+    expect(screen.getByTestId("ledger-usb-bridge-status")).not.toHaveTextContent(
+      "transport-unavailable"
+    );
     expect(container.textContent).not.toMatch(/not support|install/i);
   });
 });

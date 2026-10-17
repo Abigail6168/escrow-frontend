@@ -50,18 +50,14 @@ describe("wallet_selector_modal loading state helpers (#task-3)", () => {
 
   it("subscribeToModalWalletLoading emits the current state immediately", () => {
     const states: boolean[] = [];
-    const unsubscribe = subscribeToModalWalletLoading((loading) =>
-      states.push(loading),
-    );
+    const unsubscribe = subscribeToModalWalletLoading((loading) => states.push(loading));
     expect(states).toEqual([false]);
     unsubscribe();
   });
 
   it("withModalWalletLoader notifies subscribers true then false around a successful call", async () => {
     const states: boolean[] = [];
-    const unsubscribe = subscribeToModalWalletLoading((loading) =>
-      states.push(loading),
-    );
+    const unsubscribe = subscribeToModalWalletLoading((loading) => states.push(loading));
 
     const result = await withModalWalletLoader(async () => "done");
 
@@ -72,14 +68,12 @@ describe("wallet_selector_modal loading state helpers (#task-3)", () => {
 
   it("withModalWalletLoader notifies false even when the wrapped call throws", async () => {
     const states: boolean[] = [];
-    const unsubscribe = subscribeToModalWalletLoading((loading) =>
-      states.push(loading),
-    );
+    const unsubscribe = subscribeToModalWalletLoading((loading) => states.push(loading));
 
     await expect(
       withModalWalletLoader(async () => {
         throw new Error("fail");
-      }),
+      })
     ).rejects.toThrow("fail");
 
     expect(states).toEqual([false, true, false]);
@@ -88,9 +82,7 @@ describe("wallet_selector_modal loading state helpers (#task-3)", () => {
 
   it("startModalWalletOperation increments the counter and notifies listeners", () => {
     const states: boolean[] = [];
-    const unsubscribe = subscribeToModalWalletLoading((loading) =>
-      states.push(loading),
-    );
+    const unsubscribe = subscribeToModalWalletLoading((loading) => states.push(loading));
 
     startModalWalletOperation();
     expect(isModalWalletLoading()).toBe(true);
@@ -105,9 +97,7 @@ describe("wallet_selector_modal loading state helpers (#task-3)", () => {
     startModalWalletOperation();
 
     const states: boolean[] = [];
-    const unsubscribe = subscribeToModalWalletLoading((loading) =>
-      states.push(loading),
-    );
+    const unsubscribe = subscribeToModalWalletLoading((loading) => states.push(loading));
 
     endModalWalletOperation();
     expect(isModalWalletLoading()).toBe(true);
@@ -127,9 +117,7 @@ describe("wallet_selector_modal loading state helpers (#task-3)", () => {
 
   it("subscribeToModalWalletLoading's unsubscribe stops further notifications", async () => {
     const states: boolean[] = [];
-    const unsubscribe = subscribeToModalWalletLoading((loading) =>
-      states.push(loading),
-    );
+    const unsubscribe = subscribeToModalWalletLoading((loading) => states.push(loading));
     unsubscribe();
 
     await withModalWalletLoader(async () => "done");
@@ -151,7 +139,7 @@ describe("WalletSelectorModal loading spinner (#task-3)", () => {
         onConnect={() => {}}
         onDisconnect={() => {}}
         isLoading={false}
-      />,
+      />
     );
     expect(screen.queryByTestId("wallet-selector-spinner")).not.toBeInTheDocument();
   });
@@ -164,7 +152,7 @@ describe("WalletSelectorModal loading spinner (#task-3)", () => {
         onConnect={() => {}}
         onDisconnect={() => {}}
         isLoading={true}
-      />,
+      />
     );
     expect(screen.getByTestId("wallet-selector-spinner")).toBeInTheDocument();
   });
@@ -177,7 +165,7 @@ describe("WalletSelectorModal loading spinner (#task-3)", () => {
         onConnect={() => {}}
         onDisconnect={() => {}}
         isLoading={true}
-      />,
+      />
     );
     const spinner = screen.getByTestId("wallet-selector-spinner");
     expect(spinner.querySelector("svg")).toBeInTheDocument();
@@ -191,10 +179,10 @@ describe("WalletSelectorModal loading spinner (#task-3)", () => {
         onConnect={() => {}}
         onDisconnect={() => {}}
         isLoading={true}
-      />,
+      />
     );
     expect(screen.getByTestId("wallet-selector-spinner")).toHaveTextContent(
-      /wallet operation in progress/i,
+      /wallet operation in progress/i
     );
   });
 
@@ -206,7 +194,7 @@ describe("WalletSelectorModal loading spinner (#task-3)", () => {
         onConnect={() => {}}
         onDisconnect={() => {}}
         isLoading={true}
-      />,
+      />
     );
     expect(container).toBeEmptyDOMElement();
   });
@@ -220,7 +208,7 @@ describe("WalletSelectorModal loading spinner (#task-3)", () => {
         onDisconnect={() => {}}
         activeAddress="GABCDEF1234567890abcdef"
         isLoading={true}
-      />,
+      />
     );
     expect(screen.getByTestId("wallet-selector-disconnect-btn")).toBeDisabled();
   });
@@ -233,7 +221,7 @@ describe("WalletSelectorModal loading spinner (#task-3)", () => {
         onConnect={() => {}}
         onDisconnect={() => {}}
         isLoading={true}
-      />,
+      />
     );
     expect(screen.getByTestId("wallet-selector-option-freighter")).toBeDisabled();
     expect(screen.getByTestId("wallet-selector-option-albedo")).toBeDisabled();

@@ -47,9 +47,7 @@ describe("freighter_connector signature timeout bounds (#104)", () => {
     );
 
     const promise = signFreighterWithTimeout(request, signFn, 1_000);
-    const assertion = expect(promise).rejects.toBeInstanceOf(
-      FreighterSignatureTimeoutError
-    );
+    const assertion = expect(promise).rejects.toBeInstanceOf(FreighterSignatureTimeoutError);
 
     await vi.advanceTimersByTimeAsync(1_000);
     await assertion;

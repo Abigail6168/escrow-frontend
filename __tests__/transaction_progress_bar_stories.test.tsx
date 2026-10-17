@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import TransactionProgressBar, { DEFAULT_TRANSACTION_STEPS } from "@/app/components/TransactionProgressBar";
+import TransactionProgressBar, {
+  DEFAULT_TRANSACTION_STEPS,
+} from "@/app/components/TransactionProgressBar";
 import {
   PROGRESS_BAR_ANIMATION_CLASSES,
   MOBILE_OVERLAY_WRAPPER_CLASSES,
@@ -84,12 +86,7 @@ describe("transaction_progress_bar stories, animations and mobile layout (Issues
 
   describe("Client-side Layout & Node Rendering (Issue #418, #419)", () => {
     it("renders all transaction step nodes correctly", () => {
-      render(
-        <TransactionProgressBar
-          steps={DEFAULT_TRANSACTION_STEPS}
-          currentStepIndex={0}
-        />
-      );
+      render(<TransactionProgressBar steps={DEFAULT_TRANSACTION_STEPS} currentStepIndex={0} />);
 
       expect(screen.getByTestId("step-node-0")).toBeInTheDocument();
       expect(screen.getByTestId("step-node-1")).toBeInTheDocument();

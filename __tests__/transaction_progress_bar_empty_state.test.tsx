@@ -23,7 +23,13 @@ describe("isProgressBarEmpty", () => {
     ["undefined", undefined],
     ["a non-array", { length: 2 }],
     ["only null entries", [null, null]],
-    ["only untitled steps", [{ id: "a", title: "" }, { id: "b", title: "   " }]],
+    [
+      "only untitled steps",
+      [
+        { id: "a", title: "" },
+        { id: "b", title: "   " },
+      ],
+    ],
     ["steps with non-string titles", [{ id: "a", title: 42 }]],
   ])("treats %s as empty", (_label, steps) => {
     expect(isProgressBarEmpty(steps)).toBe(true);
@@ -47,11 +53,11 @@ describe("placeholder rendering", () => {
     render(<TransactionProgressBar steps={steps} />);
     expect(screen.getByTestId("progress-bar-placeholder")).toBeInTheDocument();
     expect(screen.getByTestId("progress-bar-placeholder-title")).toHaveTextContent(
-      PROGRESS_BAR_EMPTY_COPY.title,
+      PROGRESS_BAR_EMPTY_COPY.title
     );
-    expect(
-      screen.getByTestId("progress-bar-placeholder-description"),
-    ).toHaveTextContent(PROGRESS_BAR_EMPTY_COPY.description);
+    expect(screen.getByTestId("progress-bar-placeholder-description")).toHaveTextContent(
+      PROGRESS_BAR_EMPTY_COPY.description
+    );
   });
 
   it("does not render the step list or any step nodes", () => {
@@ -88,12 +94,12 @@ describe("placeholder rendering", () => {
     const { rerender } = render(<TransactionProgressBar steps={[]} />);
     expect(screen.getByTestId("transaction-progress-bar-container")).toHaveAttribute(
       "data-empty",
-      "true",
+      "true"
     );
     rerender(<TransactionProgressBar />);
     expect(screen.getByTestId("transaction-progress-bar-container")).toHaveAttribute(
       "data-empty",
-      "false",
+      "false"
     );
   });
 
@@ -143,7 +149,7 @@ describe("placeholder presentation", () => {
     render(<TransactionProgressBar steps={[]} />);
     expect(screen.getByTestId("progress-bar-placeholder")).toHaveClass(
       "animate-fade-in",
-      "motion-reduce:animate-none",
+      "motion-reduce:animate-none"
     );
   });
 

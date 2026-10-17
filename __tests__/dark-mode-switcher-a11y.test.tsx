@@ -5,7 +5,7 @@ import DarkModeSwitcher, { DarkModeSwitcherEmptyState } from "@/app/components/D
 
 describe("DarkModeSwitcher - a11y ARIA compliance #310", () => {
   describe("ARIA role and attributes", () => {
-    it("renders with role=\"switch\"", () => {
+    it('renders with role="switch"', () => {
       render(<DarkModeSwitcher isDarkMode={false} onToggle={vi.fn()} />);
       expect(screen.getByRole("switch")).toBeInTheDocument();
     });
@@ -55,12 +55,18 @@ describe("DarkModeSwitcher - a11y ARIA compliance #310", () => {
 
     it("renders dark data-state when dark", () => {
       render(<DarkModeSwitcher isDarkMode={true} onToggle={vi.fn()} />);
-      expect(screen.getAllByTestId("dark-mode-switcher").pop()).toHaveAttribute("data-state", "dark");
+      expect(screen.getAllByTestId("dark-mode-switcher").pop()).toHaveAttribute(
+        "data-state",
+        "dark"
+      );
     });
 
     it("renders light data-state when light", () => {
       render(<DarkModeSwitcher isDarkMode={false} onToggle={vi.fn()} />);
-      expect(screen.getAllByTestId("dark-mode-switcher").pop()).toHaveAttribute("data-state", "light");
+      expect(screen.getAllByTestId("dark-mode-switcher").pop()).toHaveAttribute(
+        "data-state",
+        "light"
+      );
     });
   });
 
@@ -217,8 +223,14 @@ describe("DarkModeSwitcher - a11y ARIA compliance #310", () => {
 
     it("EmptyState component directly has a11y attributes", () => {
       render(<DarkModeSwitcherEmptyState />);
-      expect(screen.getByTestId("dark-mode-switcher-empty-state")).toHaveAttribute("role", "region");
-      expect(screen.getByTestId("dark-mode-switcher-empty-state")).toHaveAttribute("aria-label", "No theme preferences");
+      expect(screen.getByTestId("dark-mode-switcher-empty-state")).toHaveAttribute(
+        "role",
+        "region"
+      );
+      expect(screen.getByTestId("dark-mode-switcher-empty-state")).toHaveAttribute(
+        "aria-label",
+        "No theme preferences"
+      );
     });
   });
 });

@@ -27,7 +27,7 @@ export class WalletDisconnectTimeoutError extends Error {
 }
 
 export function clearWalletDisconnectMemory(
-  request: WalletDisconnectRequest,
+  request: WalletDisconnectRequest
 ): WalletDisconnectRequest {
   if (request.payload) request.payload.fill(0);
   request.payload = null;
@@ -42,7 +42,7 @@ export interface WalletDisconnectTimeoutOptions {
 
 export function runWalletDisconnectWithTimeout<T>(
   operation: (signal: AbortSignal) => Promise<T>,
-  options: WalletDisconnectTimeoutOptions = {},
+  options: WalletDisconnectTimeoutOptions = {}
 ): Promise<T> {
   const timeoutMs = options.timeoutMs ?? DEFAULT_WALLET_DISCONNECT_TIMEOUT_MS;
   if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) {
@@ -102,12 +102,9 @@ const SETUP_INSTRUCTIONS: Record<string, string> = {
   albedo:
     "Albedo wallet extension not found. " +
     "Install Albedo from albedo.link and refresh this page to continue.",
-  xbull:
-    "xBull wallet extension not found. " +
-    "Install xBull and refresh this page to continue.",
+  xbull: "xBull wallet extension not found. " + "Install xBull and refresh this page to continue.",
   hana:
-    "Hana wallet extension not found. " +
-    "Install Hana Wallet and refresh this page to continue.",
+    "Hana wallet extension not found. " + "Install Hana Wallet and refresh this page to continue.",
 };
 
 const INSTALL_URLS: Record<string, string> = {
@@ -128,10 +125,7 @@ const FALLBACK_SETUP_INSTRUCTION =
  * @param walletId - The wallet provider ID (freighter, albedo, xbull, hana).
  * @param detector - Optional override for testing (receives the global check).
  */
-export function detectWalletExtensionById(
-  walletId: string,
-  detector?: () => boolean,
-): boolean {
+export function detectWalletExtensionById(walletId: string, detector?: () => boolean): boolean {
   if (detector) {
     return detector();
   }
@@ -157,7 +151,7 @@ export function detectWalletExtensionById(
  */
 export function checkWalletAvailabilityById(
   walletId: string,
-  detector?: () => boolean,
+  detector?: () => boolean
 ): WalletAvailabilityResult {
   try {
     const available = detectWalletExtensionById(walletId, detector);
@@ -168,20 +162,15 @@ export function checkWalletAvailabilityById(
 
     return {
       available: false,
-      setupInstruction:
-        SETUP_INSTRUCTIONS[walletId] ?? FALLBACK_SETUP_INSTRUCTION,
+      setupInstruction: SETUP_INSTRUCTIONS[walletId] ?? FALLBACK_SETUP_INSTRUCTION,
       installUrl: INSTALL_URLS[walletId] ?? null,
     };
   } catch (err) {
-    console.error(
-      `${LOG_PREFIX} AVAILABILITY CHECK FAILED for "${walletId}":`,
-      err,
-    );
+    console.error(`${LOG_PREFIX} AVAILABILITY CHECK FAILED for "${walletId}":`, err);
 
     return {
       available: false,
-      setupInstruction:
-        SETUP_INSTRUCTIONS[walletId] ?? FALLBACK_SETUP_INSTRUCTION,
+      setupInstruction: SETUP_INSTRUCTIONS[walletId] ?? FALLBACK_SETUP_INSTRUCTION,
       installUrl: INSTALL_URLS[walletId] ?? null,
     };
   }
@@ -236,9 +225,7 @@ function sanitizeWalletActiveKey(value: unknown): WalletActiveKey | null {
  * the payload here on a single bad entry would make that filtering
  * unreachable.
  */
-function isValidSerializedPayload(
-  value: unknown
-): value is WalletActiveKeysSerializedV1 {
+function isValidSerializedPayload(value: unknown): value is WalletActiveKeysSerializedV1 {
   if (!isRecord(value)) return false;
   if (value.version !== WALLET_DISCONNECT_SCHEMA_VERSION) return false;
   if (!Array.isArray(value.activeKeys)) return false;
@@ -262,8 +249,7 @@ export class WalletActiveKeysStore {
   private storage: Storage | null;
 
   constructor(storageOverride?: Storage | null) {
-    this.storage =
-      storageOverride !== undefined ? storageOverride : getStorageAdapter();
+    this.storage = storageOverride !== undefined ? storageOverride : getStorageAdapter();
     this.rehydrate();
   }
 
@@ -275,10 +261,7 @@ export class WalletActiveKeysStore {
           version: WALLET_DISCONNECT_SCHEMA_VERSION,
           activeKeys: this.activeKeys,
         };
-        this.storage.setItem(
-          WALLET_DISCONNECT_ACTIVE_KEYS_STORAGE_KEY,
-          JSON.stringify(payload)
-        );
+        this.storage.setItem(WALLET_DISCONNECT_ACTIVE_KEYS_STORAGE_KEY, JSON.stringify(payload));
       } else {
         this.storage.removeItem(WALLET_DISCONNECT_ACTIVE_KEYS_STORAGE_KEY);
       }
@@ -358,20 +341,20 @@ export class WalletActiveKeysStore {
   addActiveKey(key: WalletActiveKey): void {
     const sanitized = sanitizeWalletActiveKey(key);
     if (!sanitized) return;
-    
+
     // Remove existing entry for the same wallet IDs to avoid duplicates
-    this.activeKeys = this.activeKeys.filter(k => k.walletId !== sanitized.walletId);
+    this.activeKeys = this.activeKeys.filter((k) => k.walletId !== sanitized.walletId);
     this.activeKeys.push(sanitized);
     this.persist();
   }
 
   removeActiveKey(walletId: string): void {
-    this.activeKeys = this.activeKeys.filter(k => k.walletId !== walletId);
+    this.activeKeys = this.activeKeys.filter((k) => k.walletId !== walletId);
     this.persist();
   }
 
   getActiveKeys(): WalletActiveKey[] {
-    return this.activeKeys.map(k => ({
+    return this.activeKeys.map((k) => ({
       walletId: k.walletId,
       address: k.address,
       connectedAt: k.connectedAt,
@@ -379,7 +362,7 @@ export class WalletActiveKeysStore {
   }
 
   hasActiveKey(walletId: string): boolean {
-    return this.activeKeys.some(k => k.walletId === walletId);
+    return this.activeKeys.some((k) => k.walletId === walletId);
   }
 
   clear(): void {
@@ -407,10 +390,7 @@ export const walletActiveKeysStore = new WalletActiveKeysStore();
  * @param walletId - The wallet provider ID.
  * @param address - The wallet address.
  */
-export function registerActiveWalletKey(
-  walletId: string,
-  address: string
-): void {
+export function registerActiveWalletKey(walletId: string, address: string): void {
   walletActiveKeysStore.addActiveKey({
     walletId,
     address,
@@ -485,27 +465,22 @@ export async function disconnectWalletWithCheck(
   detector?: () => boolean,
   options?: WalletDisconnectTimeoutOptions,
   pendingTx?: PendingTxSnapshot,
-  showToast?: (message: string, type: "warning" | "error" | "info" | "success") => void,
+  showToast?: (message: string, type: "warning" | "error" | "info" | "success") => void
 ): Promise<WalletDisconnectResult> {
   // Warn immediately if a transaction was in flight when disconnect was called.
   if (pendingTx && (pendingTx.txId ?? pendingTx.status ?? pendingTx.context)) {
-    console.warn(
-      `${LOG_PREFIX} DISCONNECT WITH PENDING TRANSACTION for "${walletId}":`,
-      {
-        txId: pendingTx.txId ?? null,
-        status: pendingTx.status ?? null,
-        context: pendingTx.context ?? null,
-      },
-    );
+    console.warn(`${LOG_PREFIX} DISCONNECT WITH PENDING TRANSACTION for "${walletId}":`, {
+      txId: pendingTx.txId ?? null,
+      status: pendingTx.status ?? null,
+      context: pendingTx.context ?? null,
+    });
   }
 
   return withWalletDisconnectLoader(async () => {
     const availability = checkWalletAvailabilityById(walletId, detector);
 
     if (!availability.available) {
-      console.warn(
-        `${LOG_PREFIX} Wallet "${walletId}" is not installed — skipping disconnect.`,
-      );
+      console.warn(`${LOG_PREFIX} Wallet "${walletId}" is not installed — skipping disconnect.`);
       // Remove from active keys store even if wallet is not installed
       walletActiveKeysStore.removeActiveKey(walletId);
       return {
@@ -517,15 +492,10 @@ export async function disconnectWalletWithCheck(
     }
 
     try {
-      await runWalletDisconnectWithTimeout(
-        (signal) => disconnectFn(signal),
-        options,
-      );
+      await runWalletDisconnectWithTimeout((signal) => disconnectFn(signal), options);
       // Remove from active keys store on successful disconnect
       walletActiveKeysStore.removeActiveKey(walletId);
-      console.info(
-        `${LOG_PREFIX} Wallet "${walletId}" disconnected successfully.`,
-      );
+      console.info(`${LOG_PREFIX} Wallet "${walletId}" disconnected successfully.`);
       return {
         success: true,
         error: null,
@@ -535,17 +505,11 @@ export async function disconnectWalletWithCheck(
     } catch (err) {
       // Handle user rejection gracefully - show warning toast and return success
       if (isWalletDisconnectUserRejected(err)) {
-        console.warn(
-          `${LOG_PREFIX} DISCONNECT REJECTED by user for "${walletId}":`,
-          err,
-        );
+        console.warn(`${LOG_PREFIX} DISCONNECT REJECTED by user for "${walletId}":`, err);
         // Remove from active keys store even on user rejection
         walletActiveKeysStore.removeActiveKey(walletId);
         if (showToast) {
-          showToast(
-            "Disconnect cancelled — you rejected the request in your wallet.",
-            "warning",
-          );
+          showToast("Disconnect cancelled — you rejected the request in your wallet.", "warning");
         }
         return {
           success: true,
@@ -556,9 +520,7 @@ export async function disconnectWalletWithCheck(
       }
 
       const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown error during wallet disconnect.";
+        err instanceof Error ? err.message : "Unknown error during wallet disconnect.";
 
       console.error(`${LOG_PREFIX} DISCONNECT FAILED for "${walletId}":`, err);
 
@@ -601,7 +563,7 @@ function notifyDisconnectLoaderListeners(): void {
  * still renders the overlay.  Returns an unsubscribe function.
  */
 export function subscribeToWalletDisconnectLoading(
-  listener: (isLoading: boolean) => void,
+  listener: (isLoading: boolean) => void
 ): () => void {
   disconnectLoaderListeners.add(listener);
   listener(activeDisconnectOperations > 0);
@@ -637,9 +599,7 @@ export function resetWalletDisconnectOperations(): void {
  * The `finally` block guarantees the spinner is hidden again even when the
  * wrapped operation rejects.
  */
-export async function withWalletDisconnectLoader<T>(
-  fn: () => Promise<T>,
-): Promise<T> {
+export async function withWalletDisconnectLoader<T>(fn: () => Promise<T>): Promise<T> {
   startWalletDisconnectOperation();
   try {
     return await fn();
@@ -655,10 +615,7 @@ export async function withWalletDisconnectLoader<T>(
 export type WalletDisconnectNetwork = "mainnet" | "testnet";
 
 /** Stellar network passphrases mapped to the network labels used in the UI. */
-export const DISCONNECT_NETWORK_PASSPHRASES: Record<
-  WalletDisconnectNetwork,
-  string
-> = {
+export const DISCONNECT_NETWORK_PASSPHRASES: Record<WalletDisconnectNetwork, string> = {
   testnet: "Test SDF Network ; September 2015",
   mainnet: "Public Global Stellar Network ; September 2015",
 };
@@ -671,7 +628,7 @@ export const DISCONNECT_NETWORK_PASSPHRASES: Record<
  * interchangeably.  Returns `null` when the value is empty or unrecognized.
  */
 export function normalizeDisconnectNetwork(
-  value: string | null | undefined,
+  value: string | null | undefined
 ): WalletDisconnectNetwork | null {
   if (typeof value !== "string") return null;
 
@@ -682,9 +639,7 @@ export function normalizeDisconnectNetwork(
   if (lowered === "mainnet" || lowered === "public") return "mainnet";
   if (lowered === "testnet" || lowered === "test") return "testnet";
 
-  for (const [network, passphrase] of Object.entries(
-    DISCONNECT_NETWORK_PASSPHRASES,
-  )) {
+  for (const [network, passphrase] of Object.entries(DISCONNECT_NETWORK_PASSPHRASES)) {
     if (passphrase.toLowerCase() === lowered) {
       return network as WalletDisconnectNetwork;
     }
@@ -720,7 +675,7 @@ function capitalizeNetwork(value: string): string {
  */
 export function checkDisconnectNetworkMatch(
   walletNetwork: string | null | undefined,
-  appNetwork: string | null | undefined,
+  appNetwork: string | null | undefined
 ): WalletDisconnectNetworkMismatchState {
   const wallet = normalizeDisconnectNetwork(walletNetwork);
   const app = normalizeDisconnectNetwork(appNetwork);
@@ -765,7 +720,7 @@ export function checkDisconnectNetworkMatch(
  */
 export function warnOnDisconnectNetworkMismatch(
   walletNetwork: string | null | undefined,
-  appNetwork: string | null | undefined,
+  appNetwork: string | null | undefined
 ): WalletDisconnectNetworkMismatchState {
   const state = checkDisconnectNetworkMatch(walletNetwork, appNetwork);
 
@@ -849,7 +804,7 @@ const STROOPS_PER_XLM = 10_000_000;
  * not simulate the operation, the fee it reports is not trustworthy.
  */
 export function checkDisconnectSimulationFeeWarning(
-  result: WalletDisconnectSimulationResult | null | undefined,
+  result: WalletDisconnectSimulationResult | null | undefined
 ): WalletDisconnectGasWarningState {
   if (!result) {
     return {
@@ -880,8 +835,7 @@ export function checkDisconnectSimulationFeeWarning(
       highFee: false,
       simulationError: true,
       warningMessage:
-        "Transaction simulation returned an invalid fee estimate. " +
-        "Review before signing.",
+        "Transaction simulation returned an invalid fee estimate. " + "Review before signing.",
     };
   }
 
@@ -910,14 +864,12 @@ export function checkDisconnectSimulationFeeWarning(
  * simulation warning applies, in addition to returning the banner state.
  */
 export function warnOnDisconnectSimulationFee(
-  result: WalletDisconnectSimulationResult | null | undefined,
+  result: WalletDisconnectSimulationResult | null | undefined
 ): WalletDisconnectGasWarningState {
   const state = checkDisconnectSimulationFeeWarning(result);
 
   if (state.hasWarning && state.warningMessage) {
-    const title = state.simulationError
-      ? "SIMULATION ERROR"
-      : "HIGH FEE WARNING";
+    const title = state.simulationError ? "SIMULATION ERROR" : "HIGH FEE WARNING";
     console.warn(`${LOG_PREFIX} ${title}:`, state.warningMessage);
   }
 
@@ -969,20 +921,19 @@ export interface DisconnectMultiSigValidationResult {
  */
 export function splitDisconnectMultiSigTransaction(
   snapshot: DisconnectMultiSigSnapshot,
-  options?: WalletMultiSigParseOptions,
+  options?: WalletMultiSigParseOptions
 ): DisconnectMultiSigSplitResult {
   try {
     const envelope: WalletMultiSigEnvelopeShape = parseMultiSigEnvelope(
       snapshot.baseXdr,
-      options ?? {},
+      options ?? {}
     );
 
-    const splits: WalletMultiSigSplit[] = snapshot.signerPublicKeys.map(
-      (publicKey) =>
-        createMultiSigSplit(envelope.baseXdr, {
-          publicKey,
-          hint: publicKey.slice(-4),
-        }),
+    const splits: WalletMultiSigSplit[] = snapshot.signerPublicKeys.map((publicKey) =>
+      createMultiSigSplit(envelope.baseXdr, {
+        publicKey,
+        hint: publicKey.slice(-4),
+      })
     );
 
     return {
@@ -994,9 +945,7 @@ export function splitDisconnectMultiSigTransaction(
     };
   } catch (err) {
     const message =
-      err instanceof Error
-        ? err.message
-        : "Failed to split multi-sig transaction for disconnect.";
+      err instanceof Error ? err.message : "Failed to split multi-sig transaction for disconnect.";
 
     console.warn(`${LOG_PREFIX} MULTI-SIG SPLIT FAILED:`, message);
 
@@ -1017,7 +966,7 @@ export function splitDisconnectMultiSigTransaction(
  */
 export function validateDisconnectMultiSigSplits(
   splits: WalletMultiSigSplit[],
-  options?: WalletMultiSigAssemblyOptions,
+  options?: WalletMultiSigAssemblyOptions
 ): DisconnectMultiSigValidationResult {
   try {
     const result = validateMultiSigAssembly(splits, options);
@@ -1027,10 +976,7 @@ export function validateDisconnectMultiSigSplits(
       uniqueSigners: result.uniqueSigners,
     };
   } catch (err) {
-    const message =
-      err instanceof Error
-        ? err.message
-        : "Multi-sig assembly validation failed.";
+    const message = err instanceof Error ? err.message : "Multi-sig assembly validation failed.";
 
     console.warn(`${LOG_PREFIX} MULTI-SIG VALIDATION FAILED:`, message);
 
@@ -1050,19 +996,13 @@ export function validateDisconnectMultiSigSplits(
 export function prepareDisconnectMultiSigSplits(
   snapshot: DisconnectMultiSigSnapshot,
   parseOptions?: WalletMultiSigParseOptions,
-  assemblyOptions?: WalletMultiSigAssemblyOptions,
+  assemblyOptions?: WalletMultiSigAssemblyOptions
 ): DisconnectMultiSigSplitResult {
-  const splitResult = splitDisconnectMultiSigTransaction(
-    snapshot,
-    parseOptions,
-  );
+  const splitResult = splitDisconnectMultiSigTransaction(snapshot, parseOptions);
 
   if (!splitResult.valid) return splitResult;
 
-  const validation = validateDisconnectMultiSigSplits(
-    splitResult.splits,
-    assemblyOptions,
-  );
+  const validation = validateDisconnectMultiSigSplits(splitResult.splits, assemblyOptions);
 
   if (!validation.valid) {
     return {

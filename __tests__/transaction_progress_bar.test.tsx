@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import TransactionProgressBar, { DEFAULT_TRANSACTION_STEPS } from "@/app/components/TransactionProgressBar";
+import TransactionProgressBar, {
+  DEFAULT_TRANSACTION_STEPS,
+} from "@/app/components/TransactionProgressBar";
 import {
   TRANSACTION_PROGRESS_TOKENS,
   PROGRESS_BAR_THEME_CLASSES,
@@ -69,12 +71,7 @@ describe("transaction_progress_bar module", () => {
 
     it("invokes onStepClick when clicking an interactive step", () => {
       const onStepClick = vi.fn();
-      render(
-        <TransactionProgressBar
-          currentStepIndex={1}
-          onStepClick={onStepClick}
-        />
-      );
+      render(<TransactionProgressBar currentStepIndex={1} onStepClick={onStepClick} />);
 
       const step0Btn = screen.getByTestId("step-node-0");
       fireEvent.click(step0Btn);
@@ -82,13 +79,7 @@ describe("transaction_progress_bar module", () => {
     });
 
     it("disables step buttons when disabled prop is true", () => {
-      render(
-        <TransactionProgressBar
-          currentStepIndex={1}
-          disabled={true}
-          onStepClick={vi.fn()}
-        />
-      );
+      render(<TransactionProgressBar currentStepIndex={1} disabled={true} onStepClick={vi.fn()} />);
 
       const step0Btn = screen.getByTestId("step-node-0");
       expect(step0Btn).toBeDisabled();
@@ -109,12 +100,7 @@ describe("transaction_progress_bar module", () => {
     });
 
     it("renders validation alert when error is present", () => {
-      render(
-        <TransactionProgressBar
-          steps={DEFAULT_TRANSACTION_STEPS}
-          currentStepIndex={10}
-        />
-      );
+      render(<TransactionProgressBar steps={DEFAULT_TRANSACTION_STEPS} currentStepIndex={10} />);
 
       const alert = screen.getByRole("alert");
       expect(alert).toBeInTheDocument();
@@ -122,11 +108,7 @@ describe("transaction_progress_bar module", () => {
     });
 
     it("renders explicit errorMessage override in alert banner", () => {
-      render(
-        <TransactionProgressBar
-          errorMessage="Custom ledger submission timeout."
-        />
-      );
+      render(<TransactionProgressBar errorMessage="Custom ledger submission timeout." />);
 
       const alert = screen.getByRole("alert");
       expect(alert).toBeInTheDocument();

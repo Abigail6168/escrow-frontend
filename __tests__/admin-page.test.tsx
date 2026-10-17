@@ -49,9 +49,7 @@ describe("AdminPage", () => {
 
     render(<AdminPage />);
 
-    expect(
-      screen.getByText(/connect your wallet to manage the whitelist/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/connect your wallet to manage the whitelist/i)).toBeInTheDocument();
   });
 
   it("shows loading spinner while checking admin status", () => {
@@ -77,9 +75,7 @@ describe("AdminPage", () => {
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(screen.getByText(/access denied/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/this page is restricted to the contract admin/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/this page is restricted to the contract admin/i)).toBeInTheDocument();
   });
 
   it("renders admin form and whitelist for admin users", async () => {

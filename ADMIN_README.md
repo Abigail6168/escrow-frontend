@@ -37,16 +37,18 @@ Total: 8 new files, 2 modified files
 ### For Frontend Developers
 
 1. **Review the implementation**:
+
    ```bash
    # Main component
    cat app/admin/page.tsx
-   
+
    # Admin utilities
    cat app/lib/admin.ts
    cat app/hooks/useIsAdmin.ts
    ```
 
 2. **Run tests** (after `npm install`):
+
    ```bash
    npm test admin
    ```
@@ -58,11 +60,13 @@ Total: 8 new files, 2 modified files
 ### For Backend Developers
 
 1. **Read the integration checklist**:
+
    ```bash
    cat BACKEND_INTEGRATION_CHECKLIST.md
    ```
 
 2. **Implement 4 required endpoints**:
+
    - POST `/api/jobs/query` - Query contract methods
    - GET `/api/jobs/whitelisted-tokens` - Fetch whitelist
    - POST `/api/jobs/build-tx` - Build transactions
@@ -73,6 +77,7 @@ Total: 8 new files, 2 modified files
 ### For Admins/Users
 
 1. **Read the usage guide**:
+
    ```bash
    cat ADMIN_USAGE_GUIDE.md
    ```
@@ -85,19 +90,20 @@ Total: 8 new files, 2 modified files
 
 ## 📚 Documentation Map
 
-| Document | Purpose | Audience |
-|----------|---------|----------|
-| **ADMIN_README.md** (this file) | Overview & navigation | Everyone |
-| **IMPLEMENTATION_SUMMARY.md** | High-level summary | Project leads |
-| **ADMIN_PAGE_IMPLEMENTATION.md** | Technical details | Frontend devs |
-| **BACKEND_INTEGRATION_CHECKLIST.md** | Backend requirements | Backend devs |
-| **ADMIN_USAGE_GUIDE.md** | How to use the page | End users/admins |
-| **FEATURES.md** | Feature walkthrough | Product/QA |
-| **docs/admin-flow-diagram.md** | Visual diagrams | All technical |
+| Document                             | Purpose               | Audience         |
+| ------------------------------------ | --------------------- | ---------------- |
+| **ADMIN_README.md** (this file)      | Overview & navigation | Everyone         |
+| **IMPLEMENTATION_SUMMARY.md**        | High-level summary    | Project leads    |
+| **ADMIN_PAGE_IMPLEMENTATION.md**     | Technical details     | Frontend devs    |
+| **BACKEND_INTEGRATION_CHECKLIST.md** | Backend requirements  | Backend devs     |
+| **ADMIN_USAGE_GUIDE.md**             | How to use the page   | End users/admins |
+| **FEATURES.md**                      | Feature walkthrough   | Product/QA       |
+| **docs/admin-flow-diagram.md**       | Visual diagrams       | All technical    |
 
 ## ✅ Implementation Checklist
 
 ### Core Features
+
 - [x] Admin page at `/admin` route
 - [x] Admin access verification via contract query
 - [x] Display current whitelisted tokens
@@ -111,6 +117,7 @@ Total: 8 new files, 2 modified files
 - [x] Access denied screen for non-admins
 
 ### User Experience
+
 - [x] Professional UI matching app design
 - [x] Mobile responsive (tested 375px+)
 - [x] Touch-friendly buttons (44px minimum)
@@ -121,6 +128,7 @@ Total: 8 new files, 2 modified files
 - [x] Focus indicators
 
 ### Code Quality
+
 - [x] TypeScript types
 - [x] Reusable hooks
 - [x] Clean component structure
@@ -130,6 +138,7 @@ Total: 8 new files, 2 modified files
 - [x] No console errors
 
 ### Testing
+
 - [x] Component tests (8 test cases)
 - [x] Utility tests (11 test cases)
 - [x] Happy path coverage
@@ -137,6 +146,7 @@ Total: 8 new files, 2 modified files
 - [x] Mock setup
 
 ### Documentation
+
 - [x] Technical implementation docs
 - [x] User guide
 - [x] Backend integration guide
@@ -145,6 +155,7 @@ Total: 8 new files, 2 modified files
 - [x] Code comments
 
 ### Accessibility
+
 - [x] Semantic HTML
 - [x] ARIA labels and roles
 - [x] Keyboard navigation
@@ -157,14 +168,17 @@ Total: 8 new files, 2 modified files
 ### Required Endpoints
 
 1. **Query Contract** - `POST /api/jobs/query`
+
    - Get admin address via `get_admin()` method
    - Used for access control
 
 2. **Fetch Whitelist** - `GET /api/jobs/whitelisted-tokens?contractId={id}`
+
    - Returns array of token addresses
    - Updated after add/remove
 
 3. **Build Transaction** - `POST /api/jobs/build-tx`
+
    - Creates unsigned XDR for add/remove operations
    - Methods: `add_whitelisted_token`, `remove_whitelisted_token`
 
@@ -218,6 +232,7 @@ npm test -- --coverage
 ## 🎨 Design System
 
 ### Colors
+
 - Background: `bg-gray-950`
 - Cards: `bg-gray-900`, `border-gray-800`
 - Primary: `bg-indigo-600`
@@ -226,18 +241,21 @@ npm test -- --coverage
 - Text: `text-white`, `text-gray-400`
 
 ### Typography
+
 - Heading: `text-2xl font-bold`
 - Subheading: `font-semibold`
 - Body: `text-sm`
 - Mono: `font-mono` (for addresses)
 
 ### Spacing
+
 - Container: `max-w-xl mx-auto px-6 py-12`
 - Sections: `space-y-8`
 - Forms: `space-y-4`
 - Lists: `space-y-2`
 
 ### Components
+
 - Buttons: `rounded-lg py-3 px-4`
 - Inputs: `rounded-lg py-2 px-4`
 - Cards: `rounded-xl p-6`
@@ -246,6 +264,7 @@ npm test -- --coverage
 ## 🔐 Security
 
 ### Frontend
+
 - ✅ Admin check for UX (not security)
 - ✅ No hardcoded credentials
 - ✅ Wallet signature required
@@ -253,6 +272,7 @@ npm test -- --coverage
 - ✅ AbortController for cleanup
 
 ### Backend (Required)
+
 - ⚠️ MUST verify admin before executing
 - ⚠️ MUST validate input parameters
 - ⚠️ MUST handle errors safely
@@ -260,6 +280,7 @@ npm test -- --coverage
 - ⚠️ Logging for audit trail
 
 ### Smart Contract (Required)
+
 - ⚠️ MUST enforce admin-only access
 - ⚠️ MUST validate addresses
 - ⚠️ MUST prevent duplicates
@@ -268,10 +289,12 @@ npm test -- --coverage
 ## 📱 Responsive Design
 
 ### Breakpoints
+
 - Mobile: 375px - 767px
 - Desktop: 768px+
 
 ### Mobile Optimizations
+
 - Full width with padding
 - Token addresses truncate
 - 44px touch targets
@@ -279,6 +302,7 @@ npm test -- --coverage
 - No horizontal scroll
 
 ### Desktop Optimizations
+
 - Max width 768px
 - Centered layout
 - Hover states
@@ -289,21 +313,25 @@ npm test -- --coverage
 ### Common Issues
 
 **"Admin link doesn't appear"**
+
 - Ensure wallet connected
 - Refresh page after connecting
 - Check you're using admin wallet
 
 **"Access Denied"**
+
 - Not connected as admin
 - Switch wallet in Freighter
 - Verify contract admin address
 
 **"Could not load whitelist"**
+
 - Check backend is running
 - Verify network connection
 - Check browser console
 
 **Transaction stuck**
+
 - Look for Freighter popup
 - Check wallet is unlocked
 - Try closing/reopening Freighter
@@ -313,6 +341,7 @@ npm test -- --coverage
 ## 🚢 Deployment
 
 ### Prerequisites
+
 - [x] Backend endpoints implemented
 - [x] Contract methods deployed
 - [x] Environment variables set
@@ -371,6 +400,7 @@ All requirements met:
 ## 🔄 Future Enhancements
 
 Optional improvements:
+
 - [ ] Token metadata (symbol/name)
 - [ ] Search/filter tokens
 - [ ] Bulk operations
@@ -382,12 +412,14 @@ Optional improvements:
 ## 📞 Support
 
 ### For Questions
+
 1. Check relevant documentation (see map above)
 2. Review code comments in source files
 3. Check tests for usage examples
 4. Review flow diagrams for architecture
 
 ### For Issues
+
 1. Check browser console for errors
 2. Verify environment variables
 3. Test backend endpoints separately
@@ -397,18 +429,21 @@ Optional improvements:
 ## 🎓 Learning Resources
 
 ### To Understand the Code
+
 1. Start with `IMPLEMENTATION_SUMMARY.md`
 2. Review `docs/admin-flow-diagram.md`
 3. Read `app/admin/page.tsx`
 4. Check tests in `__tests__/`
 
 ### To Integrate Backend
+
 1. Read `BACKEND_INTEGRATION_CHECKLIST.md`
 2. Review API contracts in implementation doc
 3. Test with curl examples
 4. Verify contract methods
 
 ### To Use the Feature
+
 1. Read `ADMIN_USAGE_GUIDE.md`
 2. Review `FEATURES.md` for visuals
 3. Try on testnet first
@@ -432,6 +467,6 @@ A complete, professional admin page implementation with:
 
 ---
 
-*Last Updated: 2026-06-28*  
-*Version: 1.0.0*  
-*Acceptance Criteria: ✅ All Met*
+_Last Updated: 2026-06-28_  
+_Version: 1.0.0_  
+_Acceptance Criteria: ✅ All Met_

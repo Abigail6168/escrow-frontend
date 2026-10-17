@@ -119,12 +119,14 @@ describe("LedgerLoaderOverlay and Ledger Operation Loader Tracking", () => {
 
     const request = { xdr: "AAAA..." };
     // Create a promise that resolves after a small delay so we can capture the loading state
-    const signFn = vi.fn().mockImplementation(
-      (): Promise<LedgerSignResult> =>
-        new Promise<LedgerSignResult>((resolve) =>
-          setTimeout(() => resolve({ signedXdr: "signed-xdr" }), 150)
-        )
-    );
+    const signFn = vi
+      .fn()
+      .mockImplementation(
+        (): Promise<LedgerSignResult> =>
+          new Promise<LedgerSignResult>((resolve) =>
+            setTimeout(() => resolve({ signedXdr: "signed-xdr" }), 150)
+          )
+      );
 
     const promise = signWithTimeout(request, signFn, 5000);
     expect(isLedgerLoading()).toBe(true);
@@ -165,12 +167,14 @@ describe("LedgerLoaderOverlay and Ledger Operation Loader Tracking", () => {
   it("shows loader for signCatchingRejection and hides on success", async () => {
     render(<LedgerLoaderOverlay />);
 
-    const signFn = vi.fn().mockImplementation(
-      (): Promise<LedgerSignResult> =>
-        new Promise<LedgerSignResult>((resolve) =>
-          setTimeout(() => resolve({ signedXdr: "signed-xdr" }), 150)
-        )
-    );
+    const signFn = vi
+      .fn()
+      .mockImplementation(
+        (): Promise<LedgerSignResult> =>
+          new Promise<LedgerSignResult>((resolve) =>
+            setTimeout(() => resolve({ signedXdr: "signed-xdr" }), 150)
+          )
+      );
     const showToast = vi.fn();
 
     const promise = signCatchingRejection(signFn, showToast);
@@ -190,12 +194,14 @@ describe("LedgerLoaderOverlay and Ledger Operation Loader Tracking", () => {
   it("shows loader for signCatchingRejection and hides on user rejection", async () => {
     render(<LedgerLoaderOverlay />);
 
-    const signFn = vi.fn().mockImplementation(
-      (): Promise<LedgerSignResult> =>
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("user rejected transaction")), 150)
-        )
-    );
+    const signFn = vi
+      .fn()
+      .mockImplementation(
+        (): Promise<LedgerSignResult> =>
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("user rejected transaction")), 150)
+          )
+      );
     const showToast = vi.fn();
 
     const promise = signCatchingRejection(signFn, showToast);

@@ -5,21 +5,25 @@
 ### For Contract Admin
 
 1. **Connect Your Wallet**
+
    - Click "Connect Wallet" in the navbar
    - Approve Freighter connection
    - Ensure you're connected with the admin wallet
 
 2. **Access Admin Page**
+
    - If you're the admin, an "Admin" link will appear in the navbar
    - Click "Admin" or navigate to `/admin`
    - Page will verify your admin status (takes ~1-2 seconds)
 
 3. **View Whitelisted Tokens**
+
    - Current whitelist displays automatically
    - Each token shows its contract address
    - Empty state if no tokens yet
 
 4. **Add a Token**
+
    - Enter the token contract address in the input field
    - Click "Add to Whitelist"
    - Approve the transaction in Freighter
@@ -36,6 +40,7 @@
 ### For Non-Admin Users
 
 If you connect with a non-admin wallet:
+
 1. The "Admin" link will NOT appear in the navbar
 2. If you navigate directly to `/admin`, you'll see an "Access Denied" message
 3. No admin functionality is accessible
@@ -43,6 +48,7 @@ If you connect with a non-admin wallet:
 ## Common Scenarios
 
 ### Scenario 1: Initial Setup (No Tokens)
+
 ```
 1. Connect admin wallet
 2. Navigate to /admin
@@ -52,6 +58,7 @@ If you connect with a non-admin wallet:
 ```
 
 ### Scenario 2: Adding Multiple Tokens
+
 ```
 1. Enter first token address → Add → Approve in Freighter
 2. Wait for success message
@@ -61,6 +68,7 @@ If you connect with a non-admin wallet:
 ```
 
 ### Scenario 3: Updating Whitelist
+
 ```
 1. View current tokens
 2. Remove outdated token
@@ -71,6 +79,7 @@ If you connect with a non-admin wallet:
 ## Token Address Format
 
 Token addresses should:
+
 - Start with `C` (for contract addresses on Stellar)
 - Be 56 characters long
 - Example: `CTOKEN123ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890EXAMPLE`
@@ -82,15 +91,18 @@ Token addresses should:
 You'll see these states in order:
 
 1. **Preparing...** (Building transaction)
+
    - Backend is creating the unsigned transaction
    - Usually takes 1-2 seconds
 
 2. **Sign in wallet...** (Signing)
+
    - Freighter popup appears
    - Review and approve the transaction
    - If you decline, you'll see "You declined the transaction" error
 
 3. **Submitting...** (Submitting to network)
+
    - Transaction is being submitted to Stellar
    - Usually takes 2-5 seconds
 
@@ -102,6 +114,7 @@ You'll see these states in order:
 ### Error States
 
 If something goes wrong, you'll see:
+
 - **"You declined the transaction in your wallet"** - Click the button again when ready
 - **"Could not load whitelisted tokens"** - Check your network connection
 - **"Could not connect to backend"** - Backend may be down, try again later
@@ -110,12 +123,14 @@ If something goes wrong, you'll see:
 ## Tips
 
 ✅ **Do:**
+
 - Wait for each transaction to complete before starting another
 - Keep Freighter unlocked during operations
 - Verify token addresses before adding
 - Check the whitelist refreshes after operations
 
 ❌ **Don't:**
+
 - Close Freighter while a transaction is pending
 - Click add/remove multiple times rapidly
 - Add duplicate tokens (contract may reject)
@@ -124,26 +139,31 @@ If something goes wrong, you'll see:
 ## Troubleshooting
 
 ### "Admin link doesn't appear"
+
 - Ensure you're connected with the correct wallet
 - Refresh the page after connecting
 - Check you're using the admin wallet (not client/freelancer)
 
 ### "Access Denied" screen
+
 - You're not connected as the admin
 - Switch to the admin wallet in Freighter
 - Contact the contract deployer if you believe you should have access
 
 ### Transaction stuck on "Signing..."
+
 - Freighter popup may be hidden behind your browser
 - Look for Freighter notification icon
 - Try closing and reopening Freighter
 
 ### "Could not load whitelisted tokens"
+
 - Check your internet connection
 - Verify backend is running (if local development)
 - Try refreshing the page
 
 ### Transaction rejected
+
 - You may not be the admin
 - Token address may be invalid
 - Contract state may not allow the operation
@@ -170,6 +190,7 @@ The admin page interacts with these backend endpoints:
 ## Security Notes
 
 🔒 **Important:**
+
 - The frontend check is for UX only
 - Backend MUST verify admin status before executing operations
 - Smart contract MUST enforce admin-only access
@@ -179,6 +200,7 @@ The admin page interacts with these backend endpoints:
 ## Support
 
 If you encounter issues:
+
 1. Check the browser console for errors
 2. Verify you're using the latest version
 3. Ensure all dependencies are up to date

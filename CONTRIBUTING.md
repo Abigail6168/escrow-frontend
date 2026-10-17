@@ -20,6 +20,7 @@ Thank you for your interest in contributing! This document outlines the process 
 ## Code Style
 
 Follow the project's existing code style and use ESLint to check:
+
 ```bash
 npm run lint
 ```
@@ -34,6 +35,7 @@ npm run lint
 ## Reporting Issues
 
 If you find a bug or have a feature request, please open an issue on GitHub with clear details:
+
 - Steps to reproduce the problem (if bug)
 - Expected behavior
 - Actual behavior

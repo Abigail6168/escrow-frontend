@@ -117,9 +117,21 @@ describe("wallet_disconnect_handler WalletActiveKeysStore persistence (#237)", (
   });
 
   it("sanitizes invalid keys", () => {
-    store.addActiveKey({ walletId: "", address: "GABC123", connectedAt: Date.now() } as WalletActiveKey);
-    store.addActiveKey({ walletId: "freighter", address: "", connectedAt: Date.now() } as WalletActiveKey);
-    store.addActiveKey({ walletId: "freighter", address: "GABC123", connectedAt: NaN } as WalletActiveKey);
+    store.addActiveKey({
+      walletId: "",
+      address: "GABC123",
+      connectedAt: Date.now(),
+    } as WalletActiveKey);
+    store.addActiveKey({
+      walletId: "freighter",
+      address: "",
+      connectedAt: Date.now(),
+    } as WalletActiveKey);
+    store.addActiveKey({
+      walletId: "freighter",
+      address: "GABC123",
+      connectedAt: NaN,
+    } as WalletActiveKey);
     expect(store.getActiveKeys()).toEqual([]);
   });
 });
@@ -161,7 +173,11 @@ describe("wallet_disconnect_handler WalletActiveKeysStore rehydration (#237)", (
   });
 
   it("rehydrates multiple active keys correctly", () => {
-    const key1 = makeActiveKey({ walletId: "freighter", address: "GABC123456789", connectedAt: 1000 });
+    const key1 = makeActiveKey({
+      walletId: "freighter",
+      address: "GABC123456789",
+      connectedAt: 1000,
+    });
     const key2 = makeActiveKey({ walletId: "albedo", address: "GDEF987654321", connectedAt: 2000 });
     store.addActiveKey(key1);
     store.addActiveKey(key2);
@@ -329,11 +345,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck persistence integr
     expect(walletActiveKeysStore.hasActiveKey("freighter")).toBe(true);
 
     const disconnectFn = vi.fn(async () => {});
-    const result = await disconnectWalletWithCheck(
-      "freighter",
-      disconnectFn,
-      () => true
-    );
+    const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
     expect(result.success).toBe(true);
     expect(walletActiveKeysStore.hasActiveKey("freighter")).toBe(false);
@@ -344,11 +356,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck persistence integr
     expect(walletActiveKeysStore.hasActiveKey("freighter")).toBe(true);
 
     const disconnectFn = vi.fn(async () => {});
-    const result = await disconnectWalletWithCheck(
-      "freighter",
-      disconnectFn,
-      () => false
-    );
+    const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => false);
 
     expect(result.success).toBe(false);
     expect(walletActiveKeysStore.hasActiveKey("freighter")).toBe(false);
@@ -362,11 +370,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck persistence integr
     const disconnectFn = vi.fn(async () => {
       throw new Error("disconnect failed");
     });
-    const result = await disconnectWalletWithCheck(
-      "freighter",
-      disconnectFn,
-      () => true
-    );
+    const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
     expect(result.success).toBe(false);
     expect(result.error).toBe("disconnect failed");

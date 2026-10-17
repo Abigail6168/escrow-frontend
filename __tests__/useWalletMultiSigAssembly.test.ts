@@ -46,9 +46,7 @@ function buildXdr(): { xdr: string; source: Keypair } {
 describe("useWalletMultiSigAssembly — parseStructure", () => {
   it("parses a valid XDR and returns structure metadata (albedo)", () => {
     const { xdr } = buildXdr();
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
     const s = result.current.parseStructure(xdr);
     expect(s.operationCount).toBe(1);
     expect(typeof s.sourceAccount).toBe("string");
@@ -56,56 +54,38 @@ describe("useWalletMultiSigAssembly — parseStructure", () => {
   });
 
   it("throws WalletMultiSigParseError for empty XDR (albedo)", () => {
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
-    expect(() => result.current.parseStructure("")).toThrow(
-      WalletMultiSigParseError
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
+    expect(() => result.current.parseStructure("")).toThrow(WalletMultiSigParseError);
   });
 
   it("throws WalletMultiSigParseError for malformed XDR (albedo)", () => {
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
-    expect(() => result.current.parseStructure("not-valid-xdr")).toThrow(
-      WalletMultiSigParseError
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
+    expect(() => result.current.parseStructure("not-valid-xdr")).toThrow(WalletMultiSigParseError);
   });
 
   it("parses a valid XDR (freighter)", () => {
     const { xdr } = buildXdr();
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "freighter")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "freighter"));
     // freighter uses base-layer parseMultiSigEnvelope; structurePreview returned
     const s = result.current.parseStructure(xdr);
     expect(typeof s.operationCount).toBe("number");
   });
 
   it("throws WalletMultiSigParseError for empty XDR (freighter)", () => {
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "freighter")
-    );
-    expect(() => result.current.parseStructure("")).toThrow(
-      WalletMultiSigParseError
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "freighter"));
+    expect(() => result.current.parseStructure("")).toThrow(WalletMultiSigParseError);
   });
 
   it("parses a valid XDR (xbull)", () => {
     const { xdr } = buildXdr();
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "xbull")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "xbull"));
     const s = result.current.parseStructure(xdr);
     expect(typeof s.operationCount).toBe("number");
   });
 
   it("parses a valid XDR (hana)", () => {
     const { xdr } = buildXdr();
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "hana")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "hana"));
     const s = result.current.parseStructure(xdr);
     expect(typeof s.operationCount).toBe("number");
   });
@@ -119,9 +99,7 @@ describe("useWalletMultiSigAssembly — planAssembly", () => {
   it("builds a plan with the correct pending signers (albedo)", () => {
     const { xdr } = buildXdr();
     const signers = [Keypair.random().publicKey(), Keypair.random().publicKey()];
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
     const plan = result.current.planAssembly(xdr, signers);
     expect(plan.pendingSigners).toEqual(signers);
     expect(plan.baseXdr).toBe(xdr);
@@ -131,21 +109,15 @@ describe("useWalletMultiSigAssembly — planAssembly", () => {
   it("builds a plan with the correct pending signers (freighter)", () => {
     const { xdr } = buildXdr();
     const signers = [Keypair.random().publicKey()];
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "freighter")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "freighter"));
     const plan = result.current.planAssembly(xdr, signers);
     expect(plan.pendingSigners).toEqual(signers);
   });
 
   it("throws WalletMultiSigParseError for malformed base XDR (albedo)", () => {
     const signers = [Keypair.random().publicKey()];
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
-    expect(() =>
-      result.current.planAssembly("bad-xdr", signers)
-    ).toThrow(WalletMultiSigParseError);
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
+    expect(() => result.current.planAssembly("bad-xdr", signers)).toThrow(WalletMultiSigParseError);
   });
 });
 
@@ -158,9 +130,7 @@ describe("useWalletMultiSigAssembly — missingSigners", () => {
     const { xdr } = buildXdr();
     const keyA = Keypair.random().publicKey();
     const keyB = Keypair.random().publicKey();
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
     const plan = result.current.planAssembly(xdr, [keyA, keyB]);
     const missing = result.current.missingSigners(plan, [keyA]);
     expect(missing).toEqual([keyB]);
@@ -169,9 +139,7 @@ describe("useWalletMultiSigAssembly — missingSigners", () => {
   it("returns empty array when all signers have signed", () => {
     const { xdr } = buildXdr();
     const keyA = Keypair.random().publicKey();
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "freighter")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "freighter"));
     const plan = result.current.planAssembly(xdr, [keyA]);
     const missing = result.current.missingSigners(plan, [keyA]);
     expect(missing).toHaveLength(0);
@@ -189,20 +157,14 @@ describe("useWalletMultiSigAssembly — validateParts", () => {
     tx.sign(source);
     const signedXdr = tx.toXDR();
 
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
     expect(() =>
-      result.current.validateParts([
-        { signerPublicKey: source.publicKey(), signedXdr },
-      ])
+      result.current.validateParts([{ signerPublicKey: source.publicKey(), signedXdr }])
     ).not.toThrow();
   });
 
   it("throws WalletMultiSigParseError for a part with malformed XDR (albedo)", () => {
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
     expect(() =>
       result.current.validateParts([
         { signerPublicKey: Keypair.random().publicKey(), signedXdr: "bad" },
@@ -218,9 +180,7 @@ describe("useWalletMultiSigAssembly — validateParts", () => {
 describe("useWalletMultiSigAssembly — signTransaction", () => {
   it("calls signFn with the trimmed XDR for albedo", async () => {
     const { xdr } = buildXdr();
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
     const signFn = async (x: string) => `signed:${x}`;
     const signed = await result.current.signTransaction(xdr, signFn);
     expect(signed).toBe(`signed:${xdr}`);
@@ -228,28 +188,22 @@ describe("useWalletMultiSigAssembly — signTransaction", () => {
 
   it("calls signFn with the trimmed XDR for freighter", async () => {
     const { xdr } = buildXdr();
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "freighter")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "freighter"));
     const signFn = async (x: string) => `signed:${x}`;
     const signed = await result.current.signTransaction(xdr, signFn);
     expect(signed).toBe(`signed:${xdr.trim()}`);
   });
 
   it("rejects with WalletMultiSigParseError for invalid XDR (freighter)", async () => {
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "freighter")
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "freighter"));
+    await expect(result.current.signTransaction("bad-xdr", async (x) => x)).rejects.toThrow(
+      WalletMultiSigParseError
     );
-    await expect(
-      result.current.signTransaction("bad-xdr", async (x) => x)
-    ).rejects.toThrow(WalletMultiSigParseError);
   });
 
   it("propagates sign function errors (albedo)", async () => {
     const { xdr } = buildXdr();
-    const { result } = renderHook(() =>
-      useWalletMultiSigAssembly(NETWORK, "albedo")
-    );
+    const { result } = renderHook(() => useWalletMultiSigAssembly(NETWORK, "albedo"));
     await expect(
       result.current.signTransaction(xdr, async () => {
         throw new Error("user rejected");

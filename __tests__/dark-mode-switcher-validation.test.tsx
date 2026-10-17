@@ -6,7 +6,7 @@ describe("DarkModeSwitcher - validation messages and alerts #314", () => {
   it("renders with aria-invalid=false and no error message when error is not provided", () => {
     render(<DarkModeSwitcher isDarkMode={false} onToggle={vi.fn()} />);
     const sw = screen.getByRole("switch");
-    
+
     expect(sw).toHaveAttribute("aria-invalid", "false");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
@@ -32,13 +32,7 @@ describe("DarkModeSwitcher - validation messages and alerts #314", () => {
   });
 
   it("applies border-red-500 styling to the button when error is present", () => {
-    render(
-      <DarkModeSwitcher
-        isDarkMode={false}
-        onToggle={vi.fn()}
-        error="Validation Error"
-      />
-    );
+    render(<DarkModeSwitcher isDarkMode={false} onToggle={vi.fn()} error="Validation Error" />);
     const sw = screen.getByRole("switch");
     expect(sw.className).toContain("border-red-500");
     expect(sw.className).not.toContain("border-border-subtle");
@@ -52,10 +46,8 @@ describe("DarkModeSwitcher - validation messages and alerts #314", () => {
   });
 
   it("toggles error elements dynamically when error state changes", () => {
-    const { rerender } = render(
-      <DarkModeSwitcher isDarkMode={false} onToggle={vi.fn()} />
-    );
-    
+    const { rerender } = render(<DarkModeSwitcher isDarkMode={false} onToggle={vi.fn()} />);
+
     // Initially no error
     expect(screen.getByRole("switch")).toHaveAttribute("aria-invalid", "false");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -69,7 +61,7 @@ describe("DarkModeSwitcher - validation messages and alerts #314", () => {
         id="theme-toggle"
       />
     );
-    
+
     expect(screen.getByRole("switch")).toHaveAttribute("aria-invalid", "true");
     const alertEl = screen.getByRole("alert");
     expect(alertEl).toBeInTheDocument();
@@ -77,15 +69,8 @@ describe("DarkModeSwitcher - validation messages and alerts #314", () => {
     expect(screen.getByRole("switch")).toHaveAttribute("aria-describedby", "theme-toggle-error");
 
     // Rerender with error cleared
-    rerender(
-      <DarkModeSwitcher
-        isDarkMode={false}
-        onToggle={vi.fn()}
-        error=""
-        id="theme-toggle"
-      />
-    );
-    
+    rerender(<DarkModeSwitcher isDarkMode={false} onToggle={vi.fn()} error="" id="theme-toggle" />);
+
     expect(screen.getByRole("switch")).toHaveAttribute("aria-invalid", "false");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.getByRole("switch")).not.toHaveAttribute("aria-describedby");
@@ -102,9 +87,6 @@ describe("DarkModeSwitcher - validation messages and alerts #314", () => {
       />
     );
     const sw = screen.getByRole("switch");
-    expect(sw).toHaveAttribute(
-      "aria-describedby",
-      "external-description-id theme-element-error"
-    );
+    expect(sw).toHaveAttribute("aria-describedby", "external-description-id theme-element-error");
   });
 });

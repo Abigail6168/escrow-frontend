@@ -161,20 +161,11 @@ describe("rabe_connector console warning blocks", () => {
 
     tracker.track("tx-42", "building", "Preparing XDR");
     tracker.track("tx-42", "signing", "Prompting Rabe wallet");
-    tracker.track(
-      "tx-42",
-      "error",
-      "Wallet returned failure",
-      new Error("device busy")
-    );
+    tracker.track("tx-42", "error", "Wallet returned failure", new Error("device busy"));
 
     const history = tracker.getHistory("tx-42");
     expect(history).toHaveLength(3);
-    expect(history.map((e) => e.phase)).toEqual([
-      "building",
-      "signing",
-      "error",
-    ]);
+    expect(history.map((e) => e.phase)).toEqual(["building", "signing", "error"]);
     expect(history[2].stack).toContain("Error: device busy");
     expect(warnSpy).toHaveBeenCalledTimes(3);
 
@@ -265,9 +256,7 @@ describe("rabe_connector network mismatch checks", () => {
 const VALID_ADDRESS = "GD4TI4BA2F6L3UE2SFNFEM5DBGIP2MYH7ID2KHDI2HF3YEEGCFB2OOAI";
 const VALID_NETWORK = "testnet" as const;
 
-function makeCache(
-  overrides: Partial<RabeActiveAddressCache> = {}
-): RabeActiveAddressCache {
+function makeCache(overrides: Partial<RabeActiveAddressCache> = {}): RabeActiveAddressCache {
   return {
     version: 1,
     address: VALID_ADDRESS,
@@ -283,9 +272,7 @@ describe("rabe_connector active-address cache — validateRabeAddressCache", () 
   });
 
   it("accepts mainnet as a valid network", () => {
-    expect(validateRabeAddressCache(makeCache({ network: "mainnet" }))).toBe(
-      true
-    );
+    expect(validateRabeAddressCache(makeCache({ network: "mainnet" }))).toBe(true);
   });
 
   it("rejects null", () => {
@@ -302,9 +289,7 @@ describe("rabe_connector active-address cache — validateRabeAddressCache", () 
   });
 
   it("rejects wrong version number", () => {
-    expect(validateRabeAddressCache({ ...makeCache(), version: 2 })).toBe(
-      false
-    );
+    expect(validateRabeAddressCache({ ...makeCache(), version: 2 })).toBe(false);
   });
 
   it("rejects a missing address field", () => {
@@ -314,27 +299,27 @@ describe("rabe_connector active-address cache — validateRabeAddressCache", () 
 
   it("rejects an address that does not start with G", () => {
     expect(
-      validateRabeAddressCache(makeCache({ address: "XD4TI4BA2F6L3UE2SFNFEM5DBGIP2MYH7ID2KHDI2HF3YEEGCFB2OOAI" }))
+      validateRabeAddressCache(
+        makeCache({ address: "XD4TI4BA2F6L3UE2SFNFEM5DBGIP2MYH7ID2KHDI2HF3YEEGCFB2OOAI" })
+      )
     ).toBe(false);
   });
 
   it("rejects an address that is too short", () => {
-    expect(
-      validateRabeAddressCache(makeCache({ address: "GABC" }))
-    ).toBe(false);
+    expect(validateRabeAddressCache(makeCache({ address: "GABC" }))).toBe(false);
   });
 
   it("rejects an address with invalid Base32 characters", () => {
     // Contains '0' which is not in Base32 alphabet A-Z2-7
     expect(
-      validateRabeAddressCache(makeCache({ address: "G04TI4BA2F6L3UE2SFNFEM5DBGIP2MYH7ID2KHDI2HF3YEEGCFB2OOAI" }))
+      validateRabeAddressCache(
+        makeCache({ address: "G04TI4BA2F6L3UE2SFNFEM5DBGIP2MYH7ID2KHDI2HF3YEEGCFB2OOAI" })
+      )
     ).toBe(false);
   });
 
   it("rejects a non-numeric savedAt", () => {
-    expect(
-      validateRabeAddressCache({ ...makeCache(), savedAt: "now" })
-    ).toBe(false);
+    expect(validateRabeAddressCache({ ...makeCache(), savedAt: "now" })).toBe(false);
   });
 
   it("rejects a zero savedAt", () => {
@@ -346,9 +331,7 @@ describe("rabe_connector active-address cache — validateRabeAddressCache", () 
   });
 
   it("rejects an unknown network string", () => {
-    expect(
-      validateRabeAddressCache({ ...makeCache(), network: "devnet" })
-    ).toBe(false);
+    expect(validateRabeAddressCache({ ...makeCache(), network: "devnet" })).toBe(false);
   });
 
   it("rejects when network is missing", () => {
@@ -492,16 +475,12 @@ describe("rabe_connector active-address cache — localStorage integration", () 
   });
 
   it("saveRabeAddressCache logs a warning when localStorage.setItem throws", () => {
-    const setItemSpy = vi
-      .spyOn(Storage.prototype, "setItem")
-      .mockImplementation(() => {
-        throw new DOMException("QuotaExceededError");
-      });
+    const setItemSpy = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new DOMException("QuotaExceededError");
+    });
 
     // Should not throw itself
-    expect(() =>
-      saveRabeAddressCache(VALID_ADDRESS, VALID_NETWORK)
-    ).not.toThrow();
+    expect(() => saveRabeAddressCache(VALID_ADDRESS, VALID_NETWORK)).not.toThrow();
 
     // And should have logged a warning
     expect(warnSpy).toHaveBeenCalledTimes(1);

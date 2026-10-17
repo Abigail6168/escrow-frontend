@@ -43,8 +43,7 @@ export default function FreighterConnector({
   txId = "freighter-tx",
 }: FreighterConnectorProps) {
   const [status, setStatus] = useState<FreighterConnectorStatus>("idle");
-  const [simulation, setSimulation] =
-    useState<FreighterSimulationResult | null>(null);
+  const [simulation, setSimulation] = useState<FreighterSimulationResult | null>(null);
   const { showToast } = useToast();
 
   const handleSimulate = useCallback(async () => {
@@ -65,8 +64,7 @@ export default function FreighterConnector({
         setStatus("idle");
       }
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Simulation failed.";
+      const message = err instanceof Error ? err.message : "Simulation failed.";
       logFreighterWarning("SIMULATE ERROR", message, {
         err,
         txId,
@@ -98,17 +96,14 @@ export default function FreighterConnector({
         lc.includes("cancelled") ||
         lc.includes("canceled");
 
-      logFreighterWarning(
-        isRejection ? "SIGNATURE REJECTED" : "SIGN ERROR",
-        message,
-        { err, txId, phase: "signing" }
-      );
+      logFreighterWarning(isRejection ? "SIGNATURE REJECTED" : "SIGN ERROR", message, {
+        err,
+        txId,
+        phase: "signing",
+      });
 
       if (isRejection) {
-        showToast(
-          "Signature cancelled — you rejected the request in your wallet.",
-          "warning"
-        );
+        showToast("Signature cancelled — you rejected the request in your wallet.", "warning");
       }
 
       setStatus(isRejection ? "rejected" : "error");

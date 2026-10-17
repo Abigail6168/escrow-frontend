@@ -20,10 +20,10 @@ const TESTNET_PASSPHRASE = "Test SDF Network ; September 2015";
 // ---------------------------------------------------------------------------
 
 type SignerState =
-  | "idle"        // XDR parsed, ready to sign
-  | "signing"     // sign call in-flight
-  | "success"     // signed XDR returned
-  | "error"       // signing threw
+  | "idle" // XDR parsed, ready to sign
+  | "signing" // sign call in-flight
+  | "success" // signed XDR returned
+  | "error" // signing threw
   | "parse-error"; // XDR failed to parse on mount
 
 // ---------------------------------------------------------------------------
@@ -62,21 +62,14 @@ export interface TransactionSignerPanelProps {
 // Sub-component: structure preview
 // ---------------------------------------------------------------------------
 
-function StructurePreview({
-  structure,
-}: {
-  structure: MultiSigTransactionStructure;
-}) {
+function StructurePreview({ structure }: { structure: MultiSigTransactionStructure }) {
   return (
     <dl
       data-testid="tx-signer-structure-preview"
       className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs"
     >
       <dt className="font-medium text-gray-400">Source</dt>
-      <dd
-        className="font-mono text-gray-200 truncate"
-        title={structure.sourceAccount}
-      >
+      <dd className="font-mono text-gray-200 truncate" title={structure.sourceAccount}>
         {structure.sourceAccount
           ? `${structure.sourceAccount.slice(0, 6)}…${structure.sourceAccount.slice(-4)}`
           : "—"}
@@ -165,8 +158,7 @@ export default function TransactionSignerPanel({
       setSigningState("success");
       onSigned(signedXdr);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Signing failed.";
+      const message = err instanceof Error ? err.message : "Signing failed.";
       setSigningError(message);
       setSigningState("error");
       onError?.(message);
@@ -198,15 +190,9 @@ export default function TransactionSignerPanel({
         className="flex flex-col gap-4 bg-gray-900 border border-gray-700 rounded-xl p-5"
       >
         {label && (
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-            {label}
-          </p>
+          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{label}</p>
         )}
-        <p
-          role="alert"
-          data-testid="tx-signer-parse-error"
-          className="text-sm text-red-400"
-        >
+        <p role="alert" data-testid="tx-signer-parse-error" className="text-sm text-red-400">
           {parseErrorMessage ?? "Invalid transaction XDR."}
         </p>
         {onRejected && (
@@ -232,14 +218,9 @@ export default function TransactionSignerPanel({
         className="flex flex-col gap-3 bg-gray-900 border border-gray-700 rounded-xl p-5"
       >
         {label && (
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-            {label}
-          </p>
+          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{label}</p>
         )}
-        <p
-          data-testid="tx-signer-success-message"
-          className="text-sm text-green-400 font-medium"
-        >
+        <p data-testid="tx-signer-success-message" className="text-sm text-green-400 font-medium">
           Transaction signed successfully.
         </p>
       </div>
@@ -255,9 +236,7 @@ export default function TransactionSignerPanel({
     >
       {/* Optional label */}
       {label && (
-        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-          {label}
-        </p>
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{label}</p>
       )}
 
       {/* Transaction structure preview */}
@@ -265,11 +244,7 @@ export default function TransactionSignerPanel({
 
       {/* Signing error */}
       {state === "error" && signingError && (
-        <p
-          role="alert"
-          data-testid="tx-signer-error"
-          className="text-sm text-red-400"
-        >
+        <p role="alert" data-testid="tx-signer-error" className="text-sm text-red-400">
           {signingError}
         </p>
       )}

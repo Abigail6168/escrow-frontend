@@ -13,12 +13,7 @@ import {
 import TransactionSignerNetworkWarningBar from "@/app/components/TransactionSignerNetworkWarningBar";
 import FreighterWalletWarningBanner from "@/app/components/FreighterWalletWarningBanner";
 
-export type TransactionSignerStatus =
-  | "idle"
-  | "signing"
-  | "signed"
-  | "rejected"
-  | "error";
+export type TransactionSignerStatus = "idle" | "signing" | "signed" | "rejected" | "error";
 
 export interface TransactionSignerProps {
   /** The wallet's current network. */
@@ -51,13 +46,9 @@ export default function TransactionSigner({
   children,
 }: TransactionSignerProps) {
   const [status, setStatus] = useState<TransactionSignerStatus>("idle");
-  const walletAvailability =
-    suppliedWalletAvailability ?? checkFreighterAvailability();
+  const walletAvailability = suppliedWalletAvailability ?? checkFreighterAvailability();
 
-  const networkState = checkTransactionSignerNetworkMatch(
-    walletNetwork,
-    appNetwork
-  );
+  const networkState = checkTransactionSignerNetworkMatch(walletNetwork, appNetwork);
 
   const handleSign = useCallback(async () => {
     if (networkState.mismatched) {
@@ -104,10 +95,7 @@ export default function TransactionSigner({
   return (
     <div data-testid="transaction-signer">
       <FreighterWalletWarningBanner availability={walletAvailability} />
-      <TransactionSignerNetworkWarningBar
-        walletNetwork={walletNetwork}
-        appNetwork={appNetwork}
-      />
+      <TransactionSignerNetworkWarningBar walletNetwork={walletNetwork} appNetwork={appNetwork} />
       {children}
       <button
         type="button"

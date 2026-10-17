@@ -118,9 +118,7 @@ describe("albedo_connector stack / warning formatting", () => {
 describe("albedo_connector sensitive information handling", () => {
   it("redacts secret-key shaped values from log text", () => {
     const secret = `S${"A".repeat(55)}`;
-    const labeled = sanitizeAlbedoLogText(
-      `payload secret=${secret} privateKey=abc seed=xyz`
-    );
+    const labeled = sanitizeAlbedoLogText(`payload secret=${secret} privateKey=abc seed=xyz`);
     const bare = sanitizeAlbedoLogText(`leaked key ${secret}`);
 
     expect(labeled).not.toContain(secret);
@@ -174,12 +172,7 @@ describe("albedo_connector transaction lifecycle tracking", () => {
       network: "testnet",
       operationType: "payment",
     });
-    tracker.track(
-      "tx-10",
-      "error",
-      "Albedo popup closed",
-      { err: new Error("popup closed") }
-    );
+    tracker.track("tx-10", "error", "Albedo popup closed", { err: new Error("popup closed") });
 
     const history = tracker.getHistory("tx-10");
     expect(history).toHaveLength(6);

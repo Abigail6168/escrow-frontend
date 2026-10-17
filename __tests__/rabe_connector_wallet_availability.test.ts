@@ -53,7 +53,6 @@ describe("rabe_connector detectRabeExtension (#133)", () => {
   });
 });
 
-
 // ---------------------------------------------------------------------------
 // checkRabeAvailability
 // ---------------------------------------------------------------------------
@@ -141,7 +140,6 @@ describe("rabe_connector checkRabeAvailability (#133)", () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 });
-
 
 // ---------------------------------------------------------------------------
 // warnOnMissingRabe

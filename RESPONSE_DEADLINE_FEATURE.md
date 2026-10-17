@@ -52,7 +52,7 @@ Professional implementation of validation, presets, and user guidance for the "R
 
 - Shows when a valid deadline is entered (1-365 days)
 - Updates dynamically as the value changes
-- Clear, plain-language explanation: *"Freelancer can claim funds automatically after X days if you do not respond"*
+- Clear, plain-language explanation: _"Freelancer can claim funds automatically after X days if you do not respond"_
 - Grammatically correct (singular "day" vs plural "days")
 - Hides when validation error is present
 

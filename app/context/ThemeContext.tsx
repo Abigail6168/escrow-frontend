@@ -1,5 +1,11 @@
 "use client";
-import { createContext, useContext, useCallback, useSyncExternalStore, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 
 type Theme = "dark" | "light";
 
@@ -59,11 +65,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     notifyListeners();
   }, []);
 
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme(): ThemeContextValue {

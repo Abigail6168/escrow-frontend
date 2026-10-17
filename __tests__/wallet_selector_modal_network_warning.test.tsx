@@ -88,7 +88,7 @@ describe("wallet_selector_modal network mismatch detection (#task-1)", () => {
     const msg = buildWalletSelectorMismatchMessage(
       "freighter",
       TESTNET_PASSPHRASE,
-      TESTNET_PASSPHRASE,
+      TESTNET_PASSPHRASE
     );
     expect(msg).toBeNull();
   });
@@ -97,7 +97,7 @@ describe("wallet_selector_modal network mismatch detection (#task-1)", () => {
     const msg = buildWalletSelectorMismatchMessage(
       "freighter",
       MAINNET_PASSPHRASE,
-      TESTNET_PASSPHRASE,
+      TESTNET_PASSPHRASE
     );
     expect(msg).not.toBeNull();
     expect(msg).toContain("Freighter");
@@ -109,7 +109,7 @@ describe("wallet_selector_modal network mismatch detection (#task-1)", () => {
     const msg = buildWalletSelectorMismatchMessage(
       "albedo",
       MAINNET_PASSPHRASE,
-      TESTNET_PASSPHRASE,
+      TESTNET_PASSPHRASE
     );
     expect(msg).toContain("Albedo");
   });
@@ -135,11 +135,9 @@ describe("WalletSelectorModal network mismatch warning bar (#task-1)", () => {
         onDisconnect={() => {}}
         walletNetwork={TESTNET_PASSPHRASE}
         appNetwork={TESTNET_PASSPHRASE}
-      />,
+      />
     );
-    expect(
-      screen.queryByTestId("wallet-selector-network-warning"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("wallet-selector-network-warning")).not.toBeInTheDocument();
   });
 
   it("renders the warning bar when wallet network differs from app network", () => {
@@ -151,7 +149,7 @@ describe("WalletSelectorModal network mismatch warning bar (#task-1)", () => {
         onDisconnect={() => {}}
         walletNetwork={MAINNET_PASSPHRASE}
         appNetwork={TESTNET_PASSPHRASE}
-      />,
+      />
     );
     const warning = screen.getByTestId("wallet-selector-network-warning");
     expect(warning).toBeInTheDocument();
@@ -170,11 +168,9 @@ describe("WalletSelectorModal network mismatch warning bar (#task-1)", () => {
         walletNetwork={MAINNET_PASSPHRASE}
         appNetwork={TESTNET_PASSPHRASE}
         selectedWalletId="albedo"
-      />,
+      />
     );
-    expect(screen.getByTestId("wallet-selector-network-warning")).toHaveTextContent(
-      /Albedo/,
-    );
+    expect(screen.getByTestId("wallet-selector-network-warning")).toHaveTextContent(/Albedo/);
   });
 
   it("does not render the warning bar when walletNetwork is null", () => {
@@ -186,11 +182,9 @@ describe("WalletSelectorModal network mismatch warning bar (#task-1)", () => {
         onDisconnect={() => {}}
         walletNetwork={null}
         appNetwork={TESTNET_PASSPHRASE}
-      />,
+      />
     );
-    expect(
-      screen.queryByTestId("wallet-selector-network-warning"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("wallet-selector-network-warning")).not.toBeInTheDocument();
   });
 
   it("does not render the modal at all when isOpen is false", () => {
@@ -202,7 +196,7 @@ describe("WalletSelectorModal network mismatch warning bar (#task-1)", () => {
         onDisconnect={() => {}}
         walletNetwork={MAINNET_PASSPHRASE}
         appNetwork={TESTNET_PASSPHRASE}
-      />,
+      />
     );
     expect(container).toBeEmptyDOMElement();
   });
@@ -214,7 +208,7 @@ describe("WalletSelectorModal network mismatch warning bar (#task-1)", () => {
         onClose={() => {}}
         onConnect={() => {}}
         onDisconnect={() => {}}
-      />,
+      />
     );
     expect(screen.getByTestId("wallet-selector-option-freighter")).toBeInTheDocument();
     expect(screen.getByTestId("wallet-selector-option-albedo")).toBeInTheDocument();
@@ -229,7 +223,7 @@ describe("WalletSelectorModal network mismatch warning bar (#task-1)", () => {
         onClose={() => {}}
         onConnect={() => {}}
         onDisconnect={() => {}}
-      />,
+      />
     );
     const dialog = screen.getByRole("dialog");
     expect(dialog).toHaveAttribute("aria-label", "Select Wallet");

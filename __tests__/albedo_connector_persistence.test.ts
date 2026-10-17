@@ -42,9 +42,7 @@ class MockStorage implements StorageAdapter {
   }
 }
 
-function validState(
-  overrides: Partial<AlbedoSerializedState> = {}
-): AlbedoSerializedState {
+function validState(overrides: Partial<AlbedoSerializedState> = {}): AlbedoSerializedState {
   return {
     version: ALBEDO_STATE_VERSION,
     address: ADDRESS_A,
@@ -138,9 +136,9 @@ describe("albedo_connector validateSerializedState", () => {
   });
 
   it("rejects invalid addresses and networks", () => {
-    expect(() =>
-      validateSerializedState(validState({ address: "bad" }))
-    ).toThrow(AlbedoStateParseError);
+    expect(() => validateSerializedState(validState({ address: "bad" }))).toThrow(
+      AlbedoStateParseError
+    );
     expect(() =>
       validateSerializedState({
         ...validState(),
@@ -150,15 +148,11 @@ describe("albedo_connector validateSerializedState", () => {
   });
 
   it("rejects non-positive or non-finite connectedAt", () => {
-    expect(() =>
-      validateSerializedState(validState({ connectedAt: 0 }))
-    ).toThrow(/connectedAt/);
-    expect(() =>
-      validateSerializedState(validState({ connectedAt: -1 }))
-    ).toThrow(/connectedAt/);
-    expect(() =>
-      validateSerializedState(validState({ connectedAt: Number.NaN }))
-    ).toThrow(/connectedAt/);
+    expect(() => validateSerializedState(validState({ connectedAt: 0 }))).toThrow(/connectedAt/);
+    expect(() => validateSerializedState(validState({ connectedAt: -1 }))).toThrow(/connectedAt/);
+    expect(() => validateSerializedState(validState({ connectedAt: Number.NaN }))).toThrow(
+      /connectedAt/
+    );
   });
 
   it("rejects payloads that include sensitive credential fields", () => {
@@ -221,10 +215,7 @@ describe("albedo_connector storage persistence", () => {
   });
 
   it("discards invalid persisted state and clears the key", () => {
-    storage.setItem(
-      ALBEDO_STORAGE_KEY,
-      JSON.stringify(validState({ address: "not-a-key" }))
-    );
+    storage.setItem(ALBEDO_STORAGE_KEY, JSON.stringify(validState({ address: "not-a-key" })));
     const restored = loadAlbedoState({ storage });
     expect(restored.restored).toBe(false);
     expect(storage.getItem(ALBEDO_STORAGE_KEY)).toBeNull();
@@ -232,9 +223,7 @@ describe("albedo_connector storage persistence", () => {
 
   it("handles storage write failures without throwing", () => {
     storage.throwOnSet = true;
-    expect(
-      saveAlbedoState({ address: ADDRESS_A, network: "testnet" }, { storage })
-    ).toBe(false);
+    expect(saveAlbedoState({ address: ADDRESS_A, network: "testnet" }, { storage })).toBe(false);
     expect(warnSpy).toHaveBeenCalled();
   });
 
@@ -246,19 +235,16 @@ describe("albedo_connector storage persistence", () => {
   });
 
   it("handles unavailable storage (null adapter)", () => {
-    expect(
-      saveAlbedoState({ address: ADDRESS_A, network: "testnet" }, { storage: null })
-    ).toBe(false);
+    expect(saveAlbedoState({ address: ADDRESS_A, network: "testnet" }, { storage: null })).toBe(
+      false
+    );
     const restored = loadAlbedoState({ storage: null });
     expect(restored.restored).toBe(false);
     expect(restored.parseError).toMatch(/unavailable/i);
   });
 
   it("clears cached state on disconnect/logout", () => {
-    saveAlbedoState(
-      { address: ADDRESS_A, network: "mainnet", connectedAt: 1 },
-      { storage }
-    );
+    saveAlbedoState({ address: ADDRESS_A, network: "mainnet", connectedAt: 1 }, { storage });
     expect(clearAlbedoState({ storage })).toBe(true);
     expect(storage.getItem(ALBEDO_STORAGE_KEY)).toBeNull();
     expect(loadAlbedoState({ storage }).restored).toBe(false);
@@ -270,9 +256,7 @@ describe("albedo_connector storage persistence", () => {
   });
 
   it("rejects save of invalid address without writing", () => {
-    expect(
-      saveAlbedoState({ address: "bad", network: "testnet" }, { storage })
-    ).toBe(false);
+    expect(saveAlbedoState({ address: "bad", network: "testnet" }, { storage })).toBe(false);
     expect(storage.getItem(ALBEDO_STORAGE_KEY)).toBeNull();
   });
 });

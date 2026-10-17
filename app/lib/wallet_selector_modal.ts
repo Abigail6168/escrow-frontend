@@ -26,7 +26,7 @@ export const APP_NETWORK_PASSPHRASES: Record<string, string> = {
  */
 export function checkNetworkMismatch(
   walletNetwork: string,
-  expectedNetwork: string,
+  expectedNetwork: string
 ): { mismatched: boolean; warningMessage: string | null } {
   if (!walletNetwork || !expectedNetwork) {
     return {
@@ -36,13 +36,11 @@ export function checkNetworkMismatch(
   }
 
   if (walletNetwork !== expectedNetwork) {
-    const walletDisplay = walletNetwork.length > 40
-      ? `${walletNetwork.slice(0, 20)}…`
-      : walletNetwork;
+    const walletDisplay =
+      walletNetwork.length > 40 ? `${walletNetwork.slice(0, 20)}…` : walletNetwork;
 
-    const expectedDisplay = expectedNetwork.length > 40
-      ? `${expectedNetwork.slice(0, 20)}…`
-      : expectedNetwork;
+    const expectedDisplay =
+      expectedNetwork.length > 40 ? `${expectedNetwork.slice(0, 20)}…` : expectedNetwork;
 
     return {
       mismatched: true,
@@ -63,7 +61,7 @@ export function checkNetworkMismatch(
 export function buildWalletSelectorMismatchMessage(
   walletId: string,
   walletNetwork: string,
-  appNetwork: string,
+  appNetwork: string
 ): string | null {
   const result = checkNetworkMismatch(walletNetwork, appNetwork);
   if (!result.mismatched) return null;
@@ -106,19 +104,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isValidCachedKey(value: unknown): value is WalletCachedKey {
   if (!isRecord(value)) return false;
-  if (typeof value.walletId !== "string" || value.walletId.length === 0)
-    return false;
-  if (typeof value.address !== "string" || value.address.length === 0)
-    return false;
+  if (typeof value.walletId !== "string" || value.walletId.length === 0) return false;
+  if (typeof value.address !== "string" || value.address.length === 0) return false;
   if (typeof value.networkPassphrase !== "string") return false;
-  if (typeof value.connectedAt !== "number" || !Number.isFinite(value.connectedAt))
-    return false;
+  if (typeof value.connectedAt !== "number" || !Number.isFinite(value.connectedAt)) return false;
   return true;
 }
 
-function isValidSerializedPayload(
-  value: unknown,
-): value is WalletCachedKeySerializedV1 {
+function isValidSerializedPayload(value: unknown): value is WalletCachedKeySerializedV1 {
   if (!isRecord(value)) return false;
   if (value.version !== CACHED_SCHEMA_VERSION) return false;
   return isValidCachedKey(value);
@@ -164,9 +157,7 @@ export function isModalWalletLoading(): boolean {
  * Subscribes to loading-state transitions.  The listener is invoked
  * immediately with the current state.  Returns an unsubscribe function.
  */
-export function subscribeToModalWalletLoading(
-  listener: (isLoading: boolean) => void,
-): () => void {
+export function subscribeToModalWalletLoading(listener: (isLoading: boolean) => void): () => void {
   walletLoadingListeners.add(listener);
   listener(activeWalletOperationCount > 0);
   return () => {
@@ -201,9 +192,7 @@ export function endModalWalletOperation(): void {
  * Wraps an async function in the loading lifecycle.  The spinner is shown
  * on entry and cleared on exit — even when the wrapped call throws.
  */
-export async function withModalWalletLoader<T>(
-  fn: () => Promise<T>,
-): Promise<T> {
+export async function withModalWalletLoader<T>(fn: () => Promise<T>): Promise<T> {
   startModalWalletOperation();
   try {
     return await fn();
@@ -226,8 +215,7 @@ export class WalletSelectorStore {
   private storage: Storage | null;
 
   constructor(storageOverride?: Storage | null) {
-    this.storage =
-      storageOverride !== undefined ? storageOverride : getStorageAdapter();
+    this.storage = storageOverride !== undefined ? storageOverride : getStorageAdapter();
     this.rehydrate();
   }
 
@@ -249,7 +237,7 @@ export class WalletSelectorStore {
     } catch (err) {
       console.warn(
         `${LOG_PREFIX} PERSIST FAILED`,
-        err instanceof Error ? err.message : String(err),
+        err instanceof Error ? err.message : String(err)
       );
     }
   }
@@ -269,7 +257,7 @@ export class WalletSelectorStore {
       if (!isValidSerializedPayload(parsed)) {
         console.warn(
           `${LOG_PREFIX} REHYDRATE SCHEMA MISMATCH`,
-          "Persisted wallet selector key failed validation, falling back to clean state.",
+          "Persisted wallet selector key failed validation, falling back to clean state."
         );
         this.storage.removeItem(STORAGE_KEY);
         return;
@@ -278,7 +266,7 @@ export class WalletSelectorStore {
     } catch (err) {
       console.warn(
         `${LOG_PREFIX} REHYDRATE FAILED`,
-        err instanceof Error ? err.message : String(err),
+        err instanceof Error ? err.message : String(err)
       );
       try {
         this.storage.removeItem(STORAGE_KEY);
@@ -330,7 +318,7 @@ export class WalletSelectorStore {
       } catch (err) {
         console.warn(
           `${LOG_PREFIX} CLEAR STORAGE FAILED`,
-          err instanceof Error ? err.message : String(err),
+          err instanceof Error ? err.message : String(err)
         );
       }
     }
@@ -364,10 +352,7 @@ export interface WalletSelectorSignRequest {
 }
 
 /** Signing callback invoked with the request XDR and an abort signal. */
-export type WalletSelectorSignFn<T> = (
-  xdr: string,
-  signal: AbortSignal
-) => Promise<T>;
+export type WalletSelectorSignFn<T> = (xdr: string, signal: AbortSignal) => Promise<T>;
 
 export class WalletSelectorTimeoutError extends Error {
   constructor(
@@ -476,10 +461,7 @@ export async function signWithWalletSelectorTimeout<T>(
   });
 
   try {
-    const result = await Promise.race([
-      signFn(request.xdr, controller.signal),
-      timeoutPromise,
-    ]);
+    const result = await Promise.race([signFn(request.xdr, controller.signal), timeoutPromise]);
     clearWalletSelectorSensitiveMemory(request);
     return result;
   } catch (err) {

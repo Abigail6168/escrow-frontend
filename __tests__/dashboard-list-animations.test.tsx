@@ -88,9 +88,7 @@ describe("Dashboard job list micro-animations", () => {
     await waitFor(() => {
       expect(screen.getByTestId("dashboard-expanded-panel")).toBeInTheDocument();
     });
-    expect(screen.getByTestId("dashboard-expanded-panel").className).toContain(
-      "animate-fade-in"
-    );
+    expect(screen.getByTestId("dashboard-expanded-panel").className).toContain("animate-fade-in");
   });
 
   it("shakes the error alert when the job fetch fails", async () => {
@@ -101,8 +99,6 @@ describe("Dashboard job list micro-animations", () => {
     await waitFor(() => {
       expect(screen.getByTestId("dashboard-error-alert")).toBeInTheDocument();
     });
-    expect(screen.getByTestId("dashboard-error-alert").className).toContain(
-      "animate-shake"
-    );
+    expect(screen.getByTestId("dashboard-error-alert").className).toContain("animate-shake");
   });
 });

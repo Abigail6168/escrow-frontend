@@ -7,12 +7,14 @@ A dedicated admin page has been implemented to allow the contract admin to manag
 ## Features Implemented
 
 ### 1. **Admin Access Control**
+
 - ✅ Queries the smart contract to fetch the admin address via `get_admin` method
 - ✅ Compares connected wallet with admin address
 - ✅ Shows "Access Denied" screen for non-admin users
 - ✅ Only loads whitelist data for verified admin users
 
 ### 2. **Token Whitelist Management**
+
 - ✅ Displays current whitelisted tokens from backend endpoint
 - ✅ Add new token form with contract address input
 - ✅ Remove button for each token
@@ -21,6 +23,7 @@ A dedicated admin page has been implemented to allow the contract admin to manag
 - ✅ Error handling for network and backend failures
 
 ### 3. **Transaction Flow**
+
 - ✅ Uses the same Freighter signing pattern as Create Job
 - ✅ Calls backend `build-tx` and `submit` endpoints
 - ✅ Shows phase-based loading indicators (Building → Signing → Submitting)
@@ -28,6 +31,7 @@ A dedicated admin page has been implemented to allow the contract admin to manag
 - ✅ Automatic whitelist refresh after successful transactions
 
 ### 4. **Navigation**
+
 - ✅ Admin link appears in navbar only for admin users
 - ✅ Hidden from non-admin wallets
 - ✅ Accessible via `/admin` route
@@ -37,18 +41,24 @@ A dedicated admin page has been implemented to allow the contract admin to manag
 ### New Files
 
 #### `app/lib/admin.ts`
+
 Utility functions for admin access control:
+
 - `fetchAdminAddress()` - Queries contract for admin address
 - `isAdmin()` - Checks if wallet is the admin
 
 #### `app/hooks/useIsAdmin.ts`
+
 React hook for checking admin status:
+
 - Returns `{ loading, isAdminUser }`
 - Handles async contract query
 - Properly manages cleanup with AbortController
 
 #### `__tests__/admin-page.test.tsx`
+
 Comprehensive test suite covering:
+
 - Wallet connection prompt
 - Loading states
 - Access denied for non-admins
@@ -57,7 +67,9 @@ Comprehensive test suite covering:
 - Error handling
 
 #### `__tests__/admin.test.ts`
+
 Unit tests for admin utilities:
+
 - Admin address fetching
 - Various response formats
 - Error handling
@@ -66,7 +78,9 @@ Unit tests for admin utilities:
 ### Modified Files
 
 #### `app/admin/page.tsx`
+
 Complete admin page implementation:
+
 - Admin access verification
 - Token whitelist display
 - Add/remove token functionality
@@ -74,10 +88,12 @@ Complete admin page implementation:
 - Responsive design with proper touch targets (44px minimum)
 
 #### `app/components/Navbar.tsx`
+
 - Added conditional Admin link
 - Only shows when `useIsAdmin` returns `isAdminUser: true`
 
 #### `README.md`
+
 - Added `/admin` page to documentation
 
 ## Technical Implementation Details
@@ -100,7 +116,7 @@ sequenceDiagram
     Backend-->>useIsAdmin: Admin address
     useIsAdmin->>useIsAdmin: Compare with wallet
     useIsAdmin-->>AdminPage: { isAdminUser: true/false }
-    
+
     alt is admin
         AdminPage->>Backend: Fetch whitelist
         Backend-->>AdminPage: Token list
@@ -139,24 +155,30 @@ sequenceDiagram
 The admin page expects the following backend endpoints:
 
 ### GET `/api/jobs/whitelisted-tokens?contractId={contractId}`
+
 Returns current whitelisted tokens.
 
 **Response format (either):**
+
 ```json
 {
   "success": true,
   "data": ["CTOKEN1...", "CTOKEN2..."]
 }
 ```
+
 or
+
 ```json
 ["CTOKEN1...", "CTOKEN2..."]
 ```
 
 ### POST `/api/jobs/query`
+
 Queries the contract for data.
 
 **Request:**
+
 ```json
 {
   "contractId": "C...",
@@ -166,17 +188,22 @@ Queries the contract for data.
 ```
 
 **Response (any of):**
+
 ```json
 "GADMIN..."
 ```
+
 or
+
 ```json
 {
   "success": true,
   "data": "GADMIN..."
 }
 ```
+
 or
+
 ```json
 {
   "result": "GADMIN..."
@@ -184,9 +211,11 @@ or
 ```
 
 ### POST `/api/jobs/build-tx`
+
 Builds unsigned transaction for contract method.
 
 **Request (Add Token):**
+
 ```json
 {
   "contractId": "C...",
@@ -200,6 +229,7 @@ Builds unsigned transaction for contract method.
 ```
 
 **Request (Remove Token):**
+
 ```json
 {
   "contractId": "C...",
@@ -213,6 +243,7 @@ Builds unsigned transaction for contract method.
 ```
 
 **Response:**
+
 ```json
 {
   "xdr": "AAAAAgAAAA..."
@@ -220,9 +251,11 @@ Builds unsigned transaction for contract method.
 ```
 
 ### POST `/api/jobs/submit`
+
 Submits signed transaction.
 
 **Request:**
+
 ```json
 {
   "signedXdr": "AAAAAgAAAA..."
@@ -230,6 +263,7 @@ Submits signed transaction.
 ```
 
 **Response:**
+
 ```json
 {
   "hash": "abc123...",
@@ -243,21 +277,27 @@ Submits signed transaction.
 The admin page requires the following contract methods:
 
 ### `get_admin() -> Address`
+
 Returns the contract admin address.
 
 ### `add_whitelisted_token(admin: Address, token: Address)`
+
 Adds a token to the whitelist.
+
 - Must verify caller is admin
 - Must emit appropriate events
 
 ### `remove_whitelisted_token(admin: Address, token: Address)`
+
 Removes a token from the whitelist.
+
 - Must verify caller is admin
 - Must emit appropriate events
 
 ## User Experience
 
 ### For Admin Users
+
 1. Connect wallet
 2. See "Verifying admin access..." loading state
 3. Admin page loads with:
@@ -277,6 +317,7 @@ Removes a token from the whitelist.
    - Token disappears from list
 
 ### For Non-Admin Users
+
 1. Connect wallet
 2. See "Verifying admin access..." loading state
 3. See "Access Denied" message with:
@@ -285,6 +326,7 @@ Removes a token from the whitelist.
    - Professional styling
 
 ### For Disconnected Users
+
 1. See prompt to connect wallet
 2. No admin check performed
 
@@ -323,7 +365,9 @@ Removes a token from the whitelist.
 Two test suites have been created:
 
 ### `__tests__/admin-page.test.tsx`
+
 Tests the AdminPage component:
+
 - Wallet connection states
 - Admin verification states
 - Access denied for non-admins
@@ -332,13 +376,16 @@ Tests the AdminPage component:
 - Error handling
 
 ### `__tests__/admin.test.ts`
+
 Tests admin utility functions:
+
 - Admin address fetching
 - Response format handling
 - Error handling
 - Admin status checking
 
 Run tests with:
+
 ```bash
 npm test admin
 ```
@@ -346,6 +393,7 @@ npm test admin
 ## Future Enhancements
 
 Potential improvements:
+
 1. Token metadata display (symbol, name) alongside addresses
 2. Search/filter for large token lists
 3. Bulk add/remove operations

@@ -256,20 +256,11 @@ describe("freighter_connector console warning blocks (#111)", () => {
 
     tracker.track("tx-42", "building", "Preparing XDR");
     tracker.track("tx-42", "signing", "Prompting Freighter wallet");
-    tracker.track(
-      "tx-42",
-      "error",
-      "Wallet returned failure",
-      new Error("device busy")
-    );
+    tracker.track("tx-42", "error", "Wallet returned failure", new Error("device busy"));
 
     const history = tracker.getHistory("tx-42");
     expect(history).toHaveLength(3);
-    expect(history.map((e) => e.phase)).toEqual([
-      "building",
-      "signing",
-      "error",
-    ]);
+    expect(history.map((e) => e.phase)).toEqual(["building", "signing", "error"]);
     expect(history[2].stack).toContain("Error: device busy");
     expect(warnSpy).toHaveBeenCalledTimes(3);
 

@@ -48,9 +48,7 @@ function buildSignedEnvelopeXdr(): string {
 
 describe("useFreighterMultiSigAssembly hook (#109)", () => {
   it("parseStructure parses a well-formed envelope without errors", () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const xdr = buildSignedEnvelopeXdr();
     const shape = result.current.parseStructure(xdr);
@@ -61,19 +59,13 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
   });
 
   it("parseStructure throws WalletMultiSigStructureError for empty input", () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
-    expect(() => result.current.parseStructure("")).toThrow(
-      WalletMultiSigStructureError
-    );
+    expect(() => result.current.parseStructure("")).toThrow(WalletMultiSigStructureError);
   });
 
   it("prepareTransaction deserializes a valid XDR", () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const xdr = buildSignedEnvelopeXdr();
     const tx = result.current.prepareTransaction(xdr);
@@ -81,19 +73,13 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
   });
 
   it("prepareTransaction throws for empty XDR", () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
-    expect(() => result.current.prepareTransaction("")).toThrow(
-      WalletMultiSigStructureError
-    );
+    expect(() => result.current.prepareTransaction("")).toThrow(WalletMultiSigStructureError);
   });
 
   it("serializeTransaction converts a transaction back to XDR string", () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const xdr = buildSignedEnvelopeXdr();
     const tx = result.current.prepareTransaction(xdr);
@@ -103,9 +89,7 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
   });
 
   it("signTransaction validates the XDR before calling the signing function", async () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const xdr = buildSignedEnvelopeXdr();
     const signFn = vi.fn(async () => "signed-xdr");
@@ -117,23 +101,19 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
   });
 
   it("signTransaction rejects invalid XDR before calling the signing function", async () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const signFn = vi.fn(async () => "signed-xdr");
 
-    await expect(
-      result.current.signTransaction("", signFn)
-    ).rejects.toThrow(WalletMultiSigStructureError);
+    await expect(result.current.signTransaction("", signFn)).rejects.toThrow(
+      WalletMultiSigStructureError
+    );
 
     expect(signFn).not.toHaveBeenCalled();
   });
 
   it("createSplit builds a split seeded with the base XDR", () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const xdr = buildSignedEnvelopeXdr();
     const split = result.current.createSplit(xdr, {
@@ -147,9 +127,7 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
   });
 
   it("signSplit signs the split's XDR through the signing function", async () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const xdr = buildSignedEnvelopeXdr();
     const split = createFreighterMultiSigSplit(xdr, {
@@ -165,9 +143,7 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
   });
 
   it("assemble validates a coherent multi-sig assembly", async () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const xdr = buildSignedEnvelopeXdr();
     const splitA = result.current.createSplit(xdr, {
@@ -179,16 +155,8 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
       hint: "bbbb",
     });
 
-    await result.current.signSplit(
-      splitA,
-      async () => "signed-a",
-      5_000
-    );
-    await result.current.signSplit(
-      splitB,
-      async () => "signed-b",
-      5_000
-    );
+    await result.current.signSplit(splitA, async () => "signed-a", 5_000);
+    await result.current.signSplit(splitB, async () => "signed-b", 5_000);
 
     const assembleResult = result.current.assemble([splitA, splitB]);
     expect(assembleResult).toEqual({
@@ -198,9 +166,7 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
   });
 
   it("assemble rejects duplicate signers", () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const xdr = buildSignedEnvelopeXdr();
     const splitA: FreighterMultiSigSplit = createFreighterMultiSigSplit(xdr, {
@@ -212,15 +178,13 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
       hint: "aaaa",
     });
 
-    expect(() =>
-      result.current.assemble([splitA, splitDup], { minRequired: 1 })
-    ).toThrow(WalletMultiSigStructureError);
+    expect(() => result.current.assemble([splitA, splitDup], { minRequired: 1 })).toThrow(
+      WalletMultiSigStructureError
+    );
   });
 
   it("assemble rejects assemblies below the minimum signer threshold", () => {
-    const { result } = renderHook(() =>
-      useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-    );
+    const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
     const xdr = buildSignedEnvelopeXdr();
     const splitA = result.current.createSplit(xdr, {
@@ -232,9 +196,7 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
       result.current.assemble([splitA]);
       throw new Error("expected assemble to throw");
     } catch (err) {
-      expect((err as WalletMultiSigStructureError).code).toBe(
-        "insufficient_signatures"
-      );
+      expect((err as WalletMultiSigStructureError).code).toBe("insufficient_signatures");
     }
   });
 
@@ -260,16 +222,12 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
   // spinner while one of them is still running.
   describe("isLoading", () => {
     it("is false before any operation runs", () => {
-      const { result } = renderHook(() =>
-        useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-      );
+      const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
       expect(result.current.isLoading).toBe(false);
     });
 
     it("is true while a signature is in flight and false once it settles", async () => {
-      const { result } = renderHook(() =>
-        useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-      );
+      const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
       let release: (value: string) => void = () => {};
       const signFn = vi.fn(
@@ -293,9 +251,7 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
     });
 
     it("stays true until the last of two overlapping operations settles", async () => {
-      const { result } = renderHook(() =>
-        useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-      );
+      const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
       const releases: Array<(value: string) => void> = [];
       const signFn = vi.fn(
@@ -328,9 +284,7 @@ describe("useFreighterMultiSigAssembly hook (#109)", () => {
     });
 
     it("clears the loading state when the signing function rejects", async () => {
-      const { result } = renderHook(() =>
-        useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE)
-      );
+      const { result } = renderHook(() => useFreighterMultiSigAssembly(TEST_NETWORK_PASSPHRASE));
 
       const signFn = vi.fn(async () => {
         throw new Error("user rejected");

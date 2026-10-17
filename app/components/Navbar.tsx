@@ -111,7 +111,9 @@ export default function Navbar() {
                 id="wallet-provider"
                 value={selectedWalletId}
                 onChange={(event) =>
-                  setSelectedWalletId(event.target.value as (typeof SUPPORTED_WALLETS)[number]["id"])
+                  setSelectedWalletId(
+                    event.target.value as (typeof SUPPORTED_WALLETS)[number]["id"]
+                  )
                 }
                 aria-label="Wallet provider"
                 disabled={isConnecting}

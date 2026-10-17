@@ -4,7 +4,6 @@ import { describe, expect, it, vi } from "vitest";
 import NotificationBell from "@/app/components/NotificationBell";
 import type { NotificationItem } from "@/app/components/NotificationBell";
 
-
 describe("NotificationBell", () => {
   describe("without notifications", () => {
     it("renders bell icon when count is 0", () => {
@@ -73,7 +72,7 @@ describe("NotificationBell", () => {
       const user = userEvent.setup();
       const onClick = vi.fn();
       render(<NotificationBell count={0} onClick={onClick} />);
-      
+
       await user.click(screen.getByRole("button"));
       expect(onClick).toHaveBeenCalledOnce();
     });
@@ -81,7 +80,7 @@ describe("NotificationBell", () => {
     it("does not call onClick when not provided", async () => {
       const user = userEvent.setup();
       render(<NotificationBell count={0} />);
-      
+
       await user.click(screen.getByRole("button"));
       // Should not throw error
     });
@@ -152,8 +151,6 @@ describe("NotificationBell", () => {
   });
 });
 
-
-
 const mockNotifications: NotificationItem[] = [
   {
     id: "notif-1",
@@ -190,9 +187,7 @@ describe("NotificationBell Component", () => {
 
     const badge = screen.getByTestId("notification-badge");
     expect(badge).toHaveTextContent("5");
-    expect(
-      screen.getByRole("button", { name: "Notifications (5 unread)" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Notifications (5 unread)" })).toBeInTheDocument();
   });
 
   it("displays 99+ for unread counts over 99", () => {
@@ -216,13 +211,7 @@ describe("NotificationBell Component", () => {
   });
 
   it("respects controlled isOpen prop", () => {
-    render(
-      <NotificationBell
-        isOpen={true}
-        unreadCount={2}
-        notifications={mockNotifications}
-      />
-    );
+    render(<NotificationBell isOpen={true} unreadCount={2} notifications={mockNotifications} />);
     expect(screen.getByTestId("notification-dropdown")).toBeInTheDocument();
   });
 
@@ -233,16 +222,9 @@ describe("NotificationBell Component", () => {
   });
 
   it("renders error alert inside dropdown when error prop is provided", () => {
-    render(
-      <NotificationBell
-        isOpen={true}
-        error="Network error fetching notifications"
-      />
-    );
+    render(<NotificationBell isOpen={true} error="Network error fetching notifications" />);
     expect(screen.getByTestId("notification-error")).toBeInTheDocument();
-    expect(
-      screen.getByText("Network error fetching notifications")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Network error fetching notifications")).toBeInTheDocument();
   });
 
   it("renders empty state inside dropdown when notifications list is empty", () => {
@@ -285,11 +267,7 @@ describe("NotificationBell Component", () => {
   it("calls onClearAll when 'Clear all' button is clicked", () => {
     const onClearAll = vi.fn();
     render(
-      <NotificationBell
-        isOpen={true}
-        notifications={mockNotifications}
-        onClearAll={onClearAll}
-      />
+      <NotificationBell isOpen={true} notifications={mockNotifications} onClearAll={onClearAll} />
     );
 
     const clearBtn = screen.getByRole("button", { name: "Clear all" });

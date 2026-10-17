@@ -8,13 +8,7 @@ export interface ExportRow {
   [key: string]: string | number;
 }
 
-export const PLATFORM_METRICS_EXPORT_HEADERS = [
-  "ID",
-  "Label",
-  "Value",
-  "Change (%)",
-  "Unit",
-];
+export const PLATFORM_METRICS_EXPORT_HEADERS = ["ID", "Label", "Value", "Change (%)", "Unit"];
 
 /** Escape a CSV cell; also neutralises spreadsheet formula injection. */
 export function escapeCsvCell(value: string | number | undefined | null): string {
@@ -67,7 +61,7 @@ export function downloadCSV(filename: string, csvContent: string): void {
 /** Convenience: format, serialise, and download metrics data as CSV. */
 export function exportPlatformMetrics(
   data: PlatformMetricsData,
-  filename = metricsExportFilename(),
+  filename = metricsExportFilename()
 ): void {
   const rows = formatMetricsForExport(data);
   const csv = convertToCSV(rows);

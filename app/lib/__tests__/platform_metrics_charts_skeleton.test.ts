@@ -104,9 +104,7 @@ describe("getPlatformMetricsChartSkeleton", () => {
   it("returns only chart-header and chart-bar frames when loading", () => {
     const frames = getPlatformMetricsChartSkeleton(true);
     for (const frame of frames) {
-      expect(["chart-title", "chart-subtitle", "chart-axis", "chart-bar"]).toContain(
-        frame.kind,
-      );
+      expect(["chart-title", "chart-subtitle", "chart-axis", "chart-bar"]).toContain(frame.kind);
     }
     expect(frames.length).toBeGreaterThan(0);
   });
@@ -140,12 +138,8 @@ describe("PLATFORM_METRICS_SKELETON_ARIA", () => {
   });
 
   it("has a non-empty aria-label", () => {
-    expect(
-      typeof PLATFORM_METRICS_SKELETON_ARIA["aria-label"],
-    ).toBe("string");
-    expect(PLATFORM_METRICS_SKELETON_ARIA["aria-label"].length).toBeGreaterThan(
-      0,
-    );
+    expect(typeof PLATFORM_METRICS_SKELETON_ARIA["aria-label"]).toBe("string");
+    expect(PLATFORM_METRICS_SKELETON_ARIA["aria-label"].length).toBeGreaterThan(0);
   });
 });
 
@@ -155,16 +149,12 @@ describe("PLATFORM_METRICS_SKELETON_ARIA", () => {
 
 describe("METRIC_CHART_HEADER_FRAMES", () => {
   it("contains a chart-title frame", () => {
-    const titleFrame = METRIC_CHART_HEADER_FRAMES.find(
-      (f) => f.kind === "chart-title",
-    );
+    const titleFrame = METRIC_CHART_HEADER_FRAMES.find((f) => f.kind === "chart-title");
     expect(titleFrame).toBeDefined();
   });
 
   it("contains a chart-subtitle frame", () => {
-    const subtitleFrame = METRIC_CHART_HEADER_FRAMES.find(
-      (f) => f.kind === "chart-subtitle",
-    );
+    const subtitleFrame = METRIC_CHART_HEADER_FRAMES.find((f) => f.kind === "chart-subtitle");
     expect(subtitleFrame).toBeDefined();
   });
 });
@@ -178,28 +168,20 @@ describe("METRIC_CHART_BAR_FRAMES", () => {
 
 describe("METRIC_FILTER_BAR_FRAMES", () => {
   it("includes a filter-input frame", () => {
-    const inputFrame = METRIC_FILTER_BAR_FRAMES.find(
-      (f) => f.kind === "filter-input",
-    );
+    const inputFrame = METRIC_FILTER_BAR_FRAMES.find((f) => f.kind === "filter-input");
     expect(inputFrame).toBeDefined();
   });
 
   it("includes a filter-button frame", () => {
-    const btnFrame = METRIC_FILTER_BAR_FRAMES.find(
-      (f) => f.kind === "filter-button",
-    );
+    const btnFrame = METRIC_FILTER_BAR_FRAMES.find((f) => f.kind === "filter-button");
     expect(btnFrame).toBeDefined();
   });
 });
 
 describe("METRIC_STAT_CARD_FRAMES", () => {
   it("contains metric-value and metric-label pairs", () => {
-    const values = METRIC_STAT_CARD_FRAMES.filter(
-      (f) => f.kind === "metric-value",
-    );
-    const labels = METRIC_STAT_CARD_FRAMES.filter(
-      (f) => f.kind === "metric-label",
-    );
+    const values = METRIC_STAT_CARD_FRAMES.filter((f) => f.kind === "metric-value");
+    const labels = METRIC_STAT_CARD_FRAMES.filter((f) => f.kind === "metric-label");
     expect(values.length).toBeGreaterThanOrEqual(3);
     expect(labels.length).toBeGreaterThanOrEqual(3);
     expect(values.length).toBe(labels.length);

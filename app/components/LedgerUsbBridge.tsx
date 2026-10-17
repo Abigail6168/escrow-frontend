@@ -58,9 +58,7 @@ export default function LedgerUsbBridge({
   const [status, setStatus] = useState<LedgerBridgeStatus>("idle");
 
   const displayStatus: LedgerBridgeStatus =
-    status === "idle" && !transportState.available
-      ? "transport-unavailable"
-      : status;
+    status === "idle" && !transportState.available ? "transport-unavailable" : status;
 
   const handleCheckNetwork = useCallback(() => {
     if (!transportState.available) {
@@ -74,14 +72,7 @@ export default function LedgerUsbBridge({
     if (state.mismatched && state.warningMessage) {
       showToast(state.warningMessage, "warning");
     }
-  }, [
-    walletNetwork,
-    appNetwork,
-    onNetworkCheck,
-    showToast,
-    transportState,
-    detector,
-  ]);
+  }, [walletNetwork, appNetwork, onNetworkCheck, showToast, transportState, detector]);
 
   const handleSign = useCallback(async () => {
     if (!transportState.available) {
@@ -100,8 +91,7 @@ export default function LedgerUsbBridge({
       }
     } catch (err) {
       setStatus("error");
-      const message =
-        err instanceof Error ? err.message : "Ledger signing failed.";
+      const message = err instanceof Error ? err.message : "Ledger signing failed.";
       showToast(message, "error");
     }
   }, [signTransaction, showToast, onSigned, transportState, detector]);

@@ -27,13 +27,13 @@ describe("LandingNav is marketing chrome only", () => {
     render(<LandingNav />);
     expect(screen.getByRole("link", { name: "How it works" })).toHaveAttribute(
       "href",
-      "#how-it-works",
+      "#how-it-works"
     );
     expect(screen.getByRole("link", { name: "Product" })).toHaveAttribute("href", "#product");
     expect(screen.getByRole("link", { name: "Security" })).toHaveAttribute("href", "#security");
     expect(screen.getByRole("link", { name: "GitHub" })).toHaveAttribute(
       "href",
-      "https://github.com/Goldii-locks",
+      "https://github.com/Goldii-locks"
     );
   });
 
@@ -51,7 +51,7 @@ describe("LandingNav is marketing chrome only", () => {
     fireEvent.click(menu);
     expect(screen.getByRole("button", { name: /close menu/i })).toHaveAttribute(
       "aria-expanded",
-      "true",
+      "true"
     );
   });
 

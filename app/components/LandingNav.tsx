@@ -72,7 +72,7 @@ export default function LandingNav() {
             >
               {link.label}
             </a>
-          ),
+          )
         )}
       </div>
 

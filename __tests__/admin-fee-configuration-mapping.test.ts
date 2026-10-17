@@ -20,11 +20,17 @@ describe("admin_fee_configuration mapping", () => {
     expect(mapFeeConfigResponse({ fee_bps: "abc" }).feePercent).toBe("");
   });
   it("maps form values back to payload", () => {
-    expect(toFeeConfigPayload({ feePercent: "1.5", recipient: "GABC" })).toEqual({ fee_bps: 150, fee_recipient: "GABC" });
+    expect(toFeeConfigPayload({ feePercent: "1.5", recipient: "GABC" })).toEqual({
+      fee_bps: 150,
+      fee_recipient: "GABC",
+    });
   });
   it("loads values from the fetcher", async () => {
     let called = "";
-    const v = await loadFeeConfig(async (u) => { called = u; return { fee_bps: 100 }; });
+    const v = await loadFeeConfig(async (u) => {
+      called = u;
+      return { fee_bps: 100 };
+    });
     expect(called).toBe(FEE_CONFIG_ENDPOINT);
     expect(v.feePercent).toBe("1");
     expect((await loadFeeConfig()).feePercent).toBe("2.5");

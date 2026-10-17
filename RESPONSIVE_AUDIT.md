@@ -14,12 +14,12 @@ re-checked at the same widths.
 
 ## Issues found and fixed
 
-| Page | Issue at 375/414px | Fix |
-|---|---|---|
-| Dashboard | The Client/Freelancer/Arbiter values render full 56-char `G…` addresses in `font-mono` with no wrapping, forcing **horizontal scroll** and cut-off text. | Added `break-all` so addresses wrap, `text-xs` to fit the narrow column, and `min-w-0` on the grid cells. |
-| Admin panel | Whitelisted-token rows put a 56-char address `<span class="truncate">` directly in a flex row; without `min-w-0` the flex item can't shrink, so `truncate` never engages and the row **overflows**. | Added `min-w-0` to the address span so it truncates instead of overflowing. |
-| Admin panel | "Remove" button was `px-3 py-1.5` (~28px tall) — below the recommended **44px** touch target. | Enlarged to `px-4 py-2.5` with `min-h-[44px]` and centered content. |
-| Create Job form | Icon-only `✕` remove buttons (assets/requirements/milestones) were `px-2 py-2` (~32–36px) — under 44px. | Added `min-h-[44px] min-w-[44px]` so they meet the minimum tap target. |
+| Page            | Issue at 375/414px                                                                                                                                                                                  | Fix                                                                                                       |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Dashboard       | The Client/Freelancer/Arbiter values render full 56-char `G…` addresses in `font-mono` with no wrapping, forcing **horizontal scroll** and cut-off text.                                            | Added `break-all` so addresses wrap, `text-xs` to fit the narrow column, and `min-w-0` on the grid cells. |
+| Admin panel     | Whitelisted-token rows put a 56-char address `<span class="truncate">` directly in a flex row; without `min-w-0` the flex item can't shrink, so `truncate` never engages and the row **overflows**. | Added `min-w-0` to the address span so it truncates instead of overflowing.                               |
+| Admin panel     | "Remove" button was `px-3 py-1.5` (~28px tall) — below the recommended **44px** touch target.                                                                                                       | Enlarged to `px-4 py-2.5` with `min-h-[44px]` and centered content.                                       |
+| Create Job form | Icon-only `✕` remove buttons (assets/requirements/milestones) were `px-2 py-2` (~32–36px) — under 44px.                                                                                             | Added `min-h-[44px] min-w-[44px]` so they meet the minimum tap target.                                    |
 
 ## Verified OK (no change needed)
 

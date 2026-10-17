@@ -10,11 +10,7 @@
 // Types
 // =============================================================
 
-export type MetricsAction =
-  | "export_csv"
-  | "reset_filters"
-  | "refresh_data"
-  | "apply_threshold";
+export type MetricsAction = "export_csv" | "reset_filters" | "refresh_data" | "apply_threshold";
 
 export interface MetricsConfirmModal {
   title: string;
@@ -37,7 +33,7 @@ export type MetricsConfirmStep = "idle" | "confirming" | "confirmed";
  */
 export function buildMetricsConfirmModal(
   action: MetricsAction,
-  payload?: { dateRange?: string; threshold?: string },
+  payload?: { dateRange?: string; threshold?: string }
 ): MetricsConfirmModal {
   switch (action) {
     case "export_csv":
@@ -93,7 +89,7 @@ export function buildMetricsConfirmModal(
  */
 export function nextMetricsConfirmStep(
   step: MetricsConfirmStep,
-  event: "submit" | "confirm" | "cancel",
+  event: "submit" | "confirm" | "cancel"
 ): MetricsConfirmStep {
   if (event === "cancel") return "idle";
   if (event === "submit") return step === "idle" ? "confirming" : step;

@@ -59,7 +59,9 @@ describe("MilestoneCard", () => {
     );
 
     expect(screen.getByTestId("milestone-card")).toHaveClass("bg-surface-card");
-    expect(screen.getByRole("button", { name: /mark milestone \d+ as delivered/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /mark milestone \d+ as delivered/i })
+    ).toBeInTheDocument();
   });
 
   it("keeps empty-state layout spacing stable across breakpoints", () => {
@@ -89,9 +91,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.getByRole("button", { name: /claim auto-release/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /claim auto-release/i })).toBeInTheDocument();
   });
 
   it("does NOT render 'Claim Auto-Release' for client when deadline has elapsed", () => {
@@ -109,9 +109,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.queryByRole("button", { name: /claim auto-release/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /claim auto-release/i })).not.toBeInTheDocument();
   });
 
   it("does NOT render 'Claim Auto-Release' when deadline has NOT elapsed", () => {
@@ -129,9 +127,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.queryByRole("button", { name: /claim auto-release/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /claim auto-release/i })).not.toBeInTheDocument();
   });
 
   it("disables 'Claim Auto-Release' button when handler is absent", () => {
@@ -148,9 +144,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.getByRole("button", { name: /claim auto-release/i })
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: /claim auto-release/i })).toBeDisabled();
   });
 
   it("shows 'Claiming...' text when claim is pending", () => {
@@ -186,9 +180,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.queryByRole("button", { name: /claim auto-release/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /claim auto-release/i })).not.toBeInTheDocument();
   });
 
   it("renders the deadline warning badge when within 24 hours of the deadline", () => {

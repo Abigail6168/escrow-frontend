@@ -5,13 +5,7 @@
 
 import type { ToastType } from "@/app/context/ToastContext";
 
-export type RabeTxPhase =
-  | "idle"
-  | "building"
-  | "signing"
-  | "submitting"
-  | "success"
-  | "error";
+export type RabeTxPhase = "idle" | "building" | "signing" | "submitting" | "success" | "error";
 
 export interface RabeTxTrackEntry {
   txId: string;
@@ -51,16 +45,12 @@ export function formatStackTrace(err?: unknown): string {
     return err;
   }
 
-  const synthetic = new Error(
-    typeof err === "string" ? err : "Rabe connector trace"
-  );
+  const synthetic = new Error(typeof err === "string" ? err : "Rabe connector trace");
   return synthetic.stack ?? "Error: Rabe connector trace";
 }
 
 /** Builds a multi-line console warning block for transaction debug tracking. */
-export function formatConsoleWarningBlock(
-  block: RabeConsoleWarningBlock
-): string {
+export function formatConsoleWarningBlock(block: RabeConsoleWarningBlock): string {
   const lines = [
     `${WARN_PREFIX} ╔══════════════════════════════════════╗`,
     `${WARN_PREFIX} ║ ${block.title.padEnd(36).slice(0, 36)} ║`,
@@ -107,9 +97,7 @@ export class RabeNetworkMismatchError extends Error {
     public readonly walletNetwork: RabeNetwork,
     public readonly appNetwork: RabeNetwork
   ) {
-    super(
-      `Network mismatch: Rabe wallet is on ${walletNetwork}, app expects ${appNetwork}`
-    );
+    super(`Network mismatch: Rabe wallet is on ${walletNetwork}, app expects ${appNetwork}`);
     this.name = "RabeNetworkMismatchError";
   }
 }
@@ -157,12 +145,7 @@ export function warnOnRabeNetworkMismatch(
 export class RabeTransactionTracker {
   private entries: RabeTxTrackEntry[] = [];
 
-  track(
-    txId: string,
-    phase: RabeTxPhase,
-    message: string,
-    err?: unknown
-  ): RabeTxTrackEntry {
+  track(txId: string, phase: RabeTxPhase, message: string, err?: unknown): RabeTxTrackEntry {
     const entry: RabeTxTrackEntry = {
       txId,
       phase,
@@ -230,9 +213,7 @@ export function detectRabeExtension(detector?: () => boolean): boolean {
  * Checks Rabe extension availability and returns fallback setup instructions
  * when the extension is missing or the check itself throws.
  */
-export function checkRabeAvailability(
-  detector?: () => boolean
-): RabeAvailabilityState {
+export function checkRabeAvailability(detector?: () => boolean): RabeAvailabilityState {
   try {
     const available = detectRabeExtension(detector);
     if (available) {
@@ -301,9 +282,7 @@ export class RabeSignatureTimeoutError extends Error {
  * Zeroes and drops a sensitive buffer so it cannot be retained after the
  * operation is aborted or completes.
  */
-export function clearRabeSensitiveMemory(
-  request: RabeSignRequest
-): RabeSignRequest {
+export function clearRabeSensitiveMemory(request: RabeSignRequest): RabeSignRequest {
   if (request.payload) {
     request.payload.fill(0);
   }
@@ -392,16 +371,12 @@ export async function runRabeSign<T>(
         err,
         phase: "signing",
       });
-      showToast(
-        "Signature cancelled — you rejected the request in your wallet.",
-        "warning"
-      );
+      showToast("Signature cancelled — you rejected the request in your wallet.", "warning");
       return null;
     }
     throw err;
   }
 }
-
 
 // ---------------------------------------------------------------------------
 // Secure persistent caching for active Rabe wallet addresses
@@ -448,9 +423,7 @@ function isValidNetwork(value: unknown): value is RabeNetwork {
  * Validates that `raw` conforms to the {@link RabeActiveAddressCache} shape.
  * Returns `true` when every required field passes its type and value check.
  */
-export function validateRabeAddressCache(
-  raw: unknown
-): raw is RabeActiveAddressCache {
+export function validateRabeAddressCache(raw: unknown): raw is RabeActiveAddressCache {
   if (!raw || typeof raw !== "object") return false;
 
   const candidate = raw as Record<string, unknown>;
@@ -459,8 +432,7 @@ export function validateRabeAddressCache(
   if (typeof candidate.address !== "string") return false;
   if (!isValidStellarAddress(candidate.address)) return false;
   if (typeof candidate.savedAt !== "number") return false;
-  if (!Number.isFinite(candidate.savedAt) || candidate.savedAt <= 0)
-    return false;
+  if (!Number.isFinite(candidate.savedAt) || candidate.savedAt <= 0) return false;
   if (!isValidNetwork(candidate.network)) return false;
 
   return true;
@@ -470,9 +442,7 @@ export function validateRabeAddressCache(
  * Serializes an {@link RabeActiveAddressCache} entry to a JSON string.
  * Exposed for testing; normal callers should use {@link saveRabeAddressCache}.
  */
-export function serializeRabeAddressCache(
-  cache: RabeActiveAddressCache
-): string {
+export function serializeRabeAddressCache(cache: RabeActiveAddressCache): string {
   return JSON.stringify(cache);
 }
 
@@ -480,9 +450,7 @@ export function serializeRabeAddressCache(
  * Parses a JSON string and validates it as an {@link RabeActiveAddressCache}.
  * Returns `null` when parsing fails or the data does not pass validation.
  */
-export function deserializeRabeAddressCache(
-  raw: string
-): RabeActiveAddressCache | null {
+export function deserializeRabeAddressCache(raw: string): RabeActiveAddressCache | null {
   try {
     const parsed: unknown = JSON.parse(raw);
     return validateRabeAddressCache(parsed) ? parsed : null;
@@ -497,10 +465,7 @@ export function deserializeRabeAddressCache(
  * Safe to call in SSR contexts — the write is skipped when `window` is
  * unavailable so Next.js server renders do not throw.
  */
-export function saveRabeAddressCache(
-  address: string,
-  network: RabeNetwork
-): void {
+export function saveRabeAddressCache(address: string, network: RabeNetwork): void {
   if (typeof window === "undefined") return;
 
   const cache: RabeActiveAddressCache = {

@@ -48,7 +48,9 @@ describe("DarkModeSwitcher - premium interactive states #311", () => {
 
     it("has focus-visible:ring-offset-surface-page", () => {
       render(<DarkModeSwitcher isDarkMode={false} onToggle={vi.fn()} />);
-      expect(screen.getByRole("switch").className).toContain("focus-visible:ring-offset-surface-page");
+      expect(screen.getByRole("switch").className).toContain(
+        "focus-visible:ring-offset-surface-page"
+      );
     });
 
     it("has focus-visible:shadow-md", () => {
@@ -85,7 +87,9 @@ describe("DarkModeSwitcher - premium interactive states #311", () => {
 
     it("thumb has transition-transform", () => {
       render(<DarkModeSwitcher isDarkMode={false} onToggle={vi.fn()} />);
-      expect(screen.getByTestId("dark-mode-switcher-thumb").className).toContain("transition-transform");
+      expect(screen.getByTestId("dark-mode-switcher-thumb").className).toContain(
+        "transition-transform"
+      );
     });
   });
 

@@ -36,23 +36,12 @@ describe("FreighterConnector component (#112)", () => {
   // -------------------------------------------------------------------------
 
   it("renders all trigger actions and initial idle status without errors", () => {
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={vi.fn()}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={vi.fn()} />);
 
     expect(screen.getByTestId("freighter-connector")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Estimate fees" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Sign via Freighter" })
-    ).toBeInTheDocument();
-    expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent(
-      "idle"
-    );
+    expect(screen.getByRole("button", { name: "Estimate fees" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign via Freighter" })).toBeInTheDocument();
+    expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("idle");
   });
 
   // -------------------------------------------------------------------------
@@ -62,24 +51,15 @@ describe("FreighterConnector component (#112)", () => {
   it("stays idle and shows no warning banner when fee is within bounds", async () => {
     const simulate = vi.fn().mockResolvedValue({ fee: 100 });
 
-    render(
-      <FreighterConnector
-        simulate={simulate}
-        signTransaction={vi.fn()}
-      />
-    );
+    render(<FreighterConnector simulate={simulate} signTransaction={vi.fn()} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Estimate fees" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("idle");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("idle");
     });
 
-    expect(
-      screen.queryByTestId("freighter-gas-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("freighter-gas-warning-banner")).not.toBeInTheDocument();
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
@@ -88,24 +68,16 @@ describe("FreighterConnector component (#112)", () => {
   // -------------------------------------------------------------------------
 
   it("shows simulation-warning status and gas warning banner when fee is too high", async () => {
-    const simulate = vi
-      .fn()
-      .mockResolvedValue({ fee: HIGH_FEE_THRESHOLD_STROOPS + 500 });
+    const simulate = vi.fn().mockResolvedValue({ fee: HIGH_FEE_THRESHOLD_STROOPS + 500 });
 
-    render(
-      <FreighterConnector
-        simulate={simulate}
-        signTransaction={vi.fn()}
-        txId="tx-high-fee"
-      />
-    );
+    render(<FreighterConnector simulate={simulate} signTransaction={vi.fn()} txId="tx-high-fee" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Estimate fees" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("simulation-warning");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent(
+        "simulation-warning"
+      );
     });
 
     const banner = screen.getByTestId("freighter-gas-warning-banner");
@@ -124,24 +96,16 @@ describe("FreighterConnector component (#112)", () => {
   // -------------------------------------------------------------------------
 
   it("shows simulation-error status and error banner when simulation reports an error", async () => {
-    const simulate = vi
-      .fn()
-      .mockResolvedValue({ fee: 0, error: "HostError: contract trap" });
+    const simulate = vi.fn().mockResolvedValue({ fee: 0, error: "HostError: contract trap" });
 
-    render(
-      <FreighterConnector
-        simulate={simulate}
-        signTransaction={vi.fn()}
-        txId="tx-sim-err"
-      />
-    );
+    render(<FreighterConnector simulate={simulate} signTransaction={vi.fn()} txId="tx-sim-err" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Estimate fees" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("simulation-error");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent(
+        "simulation-error"
+      );
     });
 
     const banner = screen.getByTestId("freighter-gas-warning-banner");
@@ -159,11 +123,7 @@ describe("FreighterConnector component (#112)", () => {
     const simulate = vi.fn().mockResolvedValue({ fee: 50 });
 
     render(
-      <FreighterConnector
-        simulate={simulate}
-        signTransaction={vi.fn()}
-        onSimulated={onSimulated}
-      />
+      <FreighterConnector simulate={simulate} signTransaction={vi.fn()} onSimulated={onSimulated} />
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Estimate fees" }));
@@ -176,19 +136,12 @@ describe("FreighterConnector component (#112)", () => {
   it("handles simulate() throwing an unexpected error gracefully", async () => {
     const simulate = vi.fn().mockRejectedValue(new Error("RPC unreachable"));
 
-    render(
-      <FreighterConnector
-        simulate={simulate}
-        signTransaction={vi.fn()}
-      />
-    );
+    render(<FreighterConnector simulate={simulate} signTransaction={vi.fn()} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Estimate fees" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("error");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("error");
     });
 
     expect(warnSpy).toHaveBeenCalled();
@@ -215,14 +168,10 @@ describe("FreighterConnector component (#112)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Sign via Freighter" }));
 
-    expect(
-      screen.getByTestId("freighter-connector-status")
-    ).toHaveTextContent("signing");
+    expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("signing");
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("signed");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("signed");
     });
 
     expect(signTransaction).toHaveBeenCalledTimes(1);
@@ -234,23 +183,14 @@ describe("FreighterConnector component (#112)", () => {
   // -------------------------------------------------------------------------
 
   it("transitions to rejected status when user declines in Freighter", async () => {
-    const signTransaction = vi
-      .fn()
-      .mockRejectedValue(new Error("User rejected transaction"));
+    const signTransaction = vi.fn().mockRejectedValue(new Error("User rejected transaction"));
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={signTransaction}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={signTransaction} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Sign via Freighter" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("rejected");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("rejected");
     });
 
     expect(warnSpy).toHaveBeenCalled();
@@ -264,42 +204,26 @@ describe("FreighterConnector component (#112)", () => {
   });
 
   it("also handles 'user declined' rejection phrasing", async () => {
-    const signTransaction = vi
-      .fn()
-      .mockRejectedValue(new Error("User declined the request"));
+    const signTransaction = vi.fn().mockRejectedValue(new Error("User declined the request"));
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={signTransaction}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={signTransaction} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Sign via Freighter" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("rejected");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("rejected");
     });
   });
 
   it("transitions to rejected status when signTransaction returns empty string", async () => {
     const signTransaction = vi.fn().mockResolvedValue("");
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={signTransaction}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={signTransaction} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Sign via Freighter" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("rejected");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("rejected");
     });
   });
 
@@ -308,23 +232,14 @@ describe("FreighterConnector component (#112)", () => {
   // -------------------------------------------------------------------------
 
   it("transitions to error status for unexpected signing failures", async () => {
-    const signTransaction = vi
-      .fn()
-      .mockRejectedValue(new Error("Freighter extension crashed"));
+    const signTransaction = vi.fn().mockRejectedValue(new Error("Freighter extension crashed"));
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={signTransaction}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={signTransaction} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Sign via Freighter" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("error");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("error");
     });
 
     expect(warnSpy).toHaveBeenCalled();
@@ -338,23 +253,14 @@ describe("FreighterConnector component (#112)", () => {
   // -------------------------------------------------------------------------
 
   it("surfaces the signature timeout alert when Freighter signing times out", async () => {
-    const signTransaction = vi
-      .fn()
-      .mockRejectedValue(new FreighterSignatureTimeoutError(60_000));
+    const signTransaction = vi.fn().mockRejectedValue(new FreighterSignatureTimeoutError(60_000));
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={signTransaction}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={signTransaction} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Sign via Freighter" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("error");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("error");
     });
 
     expect(warnSpy).toHaveBeenCalled();
@@ -383,22 +289,16 @@ describe("FreighterConnector component (#112)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Estimate fees" }));
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("idle");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("idle");
     });
 
     fireEvent.click(screen.getByRole("button", { name: "Sign via Freighter" }));
     await waitFor(() => {
-      expect(
-        screen.getByTestId("freighter-connector-status")
-      ).toHaveTextContent("signed");
+      expect(screen.getByTestId("freighter-connector-status")).toHaveTextContent("signed");
     });
 
     expect(onSigned).toHaveBeenCalledWith("final-signed-xdr");
-    expect(
-      screen.queryByTestId("freighter-gas-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("freighter-gas-warning-banner")).not.toBeInTheDocument();
   });
 });
 
@@ -408,28 +308,18 @@ describe("FreighterConnector component (#112)", () => {
 
 describe("FreighterGasWarningBanner component (#112)", () => {
   it("renders nothing when simulation is null", () => {
-    const { container } = render(
-      <FreighterGasWarningBanner simulation={null} />
-    );
+    const { container } = render(<FreighterGasWarningBanner simulation={null} />);
     expect(container).toBeEmptyDOMElement();
   });
 
   it("renders nothing when fee is within bounds and no error", () => {
-    const { container } = render(
-      <FreighterGasWarningBanner simulation={{ fee: 100 }} />
-    );
+    const { container } = render(<FreighterGasWarningBanner simulation={{ fee: 100 }} />);
     expect(container).toBeEmptyDOMElement();
-    expect(
-      screen.queryByTestId("freighter-gas-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("freighter-gas-warning-banner")).not.toBeInTheDocument();
   });
 
   it("renders a warning banner for high fees", () => {
-    render(
-      <FreighterGasWarningBanner
-        simulation={{ fee: HIGH_FEE_THRESHOLD_STROOPS + 1 }}
-      />
-    );
+    render(<FreighterGasWarningBanner simulation={{ fee: HIGH_FEE_THRESHOLD_STROOPS + 1 }} />);
 
     const banner = screen.getByTestId("freighter-gas-warning-banner");
     expect(banner).toBeInTheDocument();
@@ -438,11 +328,7 @@ describe("FreighterGasWarningBanner component (#112)", () => {
   });
 
   it("renders a warning banner for simulation errors", () => {
-    render(
-      <FreighterGasWarningBanner
-        simulation={{ fee: 0, error: "HostError: overflow" }}
-      />
-    );
+    render(<FreighterGasWarningBanner simulation={{ fee: 0, error: "HostError: overflow" }} />);
 
     const banner = screen.getByTestId("freighter-gas-warning-banner");
     expect(banner).toBeInTheDocument();
@@ -452,11 +338,7 @@ describe("FreighterGasWarningBanner component (#112)", () => {
   });
 
   it("renders a warning banner for simulationError objects", () => {
-    render(
-      <FreighterGasWarningBanner
-        simulation={{ fee: 0, simulationError: { code: -1 } }}
-      />
-    );
+    render(<FreighterGasWarningBanner simulation={{ fee: 0, simulationError: { code: -1 } }} />);
 
     const banner = screen.getByTestId("freighter-gas-warning-banner");
     expect(banner).toBeInTheDocument();

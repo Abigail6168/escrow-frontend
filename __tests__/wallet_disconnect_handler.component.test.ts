@@ -37,11 +37,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(true);
       expect(result.error).toBeNull();
@@ -53,11 +49,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("completes disconnect for albedo when extension is available", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "albedo",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("albedo", disconnectFn, () => true);
 
       expect(result.success).toBe(true);
       expect(disconnectFn).toHaveBeenCalled();
@@ -66,11 +58,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("completes disconnect for xbull when extension is available", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "xbull",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("xbull", disconnectFn, () => true);
 
       expect(result.success).toBe(true);
       expect(disconnectFn).toHaveBeenCalled();
@@ -79,11 +67,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("completes disconnect for hana when extension is available", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "hana",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("hana", disconnectFn, () => true);
 
       expect(result.success).toBe(true);
       expect(disconnectFn).toHaveBeenCalled();
@@ -97,7 +81,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
       const result = await disconnectWalletWithCheck(
         "freighter",
         disconnectFn as unknown as () => Promise<void>,
-        () => true,
+        () => true
       );
 
       expect(result.success).toBe(true);
@@ -115,11 +99,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw new Error("Freighter extension crashed");
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("Freighter extension crashed");
@@ -137,11 +117,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw new Error("Albedo popup closed unexpectedly");
       });
 
-      const result = await disconnectWalletWithCheck(
-        "albedo",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("albedo", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("Albedo popup closed unexpectedly");
@@ -153,11 +129,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw new Error("xBull connection lost");
       });
 
-      const result = await disconnectWalletWithCheck(
-        "xbull",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("xbull", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("xBull connection lost");
@@ -168,11 +140,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw new Error("Hana wallet timeout");
       });
 
-      const result = await disconnectWalletWithCheck(
-        "hana",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("hana", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("Hana wallet timeout");
@@ -183,11 +151,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw new Error("");
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("");
@@ -204,11 +168,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw "string error from extension";
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("Unknown error during wallet disconnect.");
@@ -219,11 +179,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw 404;
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("Unknown error during wallet disconnect.");
@@ -234,11 +190,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw { code: "DISCONNECT_FAILED", reason: "user cancelled" };
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("Unknown error during wallet disconnect.");
@@ -249,11 +201,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw null;
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("Unknown error during wallet disconnect.");
@@ -264,11 +212,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw undefined;
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("Unknown error during wallet disconnect.");
@@ -283,11 +227,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("returns fallback instructions for freighter when not installed", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => false,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => false);
 
       expect(result.success).toBe(false);
       expect(result.error).toBeNull();
@@ -306,11 +246,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("returns fallback instructions for albedo when not installed", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "albedo",
-        disconnectFn,
-        () => false,
-      );
+      const result = await disconnectWalletWithCheck("albedo", disconnectFn, () => false);
 
       expect(result.success).toBe(false);
       expect(result.fallbackInstructions).toMatch(/albedo/i);
@@ -321,11 +257,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("returns fallback instructions for xbull when not installed", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "xbull",
-        disconnectFn,
-        () => false,
-      );
+      const result = await disconnectWalletWithCheck("xbull", disconnectFn, () => false);
 
       expect(result.success).toBe(false);
       expect(result.fallbackInstructions).toMatch(/xbull/i);
@@ -335,11 +267,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("returns fallback instructions for hana when not installed", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "hana",
-        disconnectFn,
-        () => false,
-      );
+      const result = await disconnectWalletWithCheck("hana", disconnectFn, () => false);
 
       expect(result.success).toBe(false);
       expect(result.fallbackInstructions).toMatch(/hana/i);
@@ -349,11 +277,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("returns generic fallback for unknown wallet when not installed", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "unknown-wallet",
-        disconnectFn,
-        () => false,
-      );
+      const result = await disconnectWalletWithCheck("unknown-wallet", disconnectFn, () => false);
 
       expect(result.success).toBe(false);
       expect(result.fallbackInstructions).toMatch(/wallet extension not found/i);
@@ -370,13 +294,9 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("returns fallback when detector throws for freighter", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => {
-          throw new Error("detector failed");
-        },
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => {
+        throw new Error("detector failed");
+      });
 
       expect(result.success).toBe(false);
       expect(result.fallbackInstructions).not.toBeNull();
@@ -387,13 +307,9 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("returns fallback when detector throws for albedo", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "albedo",
-        disconnectFn,
-        () => {
-          throw new Error("detector error");
-        },
-      );
+      const result = await disconnectWalletWithCheck("albedo", disconnectFn, () => {
+        throw new Error("detector error");
+      });
 
       expect(result.success).toBe(false);
       expect(result.fallbackInstructions).toMatch(/albedo/i);
@@ -411,21 +327,9 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
       const disconnectFn2 = vi.fn(async () => {});
       const disconnectFn3 = vi.fn(async () => {});
 
-      const result1 = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn1,
-        () => true,
-      );
-      const result2 = await disconnectWalletWithCheck(
-        "albedo",
-        disconnectFn2,
-        () => true,
-      );
-      const result3 = await disconnectWalletWithCheck(
-        "xbull",
-        disconnectFn3,
-        () => true,
-      );
+      const result1 = await disconnectWalletWithCheck("freighter", disconnectFn1, () => true);
+      const result2 = await disconnectWalletWithCheck("albedo", disconnectFn2, () => true);
+      const result3 = await disconnectWalletWithCheck("xbull", disconnectFn3, () => true);
 
       expect(result1.success).toBe(true);
       expect(result2.success).toBe(true);
@@ -461,21 +365,9 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
       });
       const disconnectFn3 = vi.fn(async () => {});
 
-      const result1 = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn1,
-        () => true,
-      );
-      const result2 = await disconnectWalletWithCheck(
-        "albedo",
-        disconnectFn2,
-        () => true,
-      );
-      const result3 = await disconnectWalletWithCheck(
-        "xbull",
-        disconnectFn3,
-        () => true,
-      );
+      const result1 = await disconnectWalletWithCheck("freighter", disconnectFn1, () => true);
+      const result2 = await disconnectWalletWithCheck("albedo", disconnectFn2, () => true);
+      const result3 = await disconnectWalletWithCheck("xbull", disconnectFn3, () => true);
 
       expect(result1.success).toBe(true);
       expect(result2.success).toBe(false);
@@ -494,11 +386,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         await new Promise((resolve) => setTimeout(resolve, 50));
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(true);
       expect(disconnectFn).toHaveBeenCalled();
@@ -509,11 +397,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         return Promise.resolve();
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(true);
     });
@@ -523,11 +407,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         return Promise.reject(new Error("immediate rejection"));
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("immediate rejection");
@@ -599,7 +479,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
       const result: WalletDisconnectResult = await disconnectWalletWithCheck(
         "freighter",
         disconnectFn,
-        () => true,
+        () => true
       );
 
       expect(result).toHaveProperty("success");
@@ -615,7 +495,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
       const result: WalletDisconnectResult = await disconnectWalletWithCheck(
         "freighter",
         disconnectFn,
-        () => false,
+        () => false
       );
 
       expect(result).toHaveProperty("success", false);
@@ -633,7 +513,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
       const result: WalletDisconnectResult = await disconnectWalletWithCheck(
         "freighter",
         disconnectFn,
-        () => true,
+        () => true
       );
 
       expect(result).toHaveProperty("success", false);
@@ -657,7 +537,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
       const result = await disconnectWalletWithCheck(
         "freighter",
         disconnectFn as unknown as () => Promise<void>,
-        () => true,
+        () => true
       );
 
       expect(result.success).toBe(false);
@@ -667,11 +547,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
     it("handles empty wallet ID", async () => {
       const disconnectFn = vi.fn(async () => {});
 
-      const result = await disconnectWalletWithCheck(
-        "",
-        disconnectFn,
-        () => false,
-      );
+      const result = await disconnectWalletWithCheck("", disconnectFn, () => false);
 
       expect(result.success).toBe(false);
       expect(result.fallbackInstructions).toMatch(/wallet extension not found/i);
@@ -683,11 +559,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck mocked wallet acti
         throw new Error(longMessage);
       });
 
-      const result = await disconnectWalletWithCheck(
-        "freighter",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe(longMessage);
@@ -867,7 +739,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;
   type DisconnectToastHandler = (
     message: string,
-    type: "warning" | "error" | "info" | "success",
+    type: "warning" | "error" | "info" | "success"
   ) => void;
 
   let toastSpy: ReturnType<typeof vi.fn<DisconnectToastHandler>>;
@@ -962,7 +834,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         undefined,
-        toastSpy,
+        toastSpy
       );
 
       expect(result.success).toBe(true);
@@ -972,7 +844,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
       expect(toastSpy).toHaveBeenCalledTimes(1);
       expect(toastSpy).toHaveBeenCalledWith(
         "Disconnect cancelled — you rejected the request in your wallet.",
-        "warning",
+        "warning"
       );
       expect(warnSpy).toHaveBeenCalled();
       const logged = String(warnSpy.mock.calls[0][0]);
@@ -986,11 +858,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         throw new Error("user declined");
       });
 
-      const result = await disconnectWalletWithCheck(
-        "albedo",
-        disconnectFn,
-        () => true,
-      );
+      const result = await disconnectWalletWithCheck("albedo", disconnectFn, () => true);
 
       expect(result.success).toBe(true);
       expect(result.error).toBeNull();
@@ -1009,14 +877,14 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         undefined,
-        toastSpy,
+        toastSpy
       );
 
       expect(result.success).toBe(true);
       expect(result.error).toBeNull();
       expect(toastSpy).toHaveBeenCalledWith(
         "Disconnect cancelled — you rejected the request in your wallet.",
-        "warning",
+        "warning"
       );
     });
 
@@ -1035,7 +903,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         undefined,
-        toastSpy,
+        toastSpy
       );
 
       expect(result.success).toBe(true);
@@ -1055,7 +923,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         undefined,
-        toastSpy,
+        toastSpy
       );
 
       expect(result.success).toBe(true);
@@ -1073,7 +941,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         undefined,
-        toastSpy,
+        toastSpy
       );
 
       expect(result.success).toBe(true);
@@ -1091,7 +959,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         undefined,
-        toastSpy,
+        toastSpy
       );
 
       expect(result.success).toBe(true);
@@ -1109,7 +977,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         undefined,
-        toastSpy,
+        toastSpy
       );
 
       expect(result.success).toBe(false);
@@ -1129,7 +997,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         undefined,
-        toastSpy,
+        toastSpy
       );
 
       expect(result.success).toBe(false);
@@ -1148,7 +1016,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         undefined,
-        toastSpy,
+        toastSpy
       );
 
       expect(warnSpy).toHaveBeenCalledTimes(1);
@@ -1169,7 +1037,7 @@ describe("wallet_disconnect_handler user signature rejection handling", () => {
         () => true,
         undefined,
         { txId: "tx_123", status: "signing", context: "milestone release" },
-        toastSpy,
+        toastSpy
       );
 
       expect(result.success).toBe(true);

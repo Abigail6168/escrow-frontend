@@ -96,10 +96,7 @@ describe("Dashboard — jobs list (dashboard_list) rendering", () => {
 
   type MockJob = ReturnType<typeof mockJob>;
 
-  const mockJobsResponse = (
-    jobs: MockJob[] = [],
-    overrides: Record<string, unknown> = {}
-  ) => ({
+  const mockJobsResponse = (jobs: MockJob[] = [], overrides: Record<string, unknown> = {}) => ({
     success: true,
     data: jobs,
     page: 1,
@@ -124,9 +121,12 @@ describe("Dashboard — jobs list (dashboard_list) rendering", () => {
   });
 
   const setupFetch = (response: unknown) => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      json: async () => response,
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        json: async () => response,
+      })
+    );
   };
 
   describe("Loading state", () => {
@@ -145,9 +145,12 @@ describe("Dashboard — jobs list (dashboard_list) rendering", () => {
     });
 
     it("shows loading skeleton with proper accessible status role", () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        json: async () => mockJobsResponse([]),
-      }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          json: async () => mockJobsResponse([]),
+        })
+      );
 
       render(<Dashboard />);
 
@@ -158,12 +161,15 @@ describe("Dashboard — jobs list (dashboard_list) rendering", () => {
 
   describe("Error state", () => {
     it("displays error alert when API fails", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        json: async () => ({
-          success: false,
-          error: "Failed to fetch jobs",
-        }),
-      }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          json: async () => ({
+            success: false,
+            error: "Failed to fetch jobs",
+          }),
+        })
+      );
 
       render(<Dashboard />);
 
@@ -176,12 +182,15 @@ describe("Dashboard — jobs list (dashboard_list) rendering", () => {
     });
 
     it("error alert has proper ARIA attributes", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        json: async () => ({
-          success: false,
-          error: "Backend unavailable",
-        }),
-      }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          json: async () => ({
+            success: false,
+            error: "Backend unavailable",
+          }),
+        })
+      );
 
       render(<Dashboard />);
 
@@ -281,11 +290,13 @@ describe("Dashboard — jobs list (dashboard_list) rendering", () => {
     });
 
     it("displays role badges for user's roles", async () => {
-      const jobs = [mockJob({
-        id: "job-with-roles",
-        client: "GCLIENTADDRESS1234567890123456789012345678901234",
-        freelancer: "GFREELANCERADDRESS12345678901234567890123456",
-      })];
+      const jobs = [
+        mockJob({
+          id: "job-with-roles",
+          client: "GCLIENTADDRESS1234567890123456789012345678901234",
+          freelancer: "GFREELANCERADDRESS12345678901234567890123456",
+        }),
+      ];
       setupFetch(mockJobsResponse(jobs));
 
       render(<Dashboard />);
@@ -401,7 +412,9 @@ describe("Dashboard — jobs list (dashboard_list) rendering", () => {
       render(<Dashboard />);
 
       await waitFor(() => {
-        expect(screen.getByRole("heading", { level: 1, name: "Job Dashboard" })).toBeInTheDocument();
+        expect(
+          screen.getByRole("heading", { level: 1, name: "Job Dashboard" })
+        ).toBeInTheDocument();
       });
     });
   });

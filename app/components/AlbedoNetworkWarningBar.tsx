@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  checkAlbedoNetworkMatch,
-  type AlbedoNetwork,
-} from "@/app/lib/albedo_connector";
+import { checkAlbedoNetworkMatch, type AlbedoNetwork } from "@/app/lib/albedo_connector";
 
 interface Props {
   walletNetwork: AlbedoNetwork;

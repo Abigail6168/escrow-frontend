@@ -89,13 +89,13 @@ Freelancer can claim funds automatically after 1 day if you do not respond
 
 ## All Validation Messages
 
-| Condition                | Error Message                    |
-| ------------------------ | -------------------------------- |
-| Empty field              | Response deadline is required    |
-| Non-integer (e.g., 3.5)  | Must be a whole number of days   |
-| Less than 1 (e.g., 0)    | Must be at least 1 day           |
-| Greater than 365         | Must be at most 365 days         |
-| Valid (1-365)            | _(No error, preview shows)_      |
+| Condition               | Error Message                  |
+| ----------------------- | ------------------------------ |
+| Empty field             | Response deadline is required  |
+| Non-integer (e.g., 3.5) | Must be a whole number of days |
+| Less than 1 (e.g., 0)   | Must be at least 1 day         |
+| Greater than 365        | Must be at most 365 days       |
+| Valid (1-365)           | _(No error, preview shows)_    |
 
 ## Color Scheme (Design Tokens Used)
 

@@ -132,9 +132,7 @@ export default function TransactionProgressBar({
   // flight" state handled by the placeholder, so it raises no alert.
   const validation = validateProgressBarConfig(stepList, currentStepIndex);
   const activeAlert = errorMessage || (isEmpty ? null : validation.alertMessage);
-  const announcement = isEmpty
-    ? null
-    : getProgressAnnouncement(stepList, currentStepIndex, status);
+  const announcement = isEmpty ? null : getProgressAnnouncement(stepList, currentStepIndex, status);
 
   // 2. Responsive Layout (Issue #412, #416)
   const layout = getProgressBarLayout(viewportWidth, mobileOverlay);
@@ -177,7 +175,13 @@ export default function TransactionProgressBar({
           className={`mb-4 flex items-center gap-2 rounded-lg border p-3 text-xs font-medium ${PROGRESS_BAR_THEME_CLASSES.alertError} ${PROGRESS_BAR_ANIMATION_CLASSES.errorAlert}`}
           data-testid="progress-bar-validation-alert"
         >
-          <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" {...DECORATIVE_SVG}>
+          <svg
+            className="h-4 w-4 shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            {...DECORATIVE_SVG}
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -222,8 +226,10 @@ export default function TransactionProgressBar({
               const showDescription = layout.showDescriptions && Boolean(step.description);
 
               let stepThemeClass: string = PROGRESS_BAR_THEME_CLASSES.stepDefault;
-              if (isActive) stepThemeClass = `${PROGRESS_BAR_THEME_CLASSES.stepActive} ${PROGRESS_BAR_ANIMATION_CLASSES.activePulse}`;
-              else if (isCompleted) stepThemeClass = `${PROGRESS_BAR_THEME_CLASSES.stepCompleted} ${PROGRESS_BAR_ANIMATION_CLASSES.completedCheck}`;
+              if (isActive)
+                stepThemeClass = `${PROGRESS_BAR_THEME_CLASSES.stepActive} ${PROGRESS_BAR_ANIMATION_CLASSES.activePulse}`;
+              else if (isCompleted)
+                stepThemeClass = `${PROGRESS_BAR_THEME_CLASSES.stepCompleted} ${PROGRESS_BAR_ANIMATION_CLASSES.completedCheck}`;
               else if (isFailed) stepThemeClass = PROGRESS_BAR_THEME_CLASSES.stepFailed;
 
               // Steps are only controls when a click handler exists; otherwise
@@ -233,17 +239,39 @@ export default function TransactionProgressBar({
               const interactiveClass = isClickable
                 ? `${PROGRESS_BAR_INTERACTIVE_CLASSES.stepInteractive} ${PROGRESS_BAR_ANIMATION_CLASSES.stepHover}`
                 : disabled
-                ? PROGRESS_BAR_INTERACTIVE_CLASSES.stepDisabled
-                : "";
+                  ? PROGRESS_BAR_INTERACTIVE_CLASSES.stepDisabled
+                  : "";
               const nodeClass = `relative z-10 flex shrink-0 items-center justify-center rounded-full border font-semibold ${layout.indicatorSizeClass} ${stepThemeClass} ${interactiveClass} ${PROGRESS_BAR_ANIMATION_CLASSES.nodeTransition}`;
 
               const nodeContent = isCompleted ? (
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" {...DECORATIVE_SVG}>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  {...DECORATIVE_SVG}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               ) : isFailed ? (
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" {...DECORATIVE_SVG}>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  {...DECORATIVE_SVG}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               ) : (
                 <span aria-hidden="true">{idx + 1}</span>
@@ -307,8 +335,8 @@ export default function TransactionProgressBar({
                         isActive
                           ? PROGRESS_BAR_THEME_CLASSES.labelPrimary
                           : isCompleted
-                          ? PROGRESS_BAR_THEME_CLASSES.labelSecondary
-                          : PROGRESS_BAR_THEME_CLASSES.labelMuted
+                            ? PROGRESS_BAR_THEME_CLASSES.labelSecondary
+                            : PROGRESS_BAR_THEME_CLASSES.labelMuted
                       }`}
                     >
                       {!isInteractive && (

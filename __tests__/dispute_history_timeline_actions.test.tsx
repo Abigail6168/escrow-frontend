@@ -17,9 +17,7 @@ import {
   type DisputeTimelineStatus,
 } from "@/app/lib/dispute_history_timeline";
 
-function renderTimeline(
-  props: Partial<React.ComponentProps<typeof DisputeHistoryTimeline>> = {},
-) {
+function renderTimeline(props: Partial<React.ComponentProps<typeof DisputeHistoryTimeline>> = {}) {
   return render(
     <ToastProvider>
       <DisputeHistoryTimeline
@@ -29,7 +27,7 @@ function renderTimeline(
         {...props}
       />
       <Toast />
-    </ToastProvider>,
+    </ToastProvider>
   );
 }
 
@@ -61,7 +59,7 @@ describe("state badges (#444)", () => {
       expect(badge).toHaveAttribute("data-status", status);
       expect(badge).toHaveTextContent(DISPUTE_STATUS_BADGES[status].label);
       expect(badge.className).toContain(DISPUTE_STATUS_BADGES[status].className);
-    },
+    }
   );
 });
 
@@ -104,7 +102,7 @@ describe("action confirmation (#445)", () => {
     await waitFor(() => expect(onAction).toHaveBeenCalledTimes(1));
     expect(onAction).toHaveBeenCalledWith("withdraw", expect.objectContaining({ id: "e1" }));
     await waitFor(() =>
-      expect(screen.queryByTestId("dispute-timeline-confirm-dialog")).not.toBeInTheDocument(),
+      expect(screen.queryByTestId("dispute-timeline-confirm-dialog")).not.toBeInTheDocument()
     );
   });
 
@@ -131,7 +129,10 @@ describe("toast warnings (#446)", () => {
   });
 
   it("shows a success toast after a confirmed action", async () => {
-    renderTimeline({ initialEvents: [event("pending", "e1")], onAction: vi.fn().mockResolvedValue(undefined) });
+    renderTimeline({
+      initialEvents: [event("pending", "e1")],
+      onAction: vi.fn().mockResolvedValue(undefined),
+    });
     fireEvent.click(screen.getByTestId("dispute-timeline-escalate-e1"));
     fireEvent.click(screen.getByTestId("dispute-timeline-confirm-ack"));
     fireEvent.click(screen.getByTestId("dispute-timeline-confirm-submit"));
@@ -147,7 +148,7 @@ describe("toast warnings (#446)", () => {
     fireEvent.click(screen.getByTestId("dispute-timeline-confirm-ack"));
     fireEvent.click(screen.getByTestId("dispute-timeline-confirm-submit"));
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Could not escalate the dispute: user declined",
+      "Could not escalate the dispute: user declined"
     );
   });
 
@@ -184,12 +185,10 @@ describe("CSV export (#447)", () => {
 
   it("puts the correct cell values in each row", () => {
     const [header, ...rows] = buildTimelineCsv(MOCK_TIMELINE_EVENTS).split("\r\n");
-    expect(header).toBe(
-      "Event ID,Dispute ID,Title,Description,Actor,Status,Occurred At",
-    );
+    expect(header).toBe("Event ID,Dispute ID,Title,Description,Actor,Status,Occurred At");
     expect(rows).toHaveLength(MOCK_TIMELINE_EVENTS.length);
     expect(rows[0]).toBe(
-      "evt-001,disp-101,Dispute raised,Client disputed milestone 2 delivery.,client,Resolved,2026-09-20T10:15:00Z",
+      "evt-001,disp-101,Dispute raised,Client disputed milestone 2 delivery.,client,Resolved,2026-09-20T10:15:00Z"
     );
     expect(rows[1]).toContain(",Under review,");
   });

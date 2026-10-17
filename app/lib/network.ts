@@ -56,10 +56,7 @@ export function networkProseName(passphrase: string): string {
  * Mainnet's path segment is "public", not "mainnet". Stellar Expert has no
  * futurenet explorer, so that case returns null rather than a link that 404s.
  */
-export function stellarExpertContractUrl(
-  contractId: string,
-  passphrase: string,
-): string | null {
+export function stellarExpertContractUrl(contractId: string, passphrase: string): string | null {
   if (!contractId) return null;
   const kind = networkKind(passphrase);
   if (kind === "public") {

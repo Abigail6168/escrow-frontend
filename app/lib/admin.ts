@@ -11,19 +11,16 @@ export async function fetchAdminAddress(
   options?: { signal?: AbortSignal }
 ): Promise<string | null> {
   try {
-    const res = await fetch(
-      `${BACKEND_URL}/api/jobs/query`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contractId,
-          method: "get_admin",
-          args: [],
-        }),
-        signal: options?.signal,
-      }
-    );
+    const res = await fetch(`${BACKEND_URL}/api/jobs/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contractId,
+        method: "get_admin",
+        args: [],
+      }),
+      signal: options?.signal,
+    });
 
     if (!res.ok) {
       console.error(`Admin query failed with status ${res.status}`);

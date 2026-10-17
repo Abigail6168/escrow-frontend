@@ -5,8 +5,8 @@ import { HIGH_FEE_THRESHOLD_STROOPS } from "@/app/lib/ledger_usb_bridge";
 
 // -------------------------------------------------------------------------------------
 
-// Integration note: verify WalletContext derives gasWarning correctly from 
-// setSimulationResult so the banner reflects real context state changes. 
+// Integration note: verify WalletContext derives gasWarning correctly from
+// setSimulationResult so the banner reflects real context state changes.
 // -------------------------------------------------------------------------------------
 
 // Minimal stubs needed by WalletProvider internals.
@@ -14,7 +14,9 @@ vi.mock("@creit.tech/stellar-wallets-kit", () => ({
   Networks: { TESTNET: "Test SDF Network ; September 2015" },
   StellarWalletsKit: {
     init: vi.fn(),
-    getNetwork: vi.fn().mockResolvedValue({ networkPassphrase: "Test SDF Network ; September 2015" }),
+    getNetwork: vi
+      .fn()
+      .mockResolvedValue({ networkPassphrase: "Test SDF Network ; September 2015" }),
     getAddress: vi.fn().mockResolvedValue({ address: null }),
     authModal: vi.fn(),
     setWallet: vi.fn(),
@@ -33,12 +35,9 @@ vi.mock("@/app/lib/contract", () => ({
 
 vi.mock("@/app/lib/ledger_usb_bridge", async () => {
   // Import real implementations so checkSimulationFeeWarning logic is preserved
-  const {
-    checkSimulationFeeWarning,
-    HIGH_FEE_THRESHOLD_STROOPS,
-  } = await vi.importActual<typeof import("@/app/lib/ledger_usb_bridge")>(
-    "@/app/lib/ledger_usb_bridge"
-  );
+  const { checkSimulationFeeWarning, HIGH_FEE_THRESHOLD_STROOPS } = await vi.importActual<
+    typeof import("@/app/lib/ledger_usb_bridge")
+  >("@/app/lib/ledger_usb_bridge");
   return {
     checkSimulationFeeWarning,
     HIGH_FEE_THRESHOLD_STROOPS,

@@ -33,7 +33,7 @@ describe("arbitration_escrow_details export helpers (#487)", () => {
   it("generates timestamped export filenames", () => {
     const date = new Date("2026-09-28T12:00:00Z");
     expect(arbitrationExportFilename("DIS-123", date)).toBe(
-      "arbitration-escrow-DIS-123-2026-09-28.csv",
+      "arbitration-escrow-DIS-123-2026-09-28.csv"
     );
   });
 

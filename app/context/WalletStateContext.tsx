@@ -1,23 +1,12 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 
 // ----------------------------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------------------------
 
-export type WalletAvailabilityStatus =
-  | "checking"
-  | "available"
-  | "unavailable"
-  | "error";
+export type WalletAvailabilityStatus = "checking" | "available" | "unavailable" | "error";
 
 export interface WalletStateContextValue {
   /** Current availability status of the Freighter extension. */
@@ -45,8 +34,7 @@ export interface WalletStateContextValue {
 // Setup instruction copy
 // ----------------------------------------------------------------------------------
 
-export const FREIGHTER_INSTALL_URL =
-  "https://www.freighter.app/";
+export const FREIGHTER_INSTALL_URL = "https://www.freighter.app/";
 
 export const FREIGHTER_SETUP_INSTRUCTION =
   "Freighter wallet extension not found. " +
@@ -64,9 +52,7 @@ export const FREIGHTER_SETUP_INSTRUCTION =
 export function detectFreighterExtension(): boolean {
   if (typeof window === "undefined") return false;
   // Freighter injects `window.freighterApi` when its extension is active.
-  return !!(
-    (window as unknown as Record<string, unknown>)["freighterApi"]
-  );
+  return !!(window as unknown as Record<string, unknown>)["freighterApi"];
 }
 
 // ----------------------------------------------------------------------------------
@@ -84,8 +70,7 @@ const defaultValue: WalletStateContextValue = {
   endTransactionSigning: () => {},
 };
 
-const WalletStateContext =
-  createContext<WalletStateContextValue>(defaultValue);
+const WalletStateContext = createContext<WalletStateContextValue>(defaultValue);
 
 // ----------------------------------------------------------------------------------
 // Provider

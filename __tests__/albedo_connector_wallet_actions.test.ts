@@ -144,7 +144,6 @@ describe("albedo_connector assertNoSensitiveFields guard", () => {
   });
 });
 
-
 // ---------------------------------------------------------------------------
 // formatConsoleWarningBlock — title truncation & optional field omission
 // ---------------------------------------------------------------------------
@@ -332,7 +331,6 @@ describe("albedo_connector logAlbedoError call branches", () => {
   });
 });
 
-
 // ---------------------------------------------------------------------------
 // formatStackTrace — edge cases not covered in logging test
 // ---------------------------------------------------------------------------
@@ -425,7 +423,6 @@ describe("albedo_connector sanitizeAlbedoLogText extended cases", () => {
     expect(result).toBe(notSecret);
   });
 });
-
 
 // ---------------------------------------------------------------------------
 // AlbedoTransactionTracker — wallet action behaviour under mocked actions
@@ -603,14 +600,8 @@ describe("albedo_connector tracker multi-txId isolation", () => {
 
     expect(tracker.getHistory("tx-A")).toHaveLength(2);
     expect(tracker.getHistory("tx-B")).toHaveLength(2);
-    expect(tracker.getHistory("tx-A").map((e) => e.phase)).toEqual([
-      "building",
-      "signing",
-    ]);
-    expect(tracker.getHistory("tx-B").map((e) => e.phase)).toEqual([
-      "popup",
-      "cancelled",
-    ]);
+    expect(tracker.getHistory("tx-A").map((e) => e.phase)).toEqual(["building", "signing"]);
+    expect(tracker.getHistory("tx-B").map((e) => e.phase)).toEqual(["popup", "cancelled"]);
   });
 
   it("getHistory with no argument returns all entries across all txIds", () => {
@@ -748,12 +739,11 @@ describe("albedo_connector trackAlbedoLifecycle convenience helper", () => {
   });
 
   it("passes network and operationType through to the entry", () => {
-    const entry = trackAlbedoLifecycle(
-      "tx-opts",
-      "confirming",
-      "Waiting for ledger",
-      { network: "testnet", operationType: "invoke_contract", txHash: "h-lc" }
-    );
+    const entry = trackAlbedoLifecycle("tx-opts", "confirming", "Waiting for ledger", {
+      network: "testnet",
+      operationType: "invoke_contract",
+      txHash: "h-lc",
+    });
 
     expect(entry.network).toBe("testnet");
     expect(entry.operationType).toBe("invoke_contract");

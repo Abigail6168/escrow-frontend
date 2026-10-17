@@ -43,9 +43,7 @@ export default function WalletLoaderOverlay() {
       <div className="flex flex-col items-center space-y-4 p-6 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl max-w-sm text-center">
         <ButtonSpinner className="h-10 w-10 text-indigo-500 animate-spin" />
         <div>
-          <h3 className="text-lg font-semibold text-gray-100">
-            Wallet Operation in Progress
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-100">Wallet Operation in Progress</h3>
           <p className="text-sm text-gray-400 mt-1">
             Please check your wallet extension or device. Do not refresh or close this tab.
           </p>

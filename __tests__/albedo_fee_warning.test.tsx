@@ -9,11 +9,7 @@ describe("AlbedoFeeWarningBar", () => {
   // -------------------------------------------------------------------------
 
   it("renders a warning bar when the estimated fee exceeds the default limit", () => {
-    render(
-      <AlbedoFeeWarningBar
-        simulation={{ minResourceFee: DEFAULT_FEE_LIMIT_STROOPS + 1 }}
-      />
-    );
+    render(<AlbedoFeeWarningBar simulation={{ minResourceFee: DEFAULT_FEE_LIMIT_STROOPS + 1 }} />);
 
     const bar = screen.getByTestId("albedo-fee-warning-bar");
     expect(bar).toBeInTheDocument();
@@ -23,23 +19,17 @@ describe("AlbedoFeeWarningBar", () => {
 
   it("does not render when fee is within the default limit", () => {
     const { container } = render(
-      <AlbedoFeeWarningBar
-        simulation={{ minResourceFee: DEFAULT_FEE_LIMIT_STROOPS }}
-      />
+      <AlbedoFeeWarningBar simulation={{ minResourceFee: DEFAULT_FEE_LIMIT_STROOPS }} />
     );
 
-    expect(
-      screen.queryByTestId("albedo-fee-warning-bar")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("albedo-fee-warning-bar")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 
   it("does not render when simulation has no fee data", () => {
     const { container } = render(<AlbedoFeeWarningBar simulation={{}} />);
 
-    expect(
-      screen.queryByTestId("albedo-fee-warning-bar")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("albedo-fee-warning-bar")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -48,9 +38,7 @@ describe("AlbedoFeeWarningBar", () => {
   // -------------------------------------------------------------------------
 
   it("displays the estimated fee in stroops and XLM in the banner", () => {
-    render(
-      <AlbedoFeeWarningBar simulation={{ minResourceFee: 2_000_000 }} />
-    );
+    render(<AlbedoFeeWarningBar simulation={{ minResourceFee: 2_000_000 }} />);
 
     const bar = screen.getByTestId("albedo-fee-warning-bar");
     expect(bar).toHaveTextContent(/2000000 stroops/);
@@ -58,21 +46,13 @@ describe("AlbedoFeeWarningBar", () => {
   });
 
   it("tells the user to review before signing", () => {
-    render(
-      <AlbedoFeeWarningBar simulation={{ minResourceFee: 5_000_000 }} />
-    );
+    render(<AlbedoFeeWarningBar simulation={{ minResourceFee: 5_000_000 }} />);
 
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      /Review the transaction before signing/i
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent(/Review the transaction before signing/i);
   });
 
   it("renders when the fee comes from the classic fee field", () => {
-    render(
-      <AlbedoFeeWarningBar
-        simulation={{ fee: String(DEFAULT_FEE_LIMIT_STROOPS + 200) }}
-      />
-    );
+    render(<AlbedoFeeWarningBar simulation={{ fee: String(DEFAULT_FEE_LIMIT_STROOPS + 200) }} />);
 
     expect(screen.getByTestId("albedo-fee-warning-bar")).toBeInTheDocument();
   });
@@ -83,10 +63,7 @@ describe("AlbedoFeeWarningBar", () => {
 
   it("respects a custom feeLimitStroops prop — hides when under limit", () => {
     const { container } = render(
-      <AlbedoFeeWarningBar
-        simulation={{ minResourceFee: 200_000 }}
-        feeLimitStroops={250_000}
-      />
+      <AlbedoFeeWarningBar simulation={{ minResourceFee: 200_000 }} feeLimitStroops={250_000} />
     );
 
     expect(container).toBeEmptyDOMElement();
@@ -94,10 +71,7 @@ describe("AlbedoFeeWarningBar", () => {
 
   it("respects a custom feeLimitStroops prop — shows when over limit", () => {
     render(
-      <AlbedoFeeWarningBar
-        simulation={{ minResourceFee: 300_000 }}
-        feeLimitStroops={250_000}
-      />
+      <AlbedoFeeWarningBar simulation={{ minResourceFee: 300_000 }} feeLimitStroops={250_000} />
     );
 
     expect(screen.getByTestId("albedo-fee-warning-bar")).toBeInTheDocument();
@@ -105,12 +79,7 @@ describe("AlbedoFeeWarningBar", () => {
   });
 
   it("with a very low custom limit, triggers warning for a small fee", () => {
-    render(
-      <AlbedoFeeWarningBar
-        simulation={{ minResourceFee: 1_000 }}
-        feeLimitStroops={500}
-      />
-    );
+    render(<AlbedoFeeWarningBar simulation={{ minResourceFee: 1_000 }} feeLimitStroops={500} />);
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
   });
@@ -120,11 +89,7 @@ describe("AlbedoFeeWarningBar", () => {
   // -------------------------------------------------------------------------
 
   it("has role=alert for screen reader accessibility", () => {
-    render(
-      <AlbedoFeeWarningBar
-        simulation={{ minResourceFee: DEFAULT_FEE_LIMIT_STROOPS + 1 }}
-      />
-    );
+    render(<AlbedoFeeWarningBar simulation={{ minResourceFee: DEFAULT_FEE_LIMIT_STROOPS + 1 }} />);
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
   });

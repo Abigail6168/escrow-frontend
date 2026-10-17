@@ -27,7 +27,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isValidWalletActiveState(value: unknown): value is WalletActiveState {
   if (!isRecord(value)) return false;
   if (typeof value.address !== "string" || value.address.length === 0) return false;
-  if (typeof value.selectedWalletId !== "string" || value.selectedWalletId.length === 0) return false;
+  if (typeof value.selectedWalletId !== "string" || value.selectedWalletId.length === 0)
+    return false;
   if (typeof value.networkPassphrase !== "string") return false;
   if (typeof value.connectedAt !== "number" || !Number.isFinite(value.connectedAt)) return false;
   return true;
@@ -47,7 +48,8 @@ function isValidSerializedPayload(value: unknown): value is WalletActiveStateSer
   if (!isRecord(value)) return false;
   if (value.version !== SCHEMA_VERSION) return false;
   if (typeof value.address !== "string" || value.address.length === 0) return false;
-  if (typeof value.selectedWalletId !== "string" || value.selectedWalletId.length === 0) return false;
+  if (typeof value.selectedWalletId !== "string" || value.selectedWalletId.length === 0)
+    return false;
   if (typeof value.networkPassphrase !== "string") return false;
   if (typeof value.connectedAt !== "number" || !Number.isFinite(value.connectedAt)) return false;
   return true;
@@ -74,8 +76,7 @@ export class WalletStateStore {
   private listeners = new Set<() => void>();
 
   constructor(storageOverride?: Storage | null) {
-    this.storage =
-      storageOverride !== undefined ? storageOverride : getStorageAdapter();
+    this.storage = storageOverride !== undefined ? storageOverride : getStorageAdapter();
     this.rehydrate();
   }
 

@@ -20,14 +20,8 @@ function WalletStateConsumer() {
       <span data-testid="availability-status">{state.availabilityStatus}</span>
       <span data-testid="is-checking">{String(state.isChecking)}</span>
       <span data-testid="is-available">{String(state.isAvailable)}</span>
-      <span data-testid="setup-instruction">
-        {state.setupInstruction ?? "none"}
-      </span>
-      <button
-        type="button"
-        onClick={state.recheckAvailability}
-        data-testid="recheck-btn"
-      >
+      <span data-testid="setup-instruction">{state.setupInstruction ?? "none"}</span>
+      <button type="button" onClick={state.recheckAvailability} data-testid="recheck-btn">
         Recheck
       </button>
     </div>
@@ -102,9 +96,7 @@ describe("WalletStateProvider (#113)", () => {
     );
 
     // Initially checking
-    expect(screen.getByTestId("availability-status")).toHaveTextContent(
-      "checking"
-    );
+    expect(screen.getByTestId("availability-status")).toHaveTextContent("checking");
     expect(screen.getByTestId("is-checking")).toHaveTextContent("true");
 
     // Advance past the 100ms detection timeout
@@ -112,9 +104,7 @@ describe("WalletStateProvider (#113)", () => {
       vi.advanceTimersByTime(150);
     });
 
-    expect(screen.getByTestId("availability-status")).toHaveTextContent(
-      "unavailable"
-    );
+    expect(screen.getByTestId("availability-status")).toHaveTextContent("unavailable");
     expect(screen.getByTestId("is-checking")).toHaveTextContent("false");
     expect(screen.getByTestId("is-available")).toHaveTextContent("false");
   });
@@ -149,9 +139,7 @@ describe("WalletStateProvider (#113)", () => {
       vi.advanceTimersByTime(150);
     });
 
-    expect(screen.getByTestId("availability-status")).toHaveTextContent(
-      "available"
-    );
+    expect(screen.getByTestId("availability-status")).toHaveTextContent("available");
     expect(screen.getByTestId("is-available")).toHaveTextContent("true");
     expect(screen.getByTestId("setup-instruction")).toHaveTextContent("none");
   });
@@ -167,9 +155,7 @@ describe("WalletStateProvider (#113)", () => {
     await act(async () => {
       vi.advanceTimersByTime(150);
     });
-    expect(screen.getByTestId("availability-status")).toHaveTextContent(
-      "unavailable"
-    );
+    expect(screen.getByTestId("availability-status")).toHaveTextContent("unavailable");
 
     // Simulate extension being installed between checks
     (window as unknown as Record<string, unknown>)["freighterApi"] = {};
@@ -180,18 +166,14 @@ describe("WalletStateProvider (#113)", () => {
     });
 
     // Back to checking during the debounce window
-    expect(screen.getByTestId("availability-status")).toHaveTextContent(
-      "checking"
-    );
+    expect(screen.getByTestId("availability-status")).toHaveTextContent("checking");
 
     // Advance past the timeout
     await act(async () => {
       vi.advanceTimersByTime(150);
     });
 
-    expect(screen.getByTestId("availability-status")).toHaveTextContent(
-      "available"
-    );
+    expect(screen.getByTestId("availability-status")).toHaveTextContent("available");
     expect(screen.getByTestId("setup-instruction")).toHaveTextContent("none");
   });
 

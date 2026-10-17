@@ -69,11 +69,7 @@ describe("WalletBadge – mobile viewport overlay/clickability (Issue #259)", ()
         setViewport(width, height);
         const onDisconnect = vi.fn();
         render(
-          <WalletBadge
-            address={TEST_ADDRESS}
-            status="connected"
-            onDisconnect={onDisconnect}
-          />
+          <WalletBadge address={TEST_ADDRESS} status="connected" onDisconnect={onDisconnect} />
         );
         const btn = screen.getByRole("button", { name: /disconnect wallet/i });
         expect(btn).toBeInTheDocument();
@@ -83,11 +79,7 @@ describe("WalletBadge – mobile viewport overlay/clickability (Issue #259)", ()
         setViewport(width, height);
         const onDisconnect = vi.fn();
         render(
-          <WalletBadge
-            address={TEST_ADDRESS}
-            status="connected"
-            onDisconnect={onDisconnect}
-          />
+          <WalletBadge address={TEST_ADDRESS} status="connected" onDisconnect={onDisconnect} />
         );
         const btn = screen.getByRole("button", { name: /disconnect wallet/i });
         // jsdom computes inline styles; Tailwind class-based styles are not
@@ -105,11 +97,7 @@ describe("WalletBadge – mobile viewport overlay/clickability (Issue #259)", ()
         setViewport(width, height);
         const onDisconnect = vi.fn();
         render(
-          <WalletBadge
-            address={TEST_ADDRESS}
-            status="connected"
-            onDisconnect={onDisconnect}
-          />
+          <WalletBadge address={TEST_ADDRESS} status="connected" onDisconnect={onDisconnect} />
         );
         const btn = screen.getByRole("button", { name: /disconnect wallet/i });
         fireEvent.click(btn);
@@ -127,51 +115,29 @@ describe("WalletBadge – mobile viewport overlay/clickability (Issue #259)", ()
     });
 
     it("renders the wallet-badge element", () => {
-      render(
-        <WalletBadge address={TEST_ADDRESS} status="connected" />
-      );
+      render(<WalletBadge address={TEST_ADDRESS} status="connected" />);
       expect(screen.getByTestId("wallet-badge")).toBeInTheDocument();
     });
 
     it("shows truncated address", () => {
-      render(
-        <WalletBadge address={TEST_ADDRESS} status="connected" />
-      );
+      render(<WalletBadge address={TEST_ADDRESS} status="connected" />);
       expect(screen.getByTestId("wallet-badge")).toHaveTextContent("GBHK...R2S3");
     });
 
     it("renders disconnect button when onDisconnect is provided", () => {
       const onDisconnect = vi.fn();
-      render(
-        <WalletBadge
-          address={TEST_ADDRESS}
-          status="connected"
-          onDisconnect={onDisconnect}
-        />
-      );
-      expect(
-        screen.getByRole("button", { name: /disconnect wallet/i })
-      ).toBeInTheDocument();
+      render(<WalletBadge address={TEST_ADDRESS} status="connected" onDisconnect={onDisconnect} />);
+      expect(screen.getByRole("button", { name: /disconnect wallet/i })).toBeInTheDocument();
     });
 
     it("does not render disconnect button when onDisconnect is omitted", () => {
-      render(
-        <WalletBadge address={TEST_ADDRESS} status="connected" />
-      );
-      expect(
-        screen.queryByRole("button", { name: /disconnect wallet/i })
-      ).not.toBeInTheDocument();
+      render(<WalletBadge address={TEST_ADDRESS} status="connected" />);
+      expect(screen.queryByRole("button", { name: /disconnect wallet/i })).not.toBeInTheDocument();
     });
 
     it("onDisconnect fires on click at desktop size", () => {
       const onDisconnect = vi.fn();
-      render(
-        <WalletBadge
-          address={TEST_ADDRESS}
-          status="connected"
-          onDisconnect={onDisconnect}
-        />
-      );
+      render(<WalletBadge address={TEST_ADDRESS} status="connected" onDisconnect={onDisconnect} />);
       fireEvent.click(screen.getByRole("button", { name: /disconnect wallet/i }));
       expect(onDisconnect).toHaveBeenCalledTimes(1);
     });
@@ -184,9 +150,7 @@ describe("WalletBadge – mobile viewport overlay/clickability (Issue #259)", ()
     });
 
     it("renders error state with message", () => {
-      render(
-        <WalletBadge status="error" errorMessage="Failed to connect" />
-      );
+      render(<WalletBadge status="error" errorMessage="Failed to connect" />);
       const badge = screen.getByTestId("wallet-badge");
       expect(badge).toHaveAttribute("data-status", "error");
       expect(badge).toHaveTextContent("Failed to connect");
@@ -194,9 +158,7 @@ describe("WalletBadge – mobile viewport overlay/clickability (Issue #259)", ()
 
     it("renders error state with fallback text when no errorMessage", () => {
       render(<WalletBadge status="error" />);
-      expect(screen.getByTestId("wallet-badge")).toHaveTextContent(
-        /wallet error/i
-      );
+      expect(screen.getByTestId("wallet-badge")).toHaveTextContent(/wallet error/i);
     });
 
     it("renders disconnected state", () => {

@@ -32,9 +32,7 @@ describe("platform_metrics_charts mapping", () => {
 
   it("mapBackendToPlatformMetrics correctly maps raw backend data", () => {
     const raw = {
-      metrics: [
-        { id: "escrows", label: "Escrows", value: 10, change: 2.5, unit: "count" },
-      ],
+      metrics: [{ id: "escrows", label: "Escrows", value: 10, change: 2.5, unit: "count" }],
       last_updated: "2026-01-01T00:00:00Z",
       period: "last_7_days",
     };

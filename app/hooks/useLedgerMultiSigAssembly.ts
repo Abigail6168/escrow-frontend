@@ -15,8 +15,7 @@ import {
  */
 export function useLedgerMultiSigAssembly(networkPassphrase: string) {
   const parseStructure = useCallback(
-    (transactionXdr: string) =>
-      parseLedgerTransactionStructure(transactionXdr, networkPassphrase),
+    (transactionXdr: string) => parseLedgerTransactionStructure(transactionXdr, networkPassphrase),
     [networkPassphrase]
   );
 
@@ -34,17 +33,12 @@ export function useLedgerMultiSigAssembly(networkPassphrase: string) {
 
   const splitParts = useCallback(
     (signedXdr: string, signerPublicKeys: string[]) =>
-      splitMultiSigTransactionParts(
-        signedXdr,
-        signerPublicKeys,
-        networkPassphrase
-      ),
+      splitMultiSigTransactionParts(signedXdr, signerPublicKeys, networkPassphrase),
     [networkPassphrase]
   );
 
   const validateParts = useCallback(
-    (parts: LedgerMultiSigPart[]) =>
-      validateMultiSigParts(parts, networkPassphrase),
+    (parts: LedgerMultiSigPart[]) => validateMultiSigParts(parts, networkPassphrase),
     [networkPassphrase]
   );
 

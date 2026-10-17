@@ -17,10 +17,7 @@ vi.mock("@/app/context/WalletContext", () => ({
 }));
 
 function stubFetch(body: unknown, ok = true) {
-  vi.stubGlobal(
-    "fetch",
-    vi.fn().mockResolvedValue({ ok, json: async () => body }),
-  );
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok, json: async () => body }));
 }
 
 describe("Create Job token selector (#4)", () => {

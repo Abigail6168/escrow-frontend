@@ -39,7 +39,10 @@ export function validateFeeBps(value: number): string | null {
 }
 
 /** First click opens the modal; only a confirm moves to "confirmed". */
-export function nextConfirmStep(step: ConfirmStep, event: "submit" | "confirm" | "cancel"): ConfirmStep {
+export function nextConfirmStep(
+  step: ConfirmStep,
+  event: "submit" | "confirm" | "cancel"
+): ConfirmStep {
   if (event === "cancel") return "idle";
   if (event === "submit") return step === "idle" ? "confirming" : step;
   return step === "confirming" ? "confirmed" : step;

@@ -64,9 +64,7 @@ describe("CountdownTimer", () => {
     });
 
     expect(screen.queryByTestId("countdown-remaining")).not.toBeInTheDocument();
-    expect(screen.getByTestId("countdown-eligible")).toHaveTextContent(
-      "Eligible for auto-release"
-    );
+    expect(screen.getByTestId("countdown-eligible")).toHaveTextContent("Eligible for auto-release");
     expect(onElapsed).toHaveBeenCalledTimes(1);
   });
 

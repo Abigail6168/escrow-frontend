@@ -41,7 +41,9 @@ vi.mock("@/app/context/WalletContext", () => ({
 describe("SignatureTimeoutAlert", () => {
   it("renders timeout details and logs a formatted stack trace", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    render(<SignatureTimeoutAlert isOpen error={new Error("signature failed")} transactionId="tx-1" />);
+    render(
+      <SignatureTimeoutAlert isOpen error={new Error("signature failed")} transactionId="tx-1" />
+    );
 
     expect(screen.getByTestId("signature-timeout-alert")).toBeInTheDocument();
     expect(screen.getByText("Signature request timed out")).toBeInTheDocument();
@@ -61,9 +63,10 @@ describe("SignatureTimeoutAlert", () => {
   it("shows the retry spinner and clears loader state when retry completes", async () => {
     let resolveRetry!: () => void;
     const onRetry = vi.fn(
-      () => new Promise<void>((resolve) => {
-        resolveRetry = resolve;
-      })
+      () =>
+        new Promise<void>((resolve) => {
+          resolveRetry = resolve;
+        })
     );
     render(
       <>
@@ -77,7 +80,9 @@ describe("SignatureTimeoutAlert", () => {
     expect(screen.getByTestId("signature-timeout-retry")).toBeDisabled();
 
     resolveRetry();
-    await waitFor(() => expect(screen.queryByTestId("wallet-loader-overlay")).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.queryByTestId("wallet-loader-overlay")).not.toBeInTheDocument()
+    );
     expect(onRetry).toHaveBeenCalledOnce();
   });
 
@@ -94,6 +99,8 @@ describe("SignatureTimeoutAlert", () => {
     act(() => startWalletOperation());
     expect(screen.getByTestId("wallet-loader-overlay")).toBeInTheDocument();
     act(() => endWalletOperation());
-    await waitFor(() => expect(screen.queryByTestId("wallet-loader-overlay")).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.queryByTestId("wallet-loader-overlay")).not.toBeInTheDocument()
+    );
   });
 });

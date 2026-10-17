@@ -18,12 +18,8 @@ describe("freighter_connector user rejection handling (#105)", () => {
 
   it("detects user rejected transaction exceptions", () => {
     expect(isFreighterUserRejected(new FreighterUserRejectedError())).toBe(true);
-    expect(isFreighterUserRejected(new Error("user rejected transaction"))).toBe(
-      true
-    );
-    expect(isFreighterUserRejected(new Error("User Declined the request"))).toBe(
-      true
-    );
+    expect(isFreighterUserRejected(new Error("user rejected transaction"))).toBe(true);
+    expect(isFreighterUserRejected(new Error("User Declined the request"))).toBe(true);
     expect(isFreighterUserRejected(new Error("request rejected"))).toBe(true);
     expect(isFreighterUserRejected(new Error("denied by the user"))).toBe(true);
     expect(isFreighterUserRejected(new Error("rpc timeout"))).toBe(false);

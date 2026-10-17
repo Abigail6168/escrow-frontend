@@ -1,9 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  isRabeUserRejected,
-  RabeUserRejectedError,
-  runRabeSign,
-} from "@/app/lib/rabe_connector";
+import { isRabeUserRejected, RabeUserRejectedError, runRabeSign } from "@/app/lib/rabe_connector";
 
 describe("rabe_connector user rejection handling (#135)", () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
@@ -26,15 +22,11 @@ describe("rabe_connector user rejection handling (#135)", () => {
     });
 
     it("returns true for 'user rejected transaction' message", () => {
-      expect(isRabeUserRejected(new Error("user rejected transaction"))).toBe(
-        true
-      );
+      expect(isRabeUserRejected(new Error("user rejected transaction"))).toBe(true);
     });
 
     it("returns true for 'User Declined the request' (case-insensitive)", () => {
-      expect(
-        isRabeUserRejected(new Error("User Declined the request"))
-      ).toBe(true);
+      expect(isRabeUserRejected(new Error("User Declined the request"))).toBe(true);
     });
 
     it("returns true for 'request rejected' message", () => {
@@ -101,9 +93,7 @@ describe("rabe_connector user rejection handling (#135)", () => {
     });
 
     it("is detected by isRabeUserRejected even with a custom message", () => {
-      expect(
-        isRabeUserRejected(new RabeUserRejectedError("something custom"))
-      ).toBe(true);
+      expect(isRabeUserRejected(new RabeUserRejectedError("something custom"))).toBe(true);
     });
   });
 
@@ -114,10 +104,7 @@ describe("rabe_connector user rejection handling (#135)", () => {
   describe("runRabeSign — happy path", () => {
     it("returns the signed payload when the user approves", async () => {
       const showToast = vi.fn();
-      const result = await runRabeSign(
-        async () => ({ hash: "abc123" }),
-        showToast
-      );
+      const result = await runRabeSign(async () => ({ hash: "abc123" }), showToast);
 
       expect(result).toEqual({ hash: "abc123" });
       expect(showToast).not.toHaveBeenCalled();

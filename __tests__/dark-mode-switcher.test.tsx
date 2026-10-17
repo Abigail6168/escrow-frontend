@@ -36,10 +36,7 @@ describe("DarkModeSwitcher — empty state", () => {
 
   it("empty state has role=region", () => {
     renderSwitcher();
-    expect(screen.getByTestId("dark-mode-switcher-empty-state")).toHaveAttribute(
-      "role",
-      "region"
-    );
+    expect(screen.getByTestId("dark-mode-switcher-empty-state")).toHaveAttribute("role", "region");
   });
 
   it("empty state has descriptive aria-label", () => {
@@ -79,10 +76,7 @@ describe("DarkModeSwitcher — loading state", () => {
 
   it("loading state has aria-label 'Loading theme'", () => {
     renderSwitcher({ loading: true });
-    expect(screen.getByTestId("dark-mode-switcher")).toHaveAttribute(
-      "aria-label",
-      "Loading theme"
-    );
+    expect(screen.getByTestId("dark-mode-switcher")).toHaveAttribute("aria-label", "Loading theme");
   });
 
   it("loading state shows loading text", () => {
@@ -220,10 +214,7 @@ describe("DarkModeSwitcher — interactions", () => {
 describe("DarkModeSwitcher — props", () => {
   it("accepts a custom ariaLabel", () => {
     renderSwitcher({ isDarkMode: true, ariaLabel: "Toggle theme" });
-    expect(screen.getByTestId("dark-mode-switcher")).toHaveAttribute(
-      "aria-label",
-      "Toggle theme"
-    );
+    expect(screen.getByTestId("dark-mode-switcher")).toHaveAttribute("aria-label", "Toggle theme");
   });
 
   it("accepts a custom id", () => {

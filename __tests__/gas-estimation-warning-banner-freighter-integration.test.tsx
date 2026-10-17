@@ -28,12 +28,7 @@ describe("FreighterConnector gas estimation warning banner integration (#110)", 
       },
     });
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={vi.fn()}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={vi.fn()} />);
 
     const banner = screen.getByTestId("gas-estimation-warning-banner");
     expect(banner).toBeInTheDocument();
@@ -51,12 +46,7 @@ describe("FreighterConnector gas estimation warning banner integration (#110)", 
       },
     });
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={vi.fn()}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={vi.fn()} />);
 
     const banner = screen.getByTestId("gas-estimation-warning-banner");
     expect(banner).toBeInTheDocument();
@@ -68,16 +58,9 @@ describe("FreighterConnector gas estimation warning banner integration (#110)", 
       gasWarning: null,
     });
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={vi.fn()}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={vi.fn()} />);
 
-    expect(
-      screen.queryByTestId("gas-estimation-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("gas-estimation-warning-banner")).not.toBeInTheDocument();
   });
 
   it("does not render GasEstimationWarningBanner when hasWarning is false", () => {
@@ -90,16 +73,9 @@ describe("FreighterConnector gas estimation warning banner integration (#110)", 
       },
     });
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={vi.fn()}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={vi.fn()} />);
 
-    expect(
-      screen.queryByTestId("gas-estimation-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("gas-estimation-warning-banner")).not.toBeInTheDocument();
   });
 
   it("renders both FreighterGasWarningBanner and GasEstimationWarningBanner simultaneously", () => {
@@ -113,22 +89,13 @@ describe("FreighterConnector gas estimation warning banner integration (#110)", 
       },
     });
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={vi.fn()}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={vi.fn()} />);
 
     // The context-based banner should be present
-    expect(
-      screen.getByTestId("gas-estimation-warning-banner")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("gas-estimation-warning-banner")).toBeInTheDocument();
 
     // The connector-level banner should not be present (no simulation run yet)
-    expect(
-      screen.queryByTestId("freighter-gas-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("freighter-gas-warning-banner")).not.toBeInTheDocument();
   });
 
   it("GasEstimationWarningBanner does not render a banner with empty warning message", () => {
@@ -141,15 +108,8 @@ describe("FreighterConnector gas estimation warning banner integration (#110)", 
       },
     });
 
-    render(
-      <FreighterConnector
-        simulate={vi.fn()}
-        signTransaction={vi.fn()}
-      />
-    );
+    render(<FreighterConnector simulate={vi.fn()} signTransaction={vi.fn()} />);
 
-    expect(
-      screen.queryByTestId("gas-estimation-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("gas-estimation-warning-banner")).not.toBeInTheDocument();
   });
 });

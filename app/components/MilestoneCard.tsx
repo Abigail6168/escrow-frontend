@@ -100,10 +100,7 @@ export function resolveDeadlineWarningThresholdMs(
     return overrideMs;
   }
   if (typeof windowMs === "number" && windowMs > 0) {
-    return Math.max(
-      DEADLINE_WARNING_FLOOR_MS,
-      Math.floor(windowMs * DEADLINE_WARNING_RATIO)
-    );
+    return Math.max(DEADLINE_WARNING_FLOOR_MS, Math.floor(windowMs * DEADLINE_WARNING_RATIO));
   }
   return DEADLINE_WARNING_FLOOR_MS;
 }
@@ -112,10 +109,7 @@ export function resolveDeadlineWarningThresholdMs(
  * Compute the release percentage (0–100) for PartiallyReleased milestones.
  * Returns null if either value is missing, zero, or non-numeric.
  */
-function getReleasePercent(
-  releasedAmount: string | undefined,
-  totalAmount: string
-): number | null {
+function getReleasePercent(releasedAmount: string | undefined, totalAmount: string): number | null {
   const released = Number(releasedAmount);
   const total = Number(totalAmount);
   if (!releasedAmount || isNaN(released) || isNaN(total) || total <= 0) {
@@ -180,8 +174,7 @@ export default function MilestoneCard({
   const [mountedAt] = useState<number>(() => Date.now());
   const [liveElapsed, setLiveElapsed] = useState(false);
   const isDeadlineElapsed =
-    liveElapsed ||
-    (typeof autoReleaseDeadline === "number" && autoReleaseDeadline <= mountedAt);
+    liveElapsed || (typeof autoReleaseDeadline === "number" && autoReleaseDeadline <= mountedAt);
 
   const warningThresholdMs = resolveDeadlineWarningThresholdMs(
     autoReleaseWindowMs,
@@ -234,14 +227,14 @@ export default function MilestoneCard({
   }
 
   if (
-  !milestone ||
-  milestone.index === undefined ||
-  milestone.amount === undefined ||
-  milestone.status === undefined ||
-  typeof milestone.index !== "number" ||
-  typeof milestone.amount !== "string" ||
-  typeof milestone.status !== "string"
-) {
+    !milestone ||
+    milestone.index === undefined ||
+    milestone.amount === undefined ||
+    milestone.status === undefined ||
+    typeof milestone.index !== "number" ||
+    typeof milestone.amount !== "string" ||
+    typeof milestone.status !== "string"
+  ) {
     return (
       <div
         data-testid="milestone-empty-state"
@@ -252,8 +245,8 @@ export default function MilestoneCard({
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-semibold text-text-secondary">No milestones available</p>
           <p className="text-xs text-text-muted">
-            This job has no milestone data yet. Add milestones in the create job form to
-            track delivery and releases.
+            This job has no milestone data yet. Add milestones in the create job form to track
+            delivery and releases.
           </p>
         </div>
         <span
@@ -380,34 +373,34 @@ export default function MilestoneCard({
               aria-label={`${milestoneLabel} status: ${milestone.status}`}
               data-testid="milestone-status-badge"
               className={`text-xs px-2 py-1 rounded-full border whitespace-nowrap transition-colors ${
-                statusColor[milestone.status] ?? "bg-surface-field text-text-muted border-border-subtle"
+                statusColor[milestone.status] ??
+                "bg-surface-field text-text-muted border-border-subtle"
               }`}
             >
               {isPartiallyReleased ? "Partially Released" : milestone.status}
             </span>
             {/* Auto-release countdown for delivered milestones */}
-            {milestone.status === "Delivered" &&
-              typeof autoReleaseDeadline === "number" && (
-                <>
-                  <CountdownTimer
-                    deadline={autoReleaseDeadline}
-                    onElapsed={() => setLiveElapsed(true)}
-                    warningThresholdMs={warningThresholdMs}
-                    onWarningThreshold={() => setLiveWarning(true)}
-                  />
-                  {isWithinDeadlineWarning && (
-                    <span
-                      role="status"
-                      aria-live="polite"
-                      data-testid="milestone-deadline-warning"
-                      aria-label={`${milestoneLabel} auto-release deadline approaching`}
-                      className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border bg-warning-soft/10 text-warning-soft border-warning-soft/30"
-                    >
-                      <span aria-hidden="true">!</span> Deadline approaching
-                    </span>
-                  )}
-                </>
-              )}
+            {milestone.status === "Delivered" && typeof autoReleaseDeadline === "number" && (
+              <>
+                <CountdownTimer
+                  deadline={autoReleaseDeadline}
+                  onElapsed={() => setLiveElapsed(true)}
+                  warningThresholdMs={warningThresholdMs}
+                  onWarningThreshold={() => setLiveWarning(true)}
+                />
+                {isWithinDeadlineWarning && (
+                  <span
+                    role="status"
+                    aria-live="polite"
+                    data-testid="milestone-deadline-warning"
+                    aria-label={`${milestoneLabel} auto-release deadline approaching`}
+                    className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border bg-warning-soft/10 text-warning-soft border-warning-soft/30"
+                  >
+                    <span aria-hidden="true">!</span> Deadline approaching
+                  </span>
+                )}
+              </>
+            )}
             {/* Status field error */}
             {errors?.status && (
               <p
@@ -457,18 +450,17 @@ export default function MilestoneCard({
             </button>
           )}
 
-          {(isClient || isFreelancer) &&
-            ["Pending", "Delivered"].includes(milestone.status) && (
-              <button
-                onClick={() => setIsDisputeModalOpen(true)}
-                disabled={!onDispute}
-                aria-disabled={!onDispute}
-                aria-label={`Dispute ${milestoneLabel}`}
-                className={`${baseBtn} bg-danger text-text-primary hover:bg-danger/80 active:scale-[0.97] focus-visible:ring-danger-soft disabled:hover:bg-danger disabled:active:scale-100`}
-              >
-                Dispute
-              </button>
-            )}
+          {(isClient || isFreelancer) && ["Pending", "Delivered"].includes(milestone.status) && (
+            <button
+              onClick={() => setIsDisputeModalOpen(true)}
+              disabled={!onDispute}
+              aria-disabled={!onDispute}
+              aria-label={`Dispute ${milestoneLabel}`}
+              className={`${baseBtn} bg-danger text-text-primary hover:bg-danger/80 active:scale-[0.97] focus-visible:ring-danger-soft disabled:hover:bg-danger disabled:active:scale-100`}
+            >
+              Dispute
+            </button>
+          )}
         </div>
       </div>
 
@@ -493,8 +485,7 @@ export default function MilestoneCard({
           {/* Remaining balance hint */}
           {milestone.releasedAmount && (
             <p className="text-xs text-text-muted">
-              Released so far:{" "}
-              <span className="font-mono">{milestone.releasedAmount} stroops</span>
+              Released so far: <span className="font-mono">{milestone.releasedAmount} stroops</span>
               {unreleasedBalance(milestone) !== null && (
                 <>
                   {" · "}Remaining:{" "}

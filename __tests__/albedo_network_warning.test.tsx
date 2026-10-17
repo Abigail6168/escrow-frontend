@@ -4,9 +4,7 @@ import AlbedoNetworkWarningBar from "@/app/components/AlbedoNetworkWarningBar";
 
 describe("AlbedoNetworkWarningBar (#126)", () => {
   it("renders a warning bar when wallet and app networks differ", () => {
-    render(
-      <AlbedoNetworkWarningBar walletNetwork="mainnet" appNetwork="testnet" />
-    );
+    render(<AlbedoNetworkWarningBar walletNetwork="mainnet" appNetwork="testnet" />);
 
     const bar = screen.getByTestId("albedo-network-warning-bar");
     expect(bar).toBeInTheDocument();
@@ -21,16 +19,12 @@ describe("AlbedoNetworkWarningBar (#126)", () => {
       <AlbedoNetworkWarningBar walletNetwork="testnet" appNetwork="testnet" />
     );
 
-    expect(
-      screen.queryByTestId("albedo-network-warning-bar")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("albedo-network-warning-bar")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 
   it("renders the inverse mismatch (testnet wallet on mainnet app)", () => {
-    render(
-      <AlbedoNetworkWarningBar walletNetwork="testnet" appNetwork="mainnet" />
-    );
+    render(<AlbedoNetworkWarningBar walletNetwork="testnet" appNetwork="mainnet" />);
 
     expect(screen.getByRole("alert")).toHaveTextContent(/Testnet/);
     expect(screen.getByRole("alert")).toHaveTextContent(/Mainnet/);
@@ -45,8 +39,6 @@ describe("AlbedoNetworkWarningBar (#126)", () => {
       />
     );
 
-    expect(screen.getByTestId("albedo-network-warning-bar")).toHaveClass(
-      "custom-class"
-    );
+    expect(screen.getByTestId("albedo-network-warning-bar")).toHaveClass("custom-class");
   });
 });

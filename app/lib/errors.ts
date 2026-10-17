@@ -18,8 +18,7 @@ interface WalletInfo {
 const WALLET_INFO: Record<string, WalletInfo> = {
   freighter: {
     label: "Freighter",
-    installUrl:
-      "https://www.freighter.app/",
+    installUrl: "https://www.freighter.app/",
   },
   albedo: {
     label: "Albedo",
@@ -47,9 +46,7 @@ export class WalletUnavailableError extends Error {
   constructor(walletId: string) {
     const info = WALLET_INFO[walletId.toLowerCase()];
     const label = info?.label ?? walletId;
-    super(
-      `${label} isn't available. Make sure the extension is installed and unlocked.`
-    );
+    super(`${label} isn't available. Make sure the extension is installed and unlocked.`);
     this.name = "WalletUnavailableError";
     this.walletId = walletId.toLowerCase();
   }

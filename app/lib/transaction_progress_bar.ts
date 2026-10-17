@@ -24,12 +24,12 @@ export const TRANSACTION_PROGRESS_TOKENS = {
   "text-secondary": "#d1d5db",
   "text-muted": "#9ca3af",
   "text-disabled": "#6b7280",
-  "accent": "#4f46e5",
+  accent: "#4f46e5",
   "accent-hover": "#6366f1",
   "accent-soft": "#818cf8",
-  "success": "#16a34a",
+  success: "#16a34a",
   "success-soft": "#4ade80",
-  "danger": "#991b1b",
+  danger: "#991b1b",
   "danger-soft": "#f87171",
   "warning-soft": "#facc15",
   "partial-soft": "#fdba74",
@@ -38,15 +38,19 @@ export const TRANSACTION_PROGRESS_TOKENS = {
 export type TransactionProgressToken = keyof typeof TRANSACTION_PROGRESS_TOKENS;
 
 export const PROGRESS_BAR_THEME_CLASSES = {
-  container: "bg-[var(--color-surface-card)] border-[var(--color-border-subtle)] text-[var(--color-text-primary)]",
-  stepDefault: "bg-[var(--color-surface-field)] border-[var(--color-border-strong)] text-[var(--color-text-muted)]",
-  stepActive: "bg-[var(--color-accent)] border-[var(--color-accent-soft)] text-white shadow-md shadow-indigo-500/20",
+  container:
+    "bg-[var(--color-surface-card)] border-[var(--color-border-subtle)] text-[var(--color-text-primary)]",
+  stepDefault:
+    "bg-[var(--color-surface-field)] border-[var(--color-border-strong)] text-[var(--color-text-muted)]",
+  stepActive:
+    "bg-[var(--color-accent)] border-[var(--color-accent-soft)] text-white shadow-md shadow-indigo-500/20",
   stepCompleted: "bg-[var(--color-success)] border-[var(--color-success-soft)] text-white",
   stepFailed: "bg-[var(--color-danger)] border-[var(--color-danger-soft)] text-white",
   connectorActive: "bg-[var(--color-accent)]",
   connectorCompleted: "bg-[var(--color-success)]",
   connectorDefault: "bg-[var(--color-border-subtle)]",
-  alertError: "bg-[var(--color-surface-field)] border-[var(--color-danger-soft)] text-[var(--color-danger-soft)]",
+  alertError:
+    "bg-[var(--color-surface-field)] border-[var(--color-danger-soft)] text-[var(--color-danger-soft)]",
   labelPrimary: "text-[var(--color-text-primary)]",
   labelSecondary: "text-[var(--color-text-secondary)]",
   labelMuted: "text-[var(--color-text-muted)]",
@@ -62,8 +66,7 @@ export const PROGRESS_BAR_ANIMATION_CLASSES = {
    * `animate-pulse`: it only dims to {@link PROGRESS_BAR_PULSE_MIN_OPACITY},
    * so the active step keeps AA contrast mid-pulse. Off under reduced motion.
    */
-  activePulse:
-    "animate-pulse-soft motion-reduce:animate-none transition-transform duration-300",
+  activePulse: "animate-pulse-soft motion-reduce:animate-none transition-transform duration-300",
   nodeTransition: "transition-all duration-300 ease-out transform active:scale-95",
   completedCheck: "animate-fade-in transition-all duration-300",
   errorAlert: "animate-shake transition-opacity duration-200",
@@ -128,9 +131,12 @@ export function getProgressBarLayout(width: number, forceOverlay = false): Progr
 }
 
 export const MOBILE_OVERLAY_WRAPPER_CLASSES = {
-  backdrop: "fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-3",
-  panel: "w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border border-gray-800 bg-[#111827] p-5 shadow-2xl animate-slide-in",
-  stickyBottom: "fixed bottom-0 left-0 right-0 z-40 border-t border-gray-800 bg-[#111827]/95 p-3 backdrop-blur shadow-lg",
+  backdrop:
+    "fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-3",
+  panel:
+    "w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border border-gray-800 bg-[#111827] p-5 shadow-2xl animate-slide-in",
+  stickyBottom:
+    "fixed bottom-0 left-0 right-0 z-40 border-t border-gray-800 bg-[#111827]/95 p-3 backdrop-blur shadow-lg",
 };
 
 // =============================================================
@@ -179,7 +185,9 @@ export function validateProgressBarConfig(
     });
 
     if (currentStepIndex < 0 || currentStepIndex >= steps.length) {
-      errors.push(`Current step index (${currentStepIndex}) is out of bounds [0, ${steps.length - 1}].`);
+      errors.push(
+        `Current step index (${currentStepIndex}) is out of bounds [0, ${steps.length - 1}].`
+      );
     }
   }
 
@@ -227,7 +235,8 @@ export const PROGRESS_BAR_PLACEHOLDER_CLASSES = {
     "flex flex-col items-center gap-2 rounded-xl border border-dashed px-4 py-8 text-center animate-fade-in motion-reduce:animate-none " +
     "bg-[var(--color-surface-card)] border-[var(--color-border-subtle)]",
   track: "flex items-center gap-2",
-  trackDot: "h-2.5 w-2.5 rounded-full bg-[var(--color-surface-field)] border border-[var(--color-border-subtle)]",
+  trackDot:
+    "h-2.5 w-2.5 rounded-full bg-[var(--color-surface-field)] border border-[var(--color-border-subtle)]",
   trackLine: "h-0.5 w-6 rounded-full bg-[var(--color-border-subtle)]",
   title: "text-sm font-semibold text-[var(--color-text-secondary)]",
   description: "max-w-sm text-xs text-[var(--color-text-muted)]",
@@ -321,15 +330,55 @@ export function resolveProgressBarColour(name: ContrastColour): string {
 /** Every foreground/background pairing the bar renders. */
 export const PROGRESS_BAR_CONTRAST_PAIRS: readonly ProgressBarContrastPair[] = [
   { usage: "active step number", foreground: "white", background: "accent", minRatio: 4.5 },
-  { usage: "pending step number", foreground: "text-muted", background: "surface-field", minRatio: 4.5 },
+  {
+    usage: "pending step number",
+    foreground: "text-muted",
+    background: "surface-field",
+    minRatio: 4.5,
+  },
   { usage: "completed step icon", foreground: "white", background: "success", minRatio: 3 },
   { usage: "failed step icon", foreground: "white", background: "danger", minRatio: 3 },
-  { usage: "active step label", foreground: "text-primary", background: "surface-card", minRatio: 4.5 },
-  { usage: "completed step label", foreground: "text-secondary", background: "surface-card", minRatio: 4.5 },
-  { usage: "pending step label / description", foreground: "text-muted", background: "surface-card", minRatio: 4.5 },
-  { usage: "validation alert", foreground: "danger-soft", background: "surface-field", minRatio: 4.5 },
-  { usage: "overlay close button", foreground: "text-muted", background: "surface-field", minRatio: 4.5 },
-  { usage: "placeholder title", foreground: "text-secondary", background: "surface-card", minRatio: 4.5 },
-  { usage: "placeholder description", foreground: "text-muted", background: "surface-card", minRatio: 4.5 },
+  {
+    usage: "active step label",
+    foreground: "text-primary",
+    background: "surface-card",
+    minRatio: 4.5,
+  },
+  {
+    usage: "completed step label",
+    foreground: "text-secondary",
+    background: "surface-card",
+    minRatio: 4.5,
+  },
+  {
+    usage: "pending step label / description",
+    foreground: "text-muted",
+    background: "surface-card",
+    minRatio: 4.5,
+  },
+  {
+    usage: "validation alert",
+    foreground: "danger-soft",
+    background: "surface-field",
+    minRatio: 4.5,
+  },
+  {
+    usage: "overlay close button",
+    foreground: "text-muted",
+    background: "surface-field",
+    minRatio: 4.5,
+  },
+  {
+    usage: "placeholder title",
+    foreground: "text-secondary",
+    background: "surface-card",
+    minRatio: 4.5,
+  },
+  {
+    usage: "placeholder description",
+    foreground: "text-muted",
+    background: "surface-card",
+    minRatio: 4.5,
+  },
   { usage: "focus ring", foreground: "accent-soft", background: "surface-card", minRatio: 3 },
 ];

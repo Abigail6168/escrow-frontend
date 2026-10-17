@@ -1,10 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import TransactionSigner from "@/app/components/TransactionSigner";
-import {
-  FREIGHTER_INSTALL_URL,
-  FREIGHTER_SETUP_INSTRUCTION,
-} from "@/app/lib/freighter_connector";
+import { FREIGHTER_INSTALL_URL, FREIGHTER_SETUP_INSTRUCTION } from "@/app/lib/freighter_connector";
 
 describe("TransactionSigner component (#216)", () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
@@ -26,20 +23,12 @@ describe("TransactionSigner component (#216)", () => {
 
   it("renders all trigger actions and initial idle status without errors", () => {
     render(
-      <TransactionSigner
-        walletNetwork="testnet"
-        appNetwork="testnet"
-        signTransaction={vi.fn()}
-      />
+      <TransactionSigner walletNetwork="testnet" appNetwork="testnet" signTransaction={vi.fn()} />
     );
 
     expect(screen.getByTestId("transaction-signer")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Sign Transaction" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("transaction-signer-status")
-    ).toHaveTextContent("idle");
+    expect(screen.getByRole("button", { name: "Sign Transaction" })).toBeInTheDocument();
+    expect(screen.getByTestId("transaction-signer-status")).toHaveTextContent("idle");
   });
 
   it("shows wallet setup instructions and blocks signing when Freighter is missing", () => {
@@ -54,9 +43,7 @@ describe("TransactionSigner component (#216)", () => {
       />
     );
 
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      FREIGHTER_SETUP_INSTRUCTION
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent(FREIGHTER_SETUP_INSTRUCTION);
     expect(screen.getByTestId("freighter-wallet-install-link")).toHaveAttribute(
       "href",
       FREIGHTER_INSTALL_URL
@@ -85,12 +72,8 @@ describe("TransactionSigner component (#216)", () => {
       />
     );
 
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      /Unable to verify wallet availability/i
-    );
-    expect(
-      screen.getByRole("button", { name: "Sign Transaction" })
-    ).toBeDisabled();
+    expect(screen.getByRole("alert")).toHaveTextContent(/Unable to verify wallet availability/i);
+    expect(screen.getByRole("button", { name: "Sign Transaction" })).toBeDisabled();
   });
 
   // ---------------------------------------------------------------------------
@@ -99,16 +82,10 @@ describe("TransactionSigner component (#216)", () => {
 
   it("shows no network warning when networks match", () => {
     render(
-      <TransactionSigner
-        walletNetwork="testnet"
-        appNetwork="testnet"
-        signTransaction={vi.fn()}
-      />
+      <TransactionSigner walletNetwork="testnet" appNetwork="testnet" signTransaction={vi.fn()} />
     );
 
-    expect(
-      screen.queryByTestId("transaction-signer-network-warning-bar")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("transaction-signer-network-warning-bar")).not.toBeInTheDocument();
   });
 
   // ---------------------------------------------------------------------------
@@ -117,11 +94,7 @@ describe("TransactionSigner component (#216)", () => {
 
   it("shows network warning when networks mismatch", () => {
     render(
-      <TransactionSigner
-        walletNetwork="mainnet"
-        appNetwork="testnet"
-        signTransaction={vi.fn()}
-      />
+      <TransactionSigner walletNetwork="mainnet" appNetwork="testnet" signTransaction={vi.fn()} />
     );
 
     const bar = screen.getByTestId("transaction-signer-network-warning-bar");
@@ -132,11 +105,7 @@ describe("TransactionSigner component (#216)", () => {
 
   it("disables the sign button when networks mismatch", () => {
     render(
-      <TransactionSigner
-        walletNetwork="mainnet"
-        appNetwork="testnet"
-        signTransaction={vi.fn()}
-      />
+      <TransactionSigner walletNetwork="mainnet" appNetwork="testnet" signTransaction={vi.fn()} />
     );
 
     const signButton = screen.getByRole("button", {
@@ -170,11 +139,7 @@ describe("TransactionSigner component (#216)", () => {
 
   it("shows the warning bar content when networks mismatch (console warn tested in unit tests)", () => {
     render(
-      <TransactionSigner
-        walletNetwork="mainnet"
-        appNetwork="testnet"
-        signTransaction={vi.fn()}
-      />
+      <TransactionSigner walletNetwork="mainnet" appNetwork="testnet" signTransaction={vi.fn()} />
     );
 
     const bar = screen.getByRole("alert");
@@ -200,14 +165,10 @@ describe("TransactionSigner component (#216)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Sign Transaction" }));
 
-    expect(
-      screen.getByTestId("transaction-signer-status")
-    ).toHaveTextContent("signing");
+    expect(screen.getByTestId("transaction-signer-status")).toHaveTextContent("signing");
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("transaction-signer-status")
-      ).toHaveTextContent("signed");
+      expect(screen.getByTestId("transaction-signer-status")).toHaveTextContent("signed");
     });
 
     expect(signTransaction).toHaveBeenCalledTimes(1);
@@ -219,9 +180,7 @@ describe("TransactionSigner component (#216)", () => {
   // ---------------------------------------------------------------------------
 
   it("transitions to rejected status when user declines", async () => {
-    const signTransaction = vi
-      .fn()
-      .mockRejectedValue(new Error("User rejected transaction"));
+    const signTransaction = vi.fn().mockRejectedValue(new Error("User rejected transaction"));
 
     render(
       <TransactionSigner
@@ -234,16 +193,12 @@ describe("TransactionSigner component (#216)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign Transaction" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("transaction-signer-status")
-      ).toHaveTextContent("rejected");
+      expect(screen.getByTestId("transaction-signer-status")).toHaveTextContent("rejected");
     });
   });
 
   it("also handles 'user declined' rejection phrasing", async () => {
-    const signTransaction = vi
-      .fn()
-      .mockRejectedValue(new Error("User declined the request"));
+    const signTransaction = vi.fn().mockRejectedValue(new Error("User declined the request"));
 
     render(
       <TransactionSigner
@@ -256,9 +211,7 @@ describe("TransactionSigner component (#216)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign Transaction" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("transaction-signer-status")
-      ).toHaveTextContent("rejected");
+      expect(screen.getByTestId("transaction-signer-status")).toHaveTextContent("rejected");
     });
   });
 
@@ -276,9 +229,7 @@ describe("TransactionSigner component (#216)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign Transaction" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("transaction-signer-status")
-      ).toHaveTextContent("rejected");
+      expect(screen.getByTestId("transaction-signer-status")).toHaveTextContent("rejected");
     });
   });
 
@@ -287,9 +238,7 @@ describe("TransactionSigner component (#216)", () => {
   // ---------------------------------------------------------------------------
 
   it("transitions to error status for unexpected signing failures", async () => {
-    const signTransaction = vi
-      .fn()
-      .mockRejectedValue(new Error("Extension crashed"));
+    const signTransaction = vi.fn().mockRejectedValue(new Error("Extension crashed"));
 
     render(
       <TransactionSigner
@@ -302,9 +251,7 @@ describe("TransactionSigner component (#216)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign Transaction" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("transaction-signer-status")
-      ).toHaveTextContent("error");
+      expect(screen.getByTestId("transaction-signer-status")).toHaveTextContent("error");
     });
 
     expect(warnSpy).toHaveBeenCalled();
@@ -319,18 +266,12 @@ describe("TransactionSigner component (#216)", () => {
 
   it("renders children inside the component", () => {
     render(
-      <TransactionSigner
-        walletNetwork="testnet"
-        appNetwork="testnet"
-        signTransaction={vi.fn()}
-      >
+      <TransactionSigner walletNetwork="testnet" appNetwork="testnet" signTransaction={vi.fn()}>
         <div data-testid="child-content">Custom content</div>
       </TransactionSigner>
     );
 
     expect(screen.getByTestId("child-content")).toBeInTheDocument();
-    expect(screen.getByTestId("child-content")).toHaveTextContent(
-      "Custom content"
-    );
+    expect(screen.getByTestId("child-content")).toHaveTextContent("Custom content");
   });
 });

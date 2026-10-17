@@ -162,7 +162,7 @@ describe("wallet_disconnect_handler withWalletDisconnectLoader (#238)", () => {
     await expect(
       withWalletDisconnectLoader(async () => {
         throw new Error("disconnect blew up");
-      }),
+      })
     ).rejects.toThrow("disconnect blew up");
 
     expect(isWalletDisconnectLoading()).toBe(false);
@@ -203,14 +203,18 @@ describe("wallet_disconnect_handler disconnect spinner integration (#238)", () =
       async () => {
         loadingDuringDisconnect = isWalletDisconnectLoading();
       },
-      () => true,
+      () => true
     );
 
     expect(loadingDuringDisconnect).toBe(true);
   });
 
   it("hides the spinner once the disconnect resolves", async () => {
-    await disconnectWalletWithCheck("freighter", async () => {}, () => true);
+    await disconnectWalletWithCheck(
+      "freighter",
+      async () => {},
+      () => true
+    );
     expect(isWalletDisconnectLoading()).toBe(false);
   });
 
@@ -220,7 +224,7 @@ describe("wallet_disconnect_handler disconnect spinner integration (#238)", () =
       async () => {
         throw new Error("extension crashed");
       },
-      () => true,
+      () => true
     );
 
     expect(result.success).toBe(false);
@@ -231,7 +235,7 @@ describe("wallet_disconnect_handler disconnect spinner integration (#238)", () =
     const result = await disconnectWalletWithCheck(
       "freighter",
       async () => {},
-      () => false,
+      () => false
     );
 
     expect(result.fallbackInstructions).not.toBeNull();
@@ -243,7 +247,11 @@ describe("wallet_disconnect_handler disconnect spinner integration (#238)", () =
     const unsubscribe = subscribeToWalletDisconnectLoading(listener);
     listener.mockClear();
 
-    await disconnectWalletWithCheck("freighter", async () => {}, () => true);
+    await disconnectWalletWithCheck(
+      "freighter",
+      async () => {},
+      () => true
+    );
 
     expect(listener.mock.calls.map((c) => c[0])).toEqual([true, false]);
     unsubscribe();
@@ -329,7 +337,7 @@ describe("WalletDisconnectLoaderOverlay (#238)", () => {
       call = disconnectWalletWithCheck(
         "freighter",
         () => pending,
-        () => true,
+        () => true
       );
     });
 

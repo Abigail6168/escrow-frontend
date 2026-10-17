@@ -13,7 +13,7 @@ export const FEE_CONFIG_UNAUTHORIZED_WARNING =
 /** Compare the connected wallet against the admin address. */
 export function getFeeConfigAccess(
   wallet: string | null | undefined,
-  adminAddress: string | null | undefined,
+  adminAddress: string | null | undefined
 ): FeeConfigAccess {
   if (!wallet) {
     return { allowed: false, reason: "no_wallet", warning: "Connect a wallet to continue." };
@@ -28,7 +28,7 @@ export function getFeeConfigAccess(
 export function guardFeeConfig<T, F>(
   access: FeeConfigAccess,
   content: () => T,
-  fallback: (warning: string) => F,
+  fallback: (warning: string) => F
 ): T | F {
   return access.allowed ? content() : fallback(access.warning);
 }

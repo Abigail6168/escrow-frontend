@@ -13,11 +13,7 @@ import {
   submitContractTransaction,
   TxPhase,
 } from "@/app/lib/transactions";
-import {
-  fetchWhitelistedTokens,
-  tokenLabel,
-  WhitelistToken,
-} from "@/app/lib/whitelist";
+import { fetchWhitelistedTokens, tokenLabel, WhitelistToken } from "@/app/lib/whitelist";
 import { formatTxError } from "@/app/lib/errors";
 
 type WizardSection = "details" | "milestones" | "review";
@@ -109,9 +105,7 @@ export default function CreateJob() {
 
   const addAcceptedAsset = () => setAcceptedAssets([...acceptedAssets, ""]);
   const removeAcceptedAsset = (index: number) =>
-    setAcceptedAssets(
-      acceptedAssets.filter((_, currentIndex) => currentIndex !== index),
-    );
+    setAcceptedAssets(acceptedAssets.filter((_, currentIndex) => currentIndex !== index));
   const updateAcceptedAsset = (index: number, value: string) => {
     const updated = [...acceptedAssets];
     updated[index] = value;
@@ -120,9 +114,7 @@ export default function CreateJob() {
 
   const addRequirement = () => setRequirements([...requirements, ""]);
   const removeRequirement = (index: number) =>
-    setRequirements(
-      requirements.filter((_, currentIndex) => currentIndex !== index),
-    );
+    setRequirements(requirements.filter((_, currentIndex) => currentIndex !== index));
   const updateRequirement = (index: number, value: string) => {
     const updated = [...requirements];
     updated[index] = value;
@@ -133,8 +125,7 @@ export default function CreateJob() {
     if (isMilestoneCapReached(milestones.length)) return;
     setMilestones([...milestones, { amount: "" }]);
   };
-  const removeMilestone = (i: number) =>
-    setMilestones(milestones.filter((_, idx) => idx !== i));
+  const removeMilestone = (i: number) => setMilestones(milestones.filter((_, idx) => idx !== i));
   const updateMilestone = (i: number, val: string) => {
     const updated = [...milestones];
     updated[i].amount = val;
@@ -142,26 +133,23 @@ export default function CreateJob() {
   };
 
   const normalizedMilestones = milestones.filter(
-    (m): m is { amount: string } => !!m && typeof m.amount === "string",
+    (m): m is { amount: string } => !!m && typeof m.amount === "string"
   );
-  const normalizedAssets = acceptedAssets.filter(
-    (asset) => asset.trim().length > 0,
-  );
+  const normalizedAssets = acceptedAssets.filter((asset) => asset.trim().length > 0);
   const normalizedRequirements = requirements.filter(
-    (requirement) => requirement.trim().length > 0,
+    (requirement) => requirement.trim().length > 0
   );
   const hasNoMilestones = normalizedMilestones.length === 0;
-  const hasPartialMilestones = normalizedMilestones.some(
-    (m) => m.amount.trim().length === 0
-  );
-  const hasInvalidMilestones = normalizedMilestones.some(m => {
+  const hasPartialMilestones = normalizedMilestones.some((m) => m.amount.trim().length === 0);
+  const hasInvalidMilestones = normalizedMilestones.some((m) => {
     const trimmed = m.amount.trim();
     if (trimmed.length === 0) return false;
     return validateMilestoneAmount(trimmed) !== null;
   });
 
   const hasValidationErrors = !!freelancerError || !!arbiterError || !!tokenError;
-  const isSubmitDisabled = loading || !address || hasNoMilestones || hasPartialMilestones || hasValidationErrors;
+  const isSubmitDisabled =
+    loading || !address || hasNoMilestones || hasPartialMilestones || hasValidationErrors;
 
   const validateFreelancer = (val: string) => {
     if (val && !/^G[A-Z2-7]{55}$/.test(val)) {
@@ -218,7 +206,13 @@ export default function CreateJob() {
   };
 
   // Wizard tab sections config
-  const wizardSections: { id: WizardSection; label: string; helper: string; panelId: string; tabId: string }[] = [
+  const wizardSections: {
+    id: WizardSection;
+    label: string;
+    helper: string;
+    panelId: string;
+    tabId: string;
+  }[] = [
     {
       id: "details",
       label: "1. Details",
@@ -246,10 +240,7 @@ export default function CreateJob() {
    * Keyboard handler for the tablist — implements ARIA tab pattern:
    * ArrowLeft/ArrowRight cycle through tabs and move focus.
    */
-  const handleTabKeyDown = (
-    e: React.KeyboardEvent<HTMLButtonElement>,
-    currentIndex: number
-  ) => {
+  const handleTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
     const count = wizardSections.length;
     let nextIndex: number | null = null;
     if (e.key === "ArrowRight") nextIndex = (currentIndex + 1) % count;
@@ -295,7 +286,12 @@ export default function CreateJob() {
     }
     validateFreelancer(freelancer);
     validateArbiter(arbiter);
-    if (!freelancer || !arbiter || !/^G[A-Z2-7]{55}$/.test(freelancer) || !/^G[A-Z2-7]{55}$/.test(arbiter)) {
+    if (
+      !freelancer ||
+      !arbiter ||
+      !/^G[A-Z2-7]{55}$/.test(freelancer) ||
+      !/^G[A-Z2-7]{55}$/.test(arbiter)
+    ) {
       if (!freelancer) setFreelancerError("This field is required.");
       if (!arbiter) setArbiterError("This field is required.");
       setError("Please fix the address fields before creating a job.");
@@ -314,8 +310,7 @@ export default function CreateJob() {
         }
         return BigInt(trimmed);
       });
-      const autoReleaseSeconds =
-        BigInt(autoReleaseDays) * BigInt(24) * BigInt(60) * BigInt(60);
+      const autoReleaseSeconds = BigInt(autoReleaseDays) * BigInt(24) * BigInt(60) * BigInt(60);
 
       const txHash = await submitContractTransaction({
         method: "initialize",
@@ -401,8 +396,8 @@ export default function CreateJob() {
             Create New Job
           </h1>
           <p className="mb-6 text-sm leading-6 text-text-muted">
-            Configure counterparties, funding structure, and delivery
-            expectations before publishing the escrow job.
+            Configure counterparties, funding structure, and delivery expectations before publishing
+            the escrow job.
           </p>
 
           {/*
@@ -438,9 +433,7 @@ export default function CreateJob() {
                   }`}
                 >
                   <span>{section.label}</span>
-                  <span className="text-xs font-normal text-text-muted">
-                    {section.helper}
-                  </span>
+                  <span className="text-xs font-normal text-text-muted">{section.helper}</span>
                 </button>
               );
             })}
@@ -491,9 +484,7 @@ export default function CreateJob() {
             >
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-semibold text-text-primary">
-                    Job details
-                  </h2>
+                  <h2 className="text-base font-semibold text-text-primary">Job details</h2>
                   <p className="text-xs text-text-muted">
                     Specify the counterparties and core escrow timing.
                   </p>
@@ -525,7 +516,7 @@ export default function CreateJob() {
                     autoComplete="off"
                     spellCheck={false}
                     aria-required="true"
-                    className={`${inputClassName} ${freelancerError ? '!border-danger' : ''}`}
+                    className={`${inputClassName} ${freelancerError ? "!border-danger" : ""}`}
                     value={freelancer}
                     onChange={(e) => {
                       setFreelancer(e.target.value);
@@ -537,15 +528,14 @@ export default function CreateJob() {
                     required
                     disabled={loading}
                   />
-                  {freelancerError && <p className="text-sm text-danger-soft mt-1">{freelancerError}</p>}
+                  {freelancerError && (
+                    <p className="text-sm text-danger-soft mt-1">{freelancerError}</p>
+                  )}
                 </div>
 
                 {/* Arbiter Address */}
                 <div>
-                  <label
-                    htmlFor="arbiter-address"
-                    className="block text-sm text-text-muted mb-1"
-                  >
+                  <label htmlFor="arbiter-address" className="block text-sm text-text-muted mb-1">
                     Arbiter Address
                   </label>
                   <input
@@ -554,7 +544,7 @@ export default function CreateJob() {
                     autoComplete="off"
                     spellCheck={false}
                     aria-required="true"
-                    className={`${inputClassName} ${arbiterError ? '!border-danger' : ''}`}
+                    className={`${inputClassName} ${arbiterError ? "!border-danger" : ""}`}
                     value={arbiter}
                     onChange={(e) => {
                       setArbiter(e.target.value);
@@ -634,8 +624,8 @@ export default function CreateJob() {
                       className="mt-1 text-sm text-text-muted"
                       aria-live="polite"
                     >
-                      No accepted tokens are configured for this contract yet.
-                      Ask an admin to whitelist a token before creating a job.
+                      No accepted tokens are configured for this contract yet. Ask an admin to
+                      whitelist a token before creating a job.
                     </p>
                   ) : (
                     <select
@@ -660,10 +650,7 @@ export default function CreateJob() {
 
                 {/* Response Deadline */}
                 <div>
-                  <label
-                    htmlFor="response-deadline"
-                    className="block text-sm text-text-muted mb-1"
-                  >
+                  <label htmlFor="response-deadline" className="block text-sm text-text-muted mb-1">
                     Response Deadline (days)
                   </label>
                   <div
@@ -700,9 +687,7 @@ export default function CreateJob() {
                     required
                     disabled={loading}
                     aria-invalid={!!deadlineError}
-                    aria-describedby={
-                      deadlineError ? "deadline-error" : "deadline-hint"
-                    }
+                    aria-describedby={deadlineError ? "deadline-error" : "deadline-hint"}
                   />
                   {deadlineError ? (
                     <p
@@ -767,10 +752,7 @@ export default function CreateJob() {
                      * This <span> labels the group visually; the list inputs
                      * each carry their own aria-label so no htmlFor is needed.
                      */}
-                    <span
-                      id="accepted-assets-label"
-                      className="block text-sm text-text-muted"
-                    >
+                    <span id="accepted-assets-label" className="block text-sm text-text-muted">
                       Accepted assets
                     </span>
                     <button
@@ -798,17 +780,12 @@ export default function CreateJob() {
                       aria-labelledby="accepted-assets-label"
                     >
                       {acceptedAssets.map((asset, index) => (
-                        <div
-                          key={`asset-${index}`}
-                          className="flex items-center gap-2"
-                        >
+                        <div key={`asset-${index}`} className="flex items-center gap-2">
                           <input
                             id={`asset-input-${index}`}
                             className={`${inputClassName} flex-1 min-w-0`}
                             value={asset}
-                            onChange={(e) =>
-                              updateAcceptedAsset(index, e.target.value)
-                            }
+                            onChange={(e) => updateAcceptedAsset(index, e.target.value)}
                             onFocus={() => setActiveSection("milestones")}
                             placeholder={`Accepted asset ${index + 1}`}
                             aria-label={`Accepted asset ${index + 1}`}
@@ -832,10 +809,7 @@ export default function CreateJob() {
                 {/* Requirements */}
                 <div>
                   <div className="mb-2 flex items-center justify-between gap-3">
-                    <span
-                      id="requirements-label"
-                      className="block text-sm text-text-muted"
-                    >
+                    <span id="requirements-label" className="block text-sm text-text-muted">
                       Requirements
                     </span>
                     <button
@@ -863,17 +837,12 @@ export default function CreateJob() {
                       aria-labelledby="requirements-label"
                     >
                       {requirements.map((requirement, index) => (
-                        <div
-                          key={`requirement-${index}`}
-                          className="flex items-center gap-2"
-                        >
+                        <div key={`requirement-${index}`} className="flex items-center gap-2">
                           <input
                             id={`requirement-input-${index}`}
                             className={`${inputClassName} flex-1 min-w-0`}
                             value={requirement}
-                            onChange={(e) =>
-                              updateRequirement(index, e.target.value)
-                            }
+                            onChange={(e) => updateRequirement(index, e.target.value)}
                             onFocus={() => setActiveSection("milestones")}
                             placeholder={`Requirement ${index + 1}`}
                             aria-label={`Requirement ${index + 1}`}
@@ -895,7 +864,11 @@ export default function CreateJob() {
                 </div>
 
                 {/* Milestones */}
-                <fieldset aria-describedby={hasPartialMilestones && !hasNoMilestones ? "milestone-warning" : undefined}>
+                <fieldset
+                  aria-describedby={
+                    hasPartialMilestones && !hasNoMilestones ? "milestone-warning" : undefined
+                  }
+                >
                   <legend className="block text-sm text-text-muted mb-2">Milestones</legend>
                   <div className="mb-2 flex items-center justify-end">
                     <button
@@ -908,10 +881,7 @@ export default function CreateJob() {
                       + Add Milestone
                     </button>
                   </div>
-                  <p
-                    className="mb-2 text-xs text-text-muted"
-                    data-testid="milestone-limit-hint"
-                  >
+                  <p className="mb-2 text-xs text-text-muted" data-testid="milestone-limit-hint">
                     {milestoneLimitHint()}
                   </p>
                   {hasNoMilestones ? (
@@ -980,7 +950,9 @@ export default function CreateJob() {
                     aria-live="polite"
                     aria-atomic="true"
                     className={`mt-2 text-xs text-warning-soft transition-opacity duration-150 ${
-                      hasPartialMilestones && !hasNoMilestones ? "opacity-100" : "opacity-0 pointer-events-none"
+                      hasPartialMilestones && !hasNoMilestones
+                        ? "opacity-100"
+                        : "opacity-0 pointer-events-none"
                     }`}
                   >
                     {hasPartialMilestones && !hasNoMilestones
@@ -1002,12 +974,9 @@ export default function CreateJob() {
             >
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-semibold text-text-primary">
-                    Review
-                  </h2>
+                  <h2 className="text-base font-semibold text-text-primary">Review</h2>
                   <p className="text-xs text-text-muted">
-                    Confirm the job has enough structure before sending the
-                    transaction.
+                    Confirm the job has enough structure before sending the transaction.
                   </p>
                 </div>
                 <button
@@ -1028,9 +997,7 @@ export default function CreateJob() {
               >
                 <div className="rounded-xl border border-border-subtle bg-surface-field px-4 py-3">
                   <dt className="text-text-muted">Accepted assets</dt>
-                  <dd className="mt-1 font-medium text-text-primary">
-                    {normalizedAssets.length}
-                  </dd>
+                  <dd className="mt-1 font-medium text-text-primary">{normalizedAssets.length}</dd>
                 </div>
                 <div className="rounded-xl border border-border-subtle bg-surface-field px-4 py-3">
                   <dt className="text-text-muted">Requirements</dt>

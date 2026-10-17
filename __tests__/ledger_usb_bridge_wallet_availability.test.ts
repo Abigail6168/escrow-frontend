@@ -50,15 +50,18 @@ describe("ledger_usb_bridge transport availability detection", () => {
   });
 
   it("honours an injected detector callback", () => {
-    expect(
-      detectLedgerTransport(() => ({ hasWebUsb: true, hasWebHid: false }))
-    ).toEqual({ hasWebUsb: true, hasWebHid: false });
-    expect(
-      detectLedgerTransport(() => ({ hasWebUsb: false, hasWebHid: true }))
-    ).toEqual({ hasWebUsb: false, hasWebHid: true });
-    expect(
-      detectLedgerTransport(() => ({ hasWebUsb: false, hasWebHid: false }))
-    ).toEqual({ hasWebUsb: false, hasWebHid: false });
+    expect(detectLedgerTransport(() => ({ hasWebUsb: true, hasWebHid: false }))).toEqual({
+      hasWebUsb: true,
+      hasWebHid: false,
+    });
+    expect(detectLedgerTransport(() => ({ hasWebUsb: false, hasWebHid: true }))).toEqual({
+      hasWebUsb: false,
+      hasWebHid: true,
+    });
+    expect(detectLedgerTransport(() => ({ hasWebUsb: false, hasWebHid: false }))).toEqual({
+      hasWebUsb: false,
+      hasWebHid: false,
+    });
   });
 
   it("classifyTransportType returns the correct combined label", () => {
@@ -126,9 +129,7 @@ describe("ledger_usb_bridge transport availability detection", () => {
     expect(state.status).toBe("error");
     expect(state.transportType).toBe("none");
     expect(state.setupInstruction).toBe(LEDGER_SETUP_INSTRUCTION);
-    expect(state.warningMessage).toMatch(
-      /Unable to verify Ledger transport support/i
-    );
+    expect(state.warningMessage).toMatch(/Unable to verify Ledger transport support/i);
     expect(warnSpy).toHaveBeenCalled();
     const logged = String(warnSpy.mock.calls[0][0]);
     expect(logged).toContain("[ledger_usb_bridge]");
@@ -170,10 +171,7 @@ describe("warnOnMissingLedgerTransport", () => {
     }));
 
     expect(state.available).toBe(false);
-    expect(showToast).toHaveBeenCalledWith(
-      LEDGER_SETUP_INSTRUCTION,
-      "warning"
-    );
+    expect(showToast).toHaveBeenCalledWith(LEDGER_SETUP_INSTRUCTION, "warning");
   });
 
   it("does not toast when transport APIs are available (WebUSB only)", () => {

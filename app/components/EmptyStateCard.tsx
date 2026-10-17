@@ -60,10 +60,7 @@ export default function EmptyStateCard({
         {title}
       </p>
 
-      <p
-        data-testid="empty-state-description"
-        className="text-gray-400 text-sm max-w-sm"
-      >
+      <p data-testid="empty-state-description" className="text-gray-400 text-sm max-w-sm">
         {description}
       </p>
 

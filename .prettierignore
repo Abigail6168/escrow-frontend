@@ -1,0 +1,12 @@
+# Build outputs
+out
+.next
+coverage
+
+# Package manager
+node_modules
+package-lock.json
+
+# Auto-generated
+tsconfig.tsbuildinfo
+next-env.d.ts

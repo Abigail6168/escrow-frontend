@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  checkFreighterNetworkMatch,
-  type FreighterNetwork,
-} from "@/app/lib/freighter_connector";
+import { checkFreighterNetworkMatch, type FreighterNetwork } from "@/app/lib/freighter_connector";
 
 interface Props {
   walletNetwork: FreighterNetwork;

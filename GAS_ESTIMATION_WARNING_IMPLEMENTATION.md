@@ -13,6 +13,7 @@ Added gas estimation warning support with the following new exports:
 #### Types
 
 - **`NetworkSyncSimulationResult`**: Interface for simulation results from Soroban RPC
+
   - `fee`: Estimated fee in stroops (1 XLM = 10_000_000 stroops)
   - `error`: Optional error string from simulation response
   - `simulationError`: Raw simulation error object when RPC reports failure
@@ -30,11 +31,13 @@ Added gas estimation warning support with the following new exports:
 #### Functions
 
 - **`checkSimulationFeeWarning(result: NetworkSyncSimulationResult): NetworkSyncGasWarningState`**
+
   - Inspects simulation results for warnings
   - Prioritizes simulation errors over high-fee warnings
   - Returns comprehensive warning state
 
 - **`warnOnSimulationFee(result: NetworkSyncSimulationResult, options?: { txId?: string }): NetworkSyncGasWarningState`**
+
   - Logs warnings to console when detected
   - Includes transaction ID in logs when provided
   - Returns warning state for caller consumption
@@ -47,6 +50,7 @@ Added gas estimation warning support with the following new exports:
 ### 2. Warning Banner Component (`app/components/NetworkSyncGasWarningBanner.tsx`)
 
 New client-side React component that:
+
 - Accepts `simulation` prop (nullable `NetworkSyncSimulationResult`)
 - Renders warning banner when simulation contains errors or high fees
 - Uses consistent warning theme with other banner components
@@ -58,6 +62,7 @@ New client-side React component that:
 #### Unit Tests (`__tests__/network_sync_checker_gas.test.ts`)
 
 Comprehensive tests covering:
+
 - Normal fee scenarios (no warning)
 - High-fee detection and messaging
 - Simulation error string handling
@@ -69,6 +74,7 @@ Comprehensive tests covering:
 #### Component Tests (`__tests__/NetworkSyncGasWarningBanner.test.tsx`)
 
 Component behavior tests covering:
+
 - Null simulation handling
 - Normal fee rendering (no banner)
 - High-fee warning display

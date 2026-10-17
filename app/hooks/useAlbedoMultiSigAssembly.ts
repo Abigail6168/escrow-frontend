@@ -26,8 +26,7 @@ import {
  */
 export function useAlbedoMultiSigAssembly(networkPassphrase: string) {
   const parseStructure = useCallback(
-    (transactionXdr: string) =>
-      parseAlbedoTransactionStructure(transactionXdr, networkPassphrase),
+    (transactionXdr: string) => parseAlbedoTransactionStructure(transactionXdr, networkPassphrase),
     [networkPassphrase]
   );
 
@@ -41,10 +40,7 @@ export function useAlbedoMultiSigAssembly(networkPassphrase: string) {
         throw new AlbedoTransactionAssemblyError("missing transaction XDR");
       }
       try {
-        const tx = TransactionBuilder.fromXDR(
-          transactionXdr.trim(),
-          networkPassphrase
-        );
+        const tx = TransactionBuilder.fromXDR(transactionXdr.trim(), networkPassphrase);
         return tx;
       } catch (err) {
         if (err instanceof AlbedoTransactionAssemblyError) throw err;
@@ -66,9 +62,7 @@ export function useAlbedoMultiSigAssembly(networkPassphrase: string) {
         return transaction.toXDR();
       } catch (err) {
         throw new AlbedoTransactionAssemblyError(
-          err instanceof Error
-            ? err.message
-            : "failed to serialize transaction"
+          err instanceof Error ? err.message : "failed to serialize transaction"
         );
       }
     },
@@ -81,10 +75,7 @@ export function useAlbedoMultiSigAssembly(networkPassphrase: string) {
    * signatures independently.
    */
   const signTransaction = useCallback(
-    async (
-      transactionXdr: string,
-      signFn: (xdr: string) => Promise<string>
-    ): Promise<string> => {
+    async (transactionXdr: string, signFn: (xdr: string) => Promise<string>): Promise<string> => {
       const trimmed = transactionXdr.trim();
       parseStructure(trimmed);
       return signFn(trimmed);
@@ -100,27 +91,18 @@ export function useAlbedoMultiSigAssembly(networkPassphrase: string) {
 
   const planAssembly = useCallback(
     (baseXdr: string, signerPublicKeys: string[]) =>
-      createAlbedoMultiSigAssemblyPlan(
-        baseXdr,
-        signerPublicKeys,
-        networkPassphrase
-      ),
+      createAlbedoMultiSigAssemblyPlan(baseXdr, signerPublicKeys, networkPassphrase),
     [networkPassphrase]
   );
 
   const splitParts = useCallback(
     (signedXdr: string, signerPublicKeys: string[]) =>
-      splitAlbedoMultiSigTransactionParts(
-        signedXdr,
-        signerPublicKeys,
-        networkPassphrase
-      ),
+      splitAlbedoMultiSigTransactionParts(signedXdr, signerPublicKeys, networkPassphrase),
     [networkPassphrase]
   );
 
   const validateParts = useCallback(
-    (parts: AlbedoMultiSigPart[]) =>
-      validateAlbedoMultiSigParts(parts, networkPassphrase),
+    (parts: AlbedoMultiSigPart[]) => validateAlbedoMultiSigParts(parts, networkPassphrase),
     [networkPassphrase]
   );
 

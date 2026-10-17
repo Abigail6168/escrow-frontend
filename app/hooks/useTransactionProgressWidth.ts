@@ -28,11 +28,7 @@ function getServerWidthSnapshot(): number {
  * snapshot is a number primitive, so it compares by value and cannot loop.
  */
 export function useTransactionProgressWidth(): number {
-  return useSyncExternalStore(
-    subscribeToViewport,
-    getWidthSnapshot,
-    getServerWidthSnapshot,
-  );
+  return useSyncExternalStore(subscribeToViewport, getWidthSnapshot, getServerWidthSnapshot);
 }
 
 export default useTransactionProgressWidth;

@@ -2,10 +2,6 @@
 
 import { FormEvent, useMemo, useState } from "react";
 
-
-
-
-
 export type CreateJobFormValues = {
   title: string;
   description: string;
@@ -16,7 +12,7 @@ export type CreateJobFormValues = {
 
 export type CreateJobFormValidationErrors = Partial<Record<keyof CreateJobFormValues, string>>;
 
-export type CreateJobFormProps = {  
+export type CreateJobFormProps = {
   /** Initial wizard step (useful for Storybook) */
   initialStep?: 1 | 2;
   /** Simulate validation errors */
@@ -34,7 +30,12 @@ export type CreateJobFormProps = {
 type WizardStep = 1 | 2;
 
 type WizardState =
-  | { mode: "form"; step: WizardStep; values: CreateJobFormValues; errors: CreateJobFormValidationErrors }
+  | {
+      mode: "form";
+      step: WizardStep;
+      values: CreateJobFormValues;
+      errors: CreateJobFormValidationErrors;
+    }
   | { mode: "success"; values: CreateJobFormValues };
 
 const defaultValues: CreateJobFormValues = {
@@ -62,7 +63,8 @@ function validate(values: CreateJobFormValues): CreateJobFormValidationErrors {
   if (!values.escrowDeadlineDays.trim()) errors.escrowDeadlineDays = "Escrow deadline is required";
   else {
     const n = Number(values.escrowDeadlineDays);
-    if (!Number.isFinite(n) || n <= 0) errors.escrowDeadlineDays = "Escrow deadline must be a positive number";
+    if (!Number.isFinite(n) || n <= 0)
+      errors.escrowDeadlineDays = "Escrow deadline must be a positive number";
   }
 
   return errors;
@@ -115,11 +117,19 @@ export default function CreateJobForm({
     if (state.mode !== "form") return;
     const errors = validate(state.values);
     const stepErrors: CreateJobFormValidationErrors =
-      state.step === 1 ? { title: errors.title, description: errors.description } : { budget: errors.budget, escrowAgent: errors.escrowAgent, escrowDeadlineDays: errors.escrowDeadlineDays };
+      state.step === 1
+        ? { title: errors.title, description: errors.description }
+        : {
+            budget: errors.budget,
+            escrowAgent: errors.escrowAgent,
+            escrowDeadlineDays: errors.escrowDeadlineDays,
+          };
 
     const hasErrors = Object.values(stepErrors).some(Boolean);
     if (hasErrors) {
-      setState((prev) => (prev.mode === "form" ? { ...prev, errors: { ...prev.errors, ...stepErrors } } : prev));
+      setState((prev) =>
+        prev.mode === "form" ? { ...prev, errors: { ...prev.errors, ...stepErrors } } : prev
+      );
       setTouched({
         title: true,
         description: true,
@@ -144,7 +154,6 @@ export default function CreateJobForm({
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-
     e.preventDefault();
     if (state.mode !== "form") return;
 
@@ -157,7 +166,13 @@ export default function CreateJobForm({
       escrowDeadlineDays: true,
     });
 
-    if (errors.title || errors.description || errors.budget || errors.escrowAgent || errors.escrowDeadlineDays) {
+    if (
+      errors.title ||
+      errors.description ||
+      errors.budget ||
+      errors.escrowAgent ||
+      errors.escrowDeadlineDays
+    ) {
       setState((prev) => (prev.mode === "form" ? { ...prev, errors } : prev));
       return;
     }
@@ -203,7 +218,6 @@ export default function CreateJobForm({
                     placeholder="e.g. Website redesign"
                     disabled={loading}
                     aria-invalid={"false"}
-
                   />
                   {touched.title && state.errors.title && (
                     <p className="mt-1 text-xs text-red-400">{state.errors.title}</p>

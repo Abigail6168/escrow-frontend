@@ -11,14 +11,33 @@ describe("admin_fee_configuration access", () => {
   });
   it("blocks unauthorized wallets with a warning", () => {
     const a = getFeeConfigAccess("GOTHER", "GADMIN");
-    expect(a).toMatchObject({ allowed: false, reason: "not_admin", warning: FEE_CONFIG_UNAUTHORIZED_WARNING });
+    expect(a).toMatchObject({
+      allowed: false,
+      reason: "not_admin",
+      warning: FEE_CONFIG_UNAUTHORIZED_WARNING,
+    });
   });
   it("blocks when no wallet is connected", () => {
-    expect(getFeeConfigAccess(null, "GADMIN")).toMatchObject({ allowed: false, reason: "no_wallet" });
+    expect(getFeeConfigAccess(null, "GADMIN")).toMatchObject({
+      allowed: false,
+      reason: "no_wallet",
+    });
   });
   it("renders fallback instead of content when blocked", () => {
     const a = getFeeConfigAccess("GOTHER", "GADMIN");
-    expect(guardFeeConfig(a, () => "form", (w) => w)).toBe(FEE_CONFIG_UNAUTHORIZED_WARNING);
-    expect(guardFeeConfig({ allowed: true }, () => "form", (w) => w)).toBe("form");
+    expect(
+      guardFeeConfig(
+        a,
+        () => "form",
+        (w) => w
+      )
+    ).toBe(FEE_CONFIG_UNAUTHORIZED_WARNING);
+    expect(
+      guardFeeConfig(
+        { allowed: true },
+        () => "form",
+        (w) => w
+      )
+    ).toBe("form");
   });
 });

@@ -15,10 +15,7 @@ interface Props {
  * Displays a warning banner when a wallet_disconnect_handler fee estimation
  * exceeds standard bounds or the simulation itself reported an error.
  */
-export default function WalletDisconnectGasWarningBanner({
-  simulation,
-  className = "",
-}: Props) {
+export default function WalletDisconnectGasWarningBanner({ simulation, className = "" }: Props) {
   const state = checkDisconnectSimulationFeeWarning(simulation);
 
   if (!state.hasWarning || !state.warningMessage) {

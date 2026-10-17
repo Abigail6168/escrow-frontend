@@ -97,7 +97,7 @@ describe("wallet_disconnect_handler detectWalletExtensionById (#task-4)", () => 
     expect(() =>
       detectWalletExtensionById("freighter", () => {
         throw new Error("boom");
-      }),
+      })
     ).toThrow("boom");
   });
 
@@ -227,11 +227,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck (#task-4)", () => 
 
   it("returns success=true when wallet is available and disconnect succeeds", async () => {
     const disconnectFn = vi.fn(async () => {});
-    const result = await disconnectWalletWithCheck(
-      "freighter",
-      disconnectFn,
-      () => true,
-    );
+    const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
     expect(result.success).toBe(true);
     expect(result.error).toBeNull();
     expect(result.fallbackInstructions).toBeNull();
@@ -241,11 +237,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck (#task-4)", () => 
 
   it("returns fallbackInstructions when wallet is not installed", async () => {
     const disconnectFn = vi.fn(async () => {});
-    const result = await disconnectWalletWithCheck(
-      "freighter",
-      disconnectFn,
-      () => false,
-    );
+    const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => false);
     expect(result.success).toBe(false);
     expect(result.error).toBeNull();
     expect(result.fallbackInstructions).not.toBeNull();
@@ -257,11 +249,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck (#task-4)", () => 
 
   it("skips disconnect for albedo when not installed", async () => {
     const disconnectFn = vi.fn(async () => {});
-    const result = await disconnectWalletWithCheck(
-      "albedo",
-      disconnectFn,
-      () => false,
-    );
+    const result = await disconnectWalletWithCheck("albedo", disconnectFn, () => false);
     expect(result.success).toBe(false);
     expect(result.fallbackInstructions).toMatch(/albedo/i);
     expect(result.installUrl).toContain("albedo.link");
@@ -270,11 +258,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck (#task-4)", () => 
 
   it("skips disconnect for xbull when not installed", async () => {
     const disconnectFn = vi.fn(async () => {});
-    const result = await disconnectWalletWithCheck(
-      "xbull",
-      disconnectFn,
-      () => false,
-    );
+    const result = await disconnectWalletWithCheck("xbull", disconnectFn, () => false);
     expect(result.success).toBe(false);
     expect(result.fallbackInstructions).toMatch(/xbull/i);
     expect(disconnectFn).not.toHaveBeenCalled();
@@ -282,11 +266,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck (#task-4)", () => 
 
   it("skips disconnect for hana when not installed", async () => {
     const disconnectFn = vi.fn(async () => {});
-    const result = await disconnectWalletWithCheck(
-      "hana",
-      disconnectFn,
-      () => false,
-    );
+    const result = await disconnectWalletWithCheck("hana", disconnectFn, () => false);
     expect(result.success).toBe(false);
     expect(result.fallbackInstructions).toMatch(/hana/i);
     expect(disconnectFn).not.toHaveBeenCalled();
@@ -296,11 +276,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck (#task-4)", () => 
     const disconnectFn = vi.fn(async () => {
       throw new Error("extension crashed");
     });
-    const result = await disconnectWalletWithCheck(
-      "freighter",
-      disconnectFn,
-      () => true,
-    );
+    const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
     expect(result.success).toBe(false);
     expect(result.error).toBe("extension crashed");
     expect(result.fallbackInstructions).toBeNull();
@@ -319,11 +295,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck (#task-4)", () => 
     const disconnectFn = vi.fn(async () => {
       throw "string error";
     });
-    const result = await disconnectWalletWithCheck(
-      "freighter",
-      disconnectFn,
-      () => true,
-    );
+    const result = await disconnectWalletWithCheck("freighter", disconnectFn, () => true);
     expect(result.success).toBe(false);
     expect(result.error).toBe("Unknown error during wallet disconnect.");
   });
@@ -383,7 +355,7 @@ describe("wallet_disconnect_handler disconnectWalletWithCheck (#task-4)", () => 
       // #357 already claimed the 4th slot for timeout options, so pendingTx
       // sits after it.
       undefined,
-      pending,
+      pending
     );
 
     // The pending-tx notice is the only console.warn on this path -- the
@@ -420,7 +392,7 @@ describe("wallet_disconnect_handler timeout bounds", () => {
         signal = operationSignal;
         return new Promise<never>(() => {});
       },
-      { timeoutMs: 100, request: { payload }, cleanup },
+      { timeoutMs: 100, request: { payload }, cleanup }
     );
 
     await vi.advanceTimersByTimeAsync(100);
@@ -437,10 +409,11 @@ describe("wallet_disconnect_handler timeout bounds", () => {
     const cleanup = vi.fn();
 
     await expect(
-      runWalletDisconnectWithTimeout(
-        async () => "disconnected",
-        { timeoutMs: 100, request: { payload }, cleanup },
-      ),
+      runWalletDisconnectWithTimeout(async () => "disconnected", {
+        timeoutMs: 100,
+        request: { payload },
+        cleanup,
+      })
     ).resolves.toBe("disconnected");
 
     expect([...payload]).toEqual([0, 0]);
@@ -459,7 +432,7 @@ describe("wallet_disconnect_handler timeout bounds", () => {
         return new Promise<void>(() => {});
       },
       () => true,
-      { timeoutMs: 50, request: { payload }, cleanup },
+      { timeoutMs: 50, request: { payload }, cleanup }
     );
 
     await vi.advanceTimersByTimeAsync(50);

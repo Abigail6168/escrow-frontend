@@ -78,13 +78,7 @@ function TransactionSignerHarness({
 }: {
   walletNetwork?: TransactionSignerNetwork;
 }) {
-  const {
-    address,
-    connect,
-    disconnect,
-    networkMismatchMessage,
-    signTransaction,
-  } = useWallet();
+  const { address, connect, disconnect, networkMismatchMessage, signTransaction } = useWallet();
 
   // The app network is always testnet (matches NETWORK_PASSPHRASE default)
   const appNetwork: TransactionSignerNetwork = "testnet";
@@ -97,9 +91,7 @@ function TransactionSignerHarness({
         <>
           <span data-testid="connected-address">{address}</span>
           {networkMismatchMessage && (
-            <div data-testid="context-mismatch-message">
-              {networkMismatchMessage}
-            </div>
+            <div data-testid="context-mismatch-message">{networkMismatchMessage}</div>
           )}
           <TransactionSigner
             walletNetwork={walletNetwork}
@@ -159,16 +151,12 @@ describe("TransactionSigner + WalletContext integration (#216)", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("connected-address")).toHaveTextContent(
-        "GTESTNET123456"
-      );
+      expect(screen.getByTestId("connected-address")).toHaveTextContent("GTESTNET123456");
     });
 
     // TransactionSigner should be visible with no warning bar
     expect(screen.getByTestId("transaction-signer")).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("transaction-signer-network-warning-bar")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("transaction-signer-network-warning-bar")).not.toBeInTheDocument();
   });
 
   // -------------------------------------------------------------------------
@@ -192,9 +180,7 @@ describe("TransactionSigner + WalletContext integration (#216)", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("connected-address")).toHaveTextContent(
-        "GMAINNET123456"
-      );
+      expect(screen.getByTestId("connected-address")).toHaveTextContent("GMAINNET123456");
     });
 
     // TransactionSigner shows the warning bar
@@ -259,17 +245,13 @@ describe("TransactionSigner + WalletContext integration (#216)", () => {
     });
 
     // No warning bar when networks match
-    expect(
-      screen.queryByTestId("transaction-signer-network-warning-bar")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("transaction-signer-network-warning-bar")).not.toBeInTheDocument();
 
     // Sign — click and wait for status transition
     fireEvent.click(screen.getByRole("button", { name: "Sign Transaction" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("transaction-signer-status")
-      ).toHaveTextContent("signed");
+      expect(screen.getByTestId("transaction-signer-status")).toHaveTextContent("signed");
     });
   });
 

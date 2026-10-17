@@ -63,20 +63,14 @@ export interface PlatformMetricsChartsProps {
 // =============================================================
 
 /** Skeleton placeholder rendered while data is loading (#511). */
-function PlatformMetricsSkeleton({
-  frames,
-}: {
-  frames: readonly MetricSkeletonFrame[];
-}) {
+function PlatformMetricsSkeleton({ frames }: { frames: readonly MetricSkeletonFrame[] }) {
   const barFrames = frames.filter((f) => f.kind === "chart-bar");
   const headerFrames = frames.filter(
-    (f) => f.kind === "chart-title" || f.kind === "chart-subtitle",
+    (f) => f.kind === "chart-title" || f.kind === "chart-subtitle"
   );
-  const statFrames = frames.filter(
-    (f) => f.kind === "metric-value" || f.kind === "metric-label",
-  );
+  const statFrames = frames.filter((f) => f.kind === "metric-value" || f.kind === "metric-label");
   const filterFrames = frames.filter(
-    (f) => f.kind === "filter-input" || f.kind === "filter-button",
+    (f) => f.kind === "filter-input" || f.kind === "filter-button"
   );
 
   return (
@@ -89,10 +83,7 @@ function PlatformMetricsSkeleton({
 
       {/* Filter bar skeleton */}
       {filterFrames.length > 0 && (
-        <div
-          data-testid="platform-metrics-skeleton-filters"
-          className="flex gap-3"
-        >
+        <div data-testid="platform-metrics-skeleton-filters" className="flex gap-3">
           {filterFrames.map((f) => (
             <div
               key={f.id}
@@ -179,19 +170,9 @@ function PlatformMetricsSkeleton({
 }
 
 /** Status badge rendered in the chart header (#514). */
-function MetricsBadge({
-  badge,
-  testId,
-}: {
-  badge: MetricChartBadge;
-  testId: string;
-}) {
+function MetricsBadge({ badge, testId }: { badge: MetricChartBadge; testId: string }) {
   return (
-    <span
-      data-testid={testId}
-      data-status={badge.state}
-      className={badge.className}
-    >
+    <span data-testid={testId} data-status={badge.state} className={badge.className}>
       <span aria-hidden="true">{badge.icon}</span>
       {badge.label}
     </span>
@@ -199,13 +180,7 @@ function MetricsBadge({
 }
 
 /** Bar chart rendered from MetricDataPoint[] without an external lib. */
-function BarChart({
-  data,
-  testId,
-}: {
-  data: MetricDataPoint[];
-  testId: string;
-}) {
+function BarChart({ data, testId }: { data: MetricDataPoint[]; testId: string }) {
   const max = Math.max(...data.map((d) => d.value), 1);
   return (
     <div
@@ -229,10 +204,7 @@ function BarChart({
               style={{ height: `${heightPct}%` }}
               title={`${point.label}: ${point.value}`}
             />
-            <span
-              className="truncate text-[10px] text-gray-500"
-              style={{ maxWidth: "48px" }}
-            >
+            <span className="truncate text-[10px] text-gray-500" style={{ maxWidth: "48px" }}>
               {point.label}
             </span>
           </div>
@@ -272,10 +244,7 @@ function MetricsConfirmModalDialog({
         >
           {modal.title}
         </h2>
-        <p
-          data-testid="platform-metrics-confirm-message"
-          className="text-sm text-gray-400"
-        >
+        <p data-testid="platform-metrics-confirm-message" className="text-sm text-gray-400">
           {modal.message}
         </p>
         <label className="flex items-start gap-2 text-sm text-gray-300">
@@ -344,11 +313,8 @@ export default function PlatformMetricsCharts({
   const [thresholdError, setThresholdError] = useState<string | null>(null);
 
   // ── Confirm modal state (#515) ────────────────────────────────────────────
-  const [pendingAction, setPendingAction] = useState<MetricsAction | null>(
-    null,
-  );
-  const [confirmStep, setConfirmStep] =
-    useState<MetricsConfirmStep>("idle");
+  const [pendingAction, setPendingAction] = useState<MetricsAction | null>(null);
+  const [confirmStep, setConfirmStep] = useState<MetricsConfirmStep>("idle");
 
   // ── Skeleton frames (#511) ────────────────────────────────────────────────
   const skeletonFrames = getPlatformMetricsSkeleton(isLoading);
@@ -473,10 +439,7 @@ export default function PlatformMetricsCharts({
         className="flex flex-wrap items-end gap-3 rounded-xl border border-gray-800 bg-gray-900 p-4"
       >
         <div className="flex flex-col gap-1">
-          <label
-            htmlFor="metrics-date-range"
-            className="text-xs text-gray-400"
-          >
+          <label htmlFor="metrics-date-range" className="text-xs text-gray-400">
             Date range
           </label>
           <input
@@ -506,10 +469,7 @@ export default function PlatformMetricsCharts({
         </div>
 
         <div className="flex flex-col gap-1">
-          <label
-            htmlFor="metrics-threshold"
-            className="text-xs text-gray-400"
-          >
+          <label htmlFor="metrics-threshold" className="text-xs text-gray-400">
             Threshold
           </label>
           <input
@@ -519,9 +479,7 @@ export default function PlatformMetricsCharts({
             placeholder="e.g. 100"
             data-testid="platform-metrics-threshold-input"
             aria-invalid={thresholdError ? "true" : "false"}
-            aria-describedby={
-              thresholdError ? "metrics-threshold-error" : undefined
-            }
+            aria-describedby={thresholdError ? "metrics-threshold-error" : undefined}
             onChange={(e) => handleThresholdChange(e.target.value)}
             className="h-9 rounded-lg border border-gray-700 bg-gray-800 px-3 text-sm focus:outline-none focus:border-indigo-500"
           />
@@ -580,20 +538,12 @@ export default function PlatformMetricsCharts({
       >
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2
-              data-testid="platform-metrics-chart-title"
-              className="text-base font-semibold"
-            >
+            <h2 data-testid="platform-metrics-chart-title" className="text-base font-semibold">
               Platform Metrics
             </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Active system statistics
-            </p>
+            <p className="text-xs text-gray-400 mt-0.5">Active system statistics</p>
           </div>
-          <MetricsBadge
-            badge={badge}
-            testId="platform-metrics-status-badge"
-          />
+          <MetricsBadge badge={badge} testId="platform-metrics-status-badge" />
         </div>
 
         {error && (
@@ -633,9 +583,7 @@ export default function PlatformMetricsCharts({
             },
             {
               label: "Average",
-              value: Math.round(
-                data.reduce((s, d) => s + d.value, 0) / data.length,
-              ),
+              value: Math.round(data.reduce((s, d) => s + d.value, 0) / data.length),
               testId: "platform-metrics-stat-average",
             },
             {

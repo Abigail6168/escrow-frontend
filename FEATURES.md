@@ -3,6 +3,7 @@
 ## Visual Walkthrough
 
 ### 1. Disconnected State
+
 ```
 ┌─────────────────────────────────────────────┐
 │ 🔐 Escrow         [Connect Wallet]          │
@@ -18,6 +19,7 @@
 ```
 
 ### 2. Admin Verification Loading
+
 ```
 ┌─────────────────────────────────────────────┐
 │ 🔐 Escrow   Dashboard  + New Job  [G12...] │
@@ -34,6 +36,7 @@
 ```
 
 ### 3. Non-Admin Access Denied
+
 ```
 ┌─────────────────────────────────────────────┐
 │ 🔐 Escrow   Dashboard  + New Job  [G45...] │
@@ -57,6 +60,7 @@
 ```
 
 ### 4. Admin Interface - Empty State
+
 ```
 ┌─────────────────────────────────────────────┐
 │ 🔐 Escrow  Dashboard  + New Job  Admin     │
@@ -87,6 +91,7 @@
 ```
 
 ### 5. Admin Interface - With Tokens
+
 ```
 ┌─────────────────────────────────────────────┐
 │ 🔐 Escrow  Dashboard  + New Job  Admin     │
@@ -125,6 +130,7 @@
 ```
 
 ### 6. Adding Token - Building Transaction
+
 ```
 ┌─────────────────────────────────────────────┐
 │  ┌─────────────────────────────────────┐   │
@@ -140,6 +146,7 @@
 ```
 
 ### 7. Adding Token - Signing
+
 ```
 ┌─────────────────────────────────────────────┐
 │  ┌─────────────────────────────────────┐   │
@@ -157,6 +164,7 @@
 ```
 
 ### 8. Adding Token - Submitting
+
 ```
 ┌─────────────────────────────────────────────┐
 │  ┌─────────────────────────────────────┐   │
@@ -172,6 +180,7 @@
 ```
 
 ### 9. Success State
+
 ```
 ┌─────────────────────────────────────────────┐
 │  ┌─────────────────────────────────────┐   │
@@ -198,6 +207,7 @@
 ```
 
 ### 10. Error State
+
 ```
 ┌─────────────────────────────────────────────┐
 │  ┌─────────────────────────────────────┐   │
@@ -216,6 +226,7 @@
 ```
 
 ### 11. Removing Token
+
 ```
 ┌─────────────────────────────────────────────┐
 │  ┌─────────────────────────────────────┐   │
@@ -233,41 +244,46 @@
 ## Features Summary
 
 ### Access Control
+
 ✅ Only admin sees "Admin" link in navbar  
 ✅ Loading spinner during verification  
 ✅ Clear "Access Denied" for non-admins  
-✅ Graceful handling of disconnected wallets  
+✅ Graceful handling of disconnected wallets
 
 ### Token Management
+
 ✅ View all whitelisted tokens  
 ✅ Add new tokens with validation  
 ✅ Remove existing tokens  
 ✅ Empty state messaging  
-✅ Auto-refresh after changes  
+✅ Auto-refresh after changes
 
 ### User Experience
+
 ✅ Real-time loading indicators  
 ✅ Phase-based progress (Build → Sign → Submit)  
 ✅ Success banners with clear messages  
 ✅ Descriptive error messages  
 ✅ Form clears after success  
-✅ Disabled states during operations  
+✅ Disabled states during operations
 
 ### Design
+
 ✅ Consistent with app styling  
 ✅ Dark theme (gray-950 background)  
 ✅ Indigo accent color  
 ✅ Rounded borders and cards  
 ✅ Proper spacing and typography  
-✅ Mobile responsive  
+✅ Mobile responsive
 
 ### Technical
+
 ✅ TypeScript type safety  
 ✅ React hooks for state  
 ✅ Async/await patterns  
 ✅ AbortController for cleanup  
 ✅ Reusable utilities  
-✅ Comprehensive tests  
+✅ Comprehensive tests
 
 ## Component Hierarchy
 
@@ -297,21 +313,25 @@ AdminPage
 ## State Management
 
 ### Component State
+
 - `tokenAddress` - Input value for adding token
 - `whitelist` - Array of whitelisted tokens
 - `listLoading` - Loading whitelist data
 - `listError` - Error loading whitelist
 
 ### Hook State (useIsAdmin)
+
 - `loading` - Checking admin status
 - `isAdminUser` - Boolean admin flag
 
 ### Hook State (useActionStates)
+
 - Per-action states with keys:
   - `add-token` - Adding token state
   - `remove-{address}` - Removing specific token state
 
 Each action state has:
+
 - `phase` - Transaction phase
 - `error` - Error message
 - `txHash` - Transaction hash
@@ -319,6 +339,7 @@ Each action state has:
 ## User Flows
 
 ### Happy Path: Add Token
+
 1. Admin connects wallet
 2. Navbar shows "Admin" link
 3. Click "Admin" → Page loads
@@ -330,6 +351,7 @@ Each action state has:
 9. Token appears in list
 
 ### Happy Path: Remove Token
+
 1. Admin on admin page
 2. See whitelisted tokens
 3. Click "Remove" on a token
@@ -338,6 +360,7 @@ Each action state has:
 6. Token disappears from list
 
 ### Error Path: Non-Admin
+
 1. User connects wallet
 2. No "Admin" link appears
 3. If they go to /admin directly
@@ -345,6 +368,7 @@ Each action state has:
 5. Cannot perform any actions
 
 ### Error Path: Transaction Declined
+
 1. Admin initiates add/remove
 2. Freighter shows transaction
 3. User clicks "Reject"
@@ -354,12 +378,14 @@ Each action state has:
 ## Mobile Responsive Behavior
 
 ### Desktop (> 768px)
+
 - Max width 768px (max-w-xl)
 - Centered layout
 - All elements visible
 - Hover states active
 
 ### Mobile (< 768px)
+
 - Full width with padding
 - Token addresses truncate
 - Buttons stack if needed
@@ -369,18 +395,21 @@ Each action state has:
 ## Accessibility Features
 
 ### Keyboard Navigation
+
 - All buttons focusable
 - Focus rings visible
 - Logical tab order
 - Enter key submits form
 
 ### Screen Readers
+
 - Semantic HTML structure
 - ARIA labels on buttons
 - Role="alert" for errors
 - Descriptive loading text
 
 ### Visual
+
 - High contrast text
 - Clear error colors
 - Loading indicators
@@ -389,12 +418,14 @@ Each action state has:
 ## Browser Compatibility
 
 Tested/Compatible:
+
 - ✅ Chrome 90+
 - ✅ Firefox 88+
 - ✅ Safari 14+
 - ✅ Edge 90+
 
 Requirements:
+
 - JavaScript enabled
 - Freighter wallet extension
 - Modern browser (ES2020+)

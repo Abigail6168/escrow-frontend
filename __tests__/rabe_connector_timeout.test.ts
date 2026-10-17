@@ -80,9 +80,7 @@ describe("rabe_connector signature timeout bounds (#134)", () => {
     );
 
     const promise = signRabeWithTimeout(request, signFn, 1_000);
-    const assertion = expect(promise).rejects.toBeInstanceOf(
-      RabeSignatureTimeoutError
-    );
+    const assertion = expect(promise).rejects.toBeInstanceOf(RabeSignatureTimeoutError);
 
     await vi.advanceTimersByTimeAsync(1_000);
     await assertion;
@@ -101,9 +99,7 @@ describe("rabe_connector signature timeout bounds (#134)", () => {
     const signFn = vi.fn(() => new Promise<string>(() => {}));
 
     const promise = signRabeWithTimeout(request, signFn, 500);
-    const assertion = expect(promise).rejects.toBeInstanceOf(
-      RabeSignatureTimeoutError
-    );
+    const assertion = expect(promise).rejects.toBeInstanceOf(RabeSignatureTimeoutError);
 
     await vi.advanceTimersByTimeAsync(500);
     await assertion;
@@ -128,10 +124,7 @@ describe("rabe_connector signature timeout bounds (#134)", () => {
 
     // signFn resolves at 500 ms, timeout at 1000 ms — should resolve normally
     const signFn = vi.fn(
-      () =>
-        new Promise<string>((resolve) =>
-          setTimeout(() => resolve("ok"), 500)
-        )
+      () => new Promise<string>((resolve) => setTimeout(() => resolve("ok"), 500))
     );
 
     const promise = signRabeWithTimeout(request, signFn, 1_000);
@@ -199,9 +192,7 @@ describe("rabe_connector signature timeout bounds (#134)", () => {
     });
 
     const promise = signRabeWithTimeout(request, signFn, 5_000);
-    const assertion = expect(promise).rejects.not.toBeInstanceOf(
-      RabeSignatureTimeoutError
-    );
+    const assertion = expect(promise).rejects.not.toBeInstanceOf(RabeSignatureTimeoutError);
 
     await vi.runAllTimersAsync();
     await assertion;
@@ -293,9 +284,7 @@ describe("rabe_connector signature timeout bounds (#134)", () => {
     const signFn = vi.fn(() => new Promise<string>(() => {}));
 
     const promise = signRabeWithTimeout(request, signFn, 500);
-    const assertion = expect(promise).rejects.toBeInstanceOf(
-      RabeSignatureTimeoutError
-    );
+    const assertion = expect(promise).rejects.toBeInstanceOf(RabeSignatureTimeoutError);
     await vi.advanceTimersByTimeAsync(500);
     await assertion;
   });

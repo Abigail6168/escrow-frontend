@@ -21,9 +21,7 @@ describe("freighter_connector multi-sig helper hooks (#109)", () => {
   });
 
   it("parseFreighterMultiSigEnvelope throws for malformed input", () => {
-    expect(() => parseFreighterMultiSigEnvelope("")).toThrow(
-      WalletMultiSigStructureError
-    );
+    expect(() => parseFreighterMultiSigEnvelope("")).toThrow(WalletMultiSigStructureError);
   });
 
   it("createFreighterMultiSigSplit builds a split seeded with the base XDR", () => {
@@ -75,10 +73,10 @@ describe("freighter_connector multi-sig helper hooks (#109)", () => {
       publicKey: "GA",
       hint: "aaaa",
     });
-    const splitDup: FreighterMultiSigSplit = createFreighterMultiSigSplit(
-      xdr,
-      { publicKey: "GA", hint: "aaaa" }
-    );
+    const splitDup: FreighterMultiSigSplit = createFreighterMultiSigSplit(xdr, {
+      publicKey: "GA",
+      hint: "aaaa",
+    });
 
     expect(() =>
       assembleFreighterMultiSigTransaction([splitA, splitDup], {
@@ -98,9 +96,7 @@ describe("freighter_connector multi-sig helper hooks (#109)", () => {
       assembleFreighterMultiSigTransaction([splitA]);
       throw new Error("expected assembleFreighterMultiSigTransaction to throw");
     } catch (err) {
-      expect((err as WalletMultiSigStructureError).code).toBe(
-        "insufficient_signatures"
-      );
+      expect((err as WalletMultiSigStructureError).code).toBe("insufficient_signatures");
     }
   });
 });

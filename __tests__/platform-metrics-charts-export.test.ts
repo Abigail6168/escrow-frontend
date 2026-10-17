@@ -32,7 +32,7 @@ describe("platform_metrics_charts export", () => {
 
   it("metricsExportFilename builds a dated filename", () => {
     expect(metricsExportFilename(new Date("2026-09-28T10:00:00Z"))).toBe(
-      "platform-metrics-2026-09-28.csv",
+      "platform-metrics-2026-09-28.csv"
     );
   });
 
@@ -72,12 +72,8 @@ describe("platform_metrics_charts export", () => {
   it("downloadCSV creates an anchor element and triggers a click", () => {
     // The anchor below is a plain mock, not a DOM node, so the real
     // appendChild/removeChild would throw; only the calls are asserted.
-    const appendSpy = vi
-      .spyOn(document.body, "appendChild")
-      .mockImplementation((node) => node);
-    const removeSpy = vi
-      .spyOn(document.body, "removeChild")
-      .mockImplementation((node) => node);
+    const appendSpy = vi.spyOn(document.body, "appendChild").mockImplementation((node) => node);
+    const removeSpy = vi.spyOn(document.body, "removeChild").mockImplementation((node) => node);
     const createSpy = vi.spyOn(document, "createElement");
 
     const mockAnchor = {
@@ -112,12 +108,8 @@ describe("platform_metrics_charts export", () => {
   it("exportPlatformMetrics calls downloadCSV with a dated filename", () => {
     // The anchor below is a plain mock, not a DOM node, so the real
     // appendChild/removeChild would throw; only the calls are asserted.
-    const appendSpy = vi
-      .spyOn(document.body, "appendChild")
-      .mockImplementation((node) => node);
-    const removeSpy = vi
-      .spyOn(document.body, "removeChild")
-      .mockImplementation((node) => node);
+    const appendSpy = vi.spyOn(document.body, "appendChild").mockImplementation((node) => node);
+    const removeSpy = vi.spyOn(document.body, "removeChild").mockImplementation((node) => node);
     const createSpy = vi.spyOn(document, "createElement");
 
     const mockAnchor = {

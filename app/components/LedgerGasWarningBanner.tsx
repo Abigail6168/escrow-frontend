@@ -14,10 +14,7 @@ interface Props {
  * Displays a warning banner when a Ledger gas/fee estimation result
  * exceeds standard bounds or contains a simulation error.
  */
-export default function LedgerGasWarningBanner({
-  simulation,
-  className = "",
-}: Props) {
+export default function LedgerGasWarningBanner({ simulation, className = "" }: Props) {
   if (!simulation) return null;
 
   const state = checkSimulationFeeWarning(simulation);

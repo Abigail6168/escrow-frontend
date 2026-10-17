@@ -65,7 +65,7 @@ describe("DarkModeSwitcher - empty list display views #313", () => {
 
     it("has decorative icon hidden from AT (aria-hidden)", () => {
       const { container } = render(<DarkModeSwitcher isDarkMode={null} onToggle={vi.fn()} />);
-      const hidden = container.querySelector("[aria-hidden=\"true\"]");
+      const hidden = container.querySelector('[aria-hidden="true"]');
       expect(hidden).toBeInTheDocument();
     });
 
@@ -79,7 +79,9 @@ describe("DarkModeSwitcher - empty list display views #313", () => {
 
     it("uses text-text-primary and text-text-muted for contrast", () => {
       render(<DarkModeSwitcher isDarkMode={null} onToggle={vi.fn()} />);
-      expect(screen.getByText("No theme preferences available").className).toContain("text-text-primary");
+      expect(screen.getByText("No theme preferences available").className).toContain(
+        "text-text-primary"
+      );
       expect(screen.getByText(/Theme data is empty/).className).toContain("text-text-muted");
     });
 

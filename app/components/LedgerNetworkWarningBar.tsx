@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  checkNetworkMatch,
-  type LedgerNetwork,
-} from "@/app/lib/ledger_usb_bridge";
+import { checkNetworkMatch, type LedgerNetwork } from "@/app/lib/ledger_usb_bridge";
 
 interface Props {
   walletNetwork: LedgerNetwork;

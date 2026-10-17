@@ -24,7 +24,10 @@ export function getFeeToast(event: FeeToastEvent, detail?: string): FeeToast {
     case "update_success":
       return { message: "Platform fee updated successfully", type: "success" };
     case "update_failure":
-      return { message: detail ? `Fee update failed: ${detail}` : "Fee update failed", type: "error" };
+      return {
+        message: detail ? `Fee update failed: ${detail}` : "Fee update failed",
+        type: "error",
+      };
     case "invalid_fee":
       return { message: detail ?? "Invalid fee value", type: "warning" };
     case "high_fee_warning":

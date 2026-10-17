@@ -38,50 +38,35 @@ describe("PlatformMetricsCharts – loading skeleton (#511)", () => {
 
   it("skeleton has aria-busy=true", () => {
     render(<PlatformMetricsCharts isLoading />);
-    expect(screen.getByTestId("platform-metrics-skeleton")).toHaveAttribute(
-      "aria-busy",
-      "true",
-    );
+    expect(screen.getByTestId("platform-metrics-skeleton")).toHaveAttribute("aria-busy", "true");
   });
 
   it("skeleton has a screen-reader label", () => {
     render(<PlatformMetricsCharts isLoading />);
-    const srText = screen
-      .getByTestId("platform-metrics-skeleton")
-      .querySelector(".sr-only");
+    const srText = screen.getByTestId("platform-metrics-skeleton").querySelector(".sr-only");
     expect(srText).not.toBeNull();
     expect(srText!.textContent).toMatch(/loading/i);
   });
 
   it("renders the filter-bar skeleton section", () => {
     render(<PlatformMetricsCharts isLoading />);
-    expect(
-      screen.getByTestId("platform-metrics-skeleton-filters"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-skeleton-filters")).toBeInTheDocument();
   });
 
   it("renders the bar skeleton section", () => {
     render(<PlatformMetricsCharts isLoading />);
-    expect(
-      screen.getByTestId("platform-metrics-skeleton-bars"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-skeleton-bars")).toBeInTheDocument();
   });
 
   it("renders the stat-cards skeleton section", () => {
     render(<PlatformMetricsCharts isLoading />);
-    expect(
-      screen.getByTestId("platform-metrics-skeleton-stats"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-skeleton-stats")).toBeInTheDocument();
   });
 
   it("does not render the real chart when loading", () => {
     render(<PlatformMetricsCharts isLoading data={SAMPLE_DATA} />);
-    expect(
-      screen.queryByTestId("platform-metrics-charts"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("platform-metrics-bar-chart"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("platform-metrics-charts")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("platform-metrics-bar-chart")).not.toBeInTheDocument();
   });
 
   it("renders the real chart once isLoading becomes false", () => {
@@ -93,9 +78,7 @@ describe("PlatformMetricsCharts – loading skeleton (#511)", () => {
   it("individual skeleton frame elements are rendered during loading", () => {
     render(<PlatformMetricsCharts isLoading />);
     // At least one bar frame should appear
-    const barFrames = screen.getAllByTestId(
-      /^platform-metrics-skeleton-frame-bar-col/,
-    );
+    const barFrames = screen.getAllByTestId(/^platform-metrics-skeleton-frame-bar-col/);
     expect(barFrames.length).toBeGreaterThan(0);
   });
 });
@@ -190,9 +173,7 @@ describe("PlatformMetricsCharts – state badges (#514)", () => {
   });
 
   it("shows error badge when error prop is set", () => {
-    render(
-      <PlatformMetricsCharts data={SAMPLE_DATA} error="Network timeout" />,
-    );
+    render(<PlatformMetricsCharts data={SAMPLE_DATA} error="Network timeout" />);
     const badge = screen.getByTestId("platform-metrics-status-badge");
     expect(badge).toHaveAttribute("data-status", "error");
     expect(badge).toHaveTextContent(/error/i);
@@ -233,26 +214,18 @@ describe("PlatformMetricsCharts – state badges (#514)", () => {
   });
 
   it("error takes priority over degraded when both are set", () => {
-    render(
-      <PlatformMetricsCharts
-        data={SAMPLE_DATA}
-        isDegraded
-        error="Partial failure"
-      />,
-    );
+    render(<PlatformMetricsCharts data={SAMPLE_DATA} isDegraded error="Partial failure" />);
     expect(screen.getByTestId("platform-metrics-status-badge")).toHaveAttribute(
       "data-status",
-      "error",
+      "error"
     );
   });
 
   it("degraded takes priority over stale when both are set", () => {
-    render(
-      <PlatformMetricsCharts data={SAMPLE_DATA} isDegraded isStale />,
-    );
+    render(<PlatformMetricsCharts data={SAMPLE_DATA} isDegraded isStale />);
     expect(screen.getByTestId("platform-metrics-status-badge")).toHaveAttribute(
       "data-status",
-      "degraded",
+      "degraded"
     );
   });
 });
@@ -264,33 +237,25 @@ describe("PlatformMetricsCharts – state badges (#514)", () => {
 describe("PlatformMetricsCharts – confirmation modals (#515)", () => {
   it("confirmation modal is not visible initially", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
-    expect(
-      screen.queryByTestId("platform-metrics-confirm-modal"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("platform-metrics-confirm-modal")).not.toBeInTheDocument();
   });
 
   it("clicking Export CSV opens the confirm modal", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
     fireEvent.click(screen.getByTestId("platform-metrics-export-btn"));
-    expect(
-      screen.getByTestId("platform-metrics-confirm-modal"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-confirm-modal")).toBeInTheDocument();
   });
 
   it("clicking Refresh opens the confirm modal", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
     fireEvent.click(screen.getByTestId("platform-metrics-refresh-btn"));
-    expect(
-      screen.getByTestId("platform-metrics-confirm-modal"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-confirm-modal")).toBeInTheDocument();
   });
 
   it("clicking Reset opens the confirm modal", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
     fireEvent.click(screen.getByTestId("platform-metrics-reset-btn"));
-    expect(
-      screen.getByTestId("platform-metrics-confirm-modal"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-confirm-modal")).toBeInTheDocument();
   });
 
   it("modal has role=dialog for accessibility", () => {
@@ -325,9 +290,7 @@ describe("PlatformMetricsCharts – confirmation modals (#515)", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} onExport={onExport} />);
     fireEvent.click(screen.getByTestId("platform-metrics-export-btn"));
     fireEvent.click(screen.getByTestId("platform-metrics-confirm-cancel"));
-    expect(
-      screen.queryByTestId("platform-metrics-confirm-modal"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("platform-metrics-confirm-modal")).not.toBeInTheDocument();
     expect(onExport).not.toHaveBeenCalled();
   });
 
@@ -345,9 +308,7 @@ describe("PlatformMetricsCharts – confirmation modals (#515)", () => {
     fireEvent.click(screen.getByTestId("platform-metrics-export-btn"));
     fireEvent.click(screen.getByTestId("platform-metrics-confirm-checkbox"));
     fireEvent.click(screen.getByTestId("platform-metrics-confirm-submit"));
-    expect(
-      screen.queryByTestId("platform-metrics-confirm-modal"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("platform-metrics-confirm-modal")).not.toBeInTheDocument();
   });
 
   it("confirming refresh fires the onRefresh callback", () => {
@@ -361,12 +322,7 @@ describe("PlatformMetricsCharts – confirmation modals (#515)", () => {
 
   it("confirming reset fires the onResetFilters callback", () => {
     const onResetFilters = vi.fn();
-    render(
-      <PlatformMetricsCharts
-        data={SAMPLE_DATA}
-        onResetFilters={onResetFilters}
-      />,
-    );
+    render(<PlatformMetricsCharts data={SAMPLE_DATA} onResetFilters={onResetFilters} />);
     fireEvent.click(screen.getByTestId("platform-metrics-reset-btn"));
     fireEvent.click(screen.getByTestId("platform-metrics-confirm-checkbox"));
     fireEvent.click(screen.getByTestId("platform-metrics-confirm-submit"));
@@ -377,30 +333,17 @@ describe("PlatformMetricsCharts – confirmation modals (#515)", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
     // Threshold input is empty by default
     fireEvent.click(screen.getByTestId("platform-metrics-apply-threshold-btn"));
-    expect(
-      screen.getByTestId("platform-metrics-threshold-error"),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("platform-metrics-confirm-modal"),
-    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-threshold-error")).toBeInTheDocument();
+    expect(screen.queryByTestId("platform-metrics-confirm-modal")).not.toBeInTheDocument();
   });
 
   it("Apply threshold opens modal when threshold is valid", () => {
     const onApplyThreshold = vi.fn();
-    render(
-      <PlatformMetricsCharts
-        data={SAMPLE_DATA}
-        onApplyThreshold={onApplyThreshold}
-      />,
-    );
-    const thresholdInput = screen.getByTestId(
-      "platform-metrics-threshold-input",
-    );
+    render(<PlatformMetricsCharts data={SAMPLE_DATA} onApplyThreshold={onApplyThreshold} />);
+    const thresholdInput = screen.getByTestId("platform-metrics-threshold-input");
     fireEvent.change(thresholdInput, { target: { value: "200" } });
     fireEvent.click(screen.getByTestId("platform-metrics-apply-threshold-btn"));
-    expect(
-      screen.getByTestId("platform-metrics-confirm-modal"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-confirm-modal")).toBeInTheDocument();
     // Callback not yet fired (dialog not confirmed)
     expect(onApplyThreshold).not.toHaveBeenCalled();
   });
@@ -408,12 +351,8 @@ describe("PlatformMetricsCharts – confirmation modals (#515)", () => {
   it("modal displays the action title", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
     fireEvent.click(screen.getByTestId("platform-metrics-export-btn"));
-    expect(
-      screen.getByTestId("platform-metrics-confirm-title"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("platform-metrics-confirm-title").textContent,
-    ).toMatch(/.+/);
+    expect(screen.getByTestId("platform-metrics-confirm-title")).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-confirm-title").textContent).toMatch(/.+/);
   });
 });
 
@@ -428,12 +367,7 @@ describe("PlatformMetricsCharts – general rendering", () => {
   });
 
   it("accepts a custom data-testid", () => {
-    render(
-      <PlatformMetricsCharts
-        data={SAMPLE_DATA}
-        data-testid="my-custom-metrics"
-      />,
-    );
+    render(<PlatformMetricsCharts data={SAMPLE_DATA} data-testid="my-custom-metrics" />);
     expect(screen.getByTestId("my-custom-metrics")).toBeInTheDocument();
   });
 
@@ -450,67 +384,47 @@ describe("PlatformMetricsCharts – general rendering", () => {
 
   it("shows the empty state when data is empty", () => {
     render(<PlatformMetricsCharts data={[]} />);
-    expect(
-      screen.getByTestId("platform-metrics-empty-state"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-empty-state")).toBeInTheDocument();
   });
 
   it("shows the error banner when error is set", () => {
     render(<PlatformMetricsCharts data={[]} error="Failed to load" />);
-    expect(
-      screen.getByTestId("platform-metrics-error-banner"),
-    ).toBeInTheDocument();
-    expect(screen.getByTestId("platform-metrics-error-banner")).toHaveTextContent(
-      "Failed to load",
-    );
+    expect(screen.getByTestId("platform-metrics-error-banner")).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-error-banner")).toHaveTextContent("Failed to load");
   });
 
   it("renders stat cards when data is provided", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
-    expect(
-      screen.getByTestId("platform-metrics-stat-cards"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-stat-cards")).toBeInTheDocument();
     expect(screen.getByTestId("platform-metrics-stat-total")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("platform-metrics-stat-average"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-stat-average")).toBeInTheDocument();
     expect(screen.getByTestId("platform-metrics-stat-peak")).toBeInTheDocument();
   });
 
   it("total stat value equals the sum of data values", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
     const total = SAMPLE_DATA.reduce((s, d) => s + d.value, 0);
-    expect(screen.getByTestId("platform-metrics-stat-total")).toHaveTextContent(
-      String(total),
-    );
+    expect(screen.getByTestId("platform-metrics-stat-total")).toHaveTextContent(String(total));
   });
 
   it("peak stat value equals the max data value", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
     const peak = Math.max(...SAMPLE_DATA.map((d) => d.value));
-    expect(screen.getByTestId("platform-metrics-stat-peak")).toHaveTextContent(
-      String(peak),
-    );
+    expect(screen.getByTestId("platform-metrics-stat-peak")).toHaveTextContent(String(peak));
   });
 
   it("renders the chart title", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
-    expect(
-      screen.getByTestId("platform-metrics-chart-title"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-chart-title")).toBeInTheDocument();
   });
 
   it("renders the filter bar", () => {
     render(<PlatformMetricsCharts data={SAMPLE_DATA} />);
-    expect(
-      screen.getByTestId("platform-metrics-filter-bar"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("platform-metrics-filter-bar")).toBeInTheDocument();
   });
 
   it("does not render stat cards when data is empty", () => {
     render(<PlatformMetricsCharts data={[]} />);
-    expect(
-      screen.queryByTestId("platform-metrics-stat-cards"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("platform-metrics-stat-cards")).not.toBeInTheDocument();
   });
 });

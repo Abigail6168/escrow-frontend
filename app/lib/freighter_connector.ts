@@ -5,7 +5,10 @@
  */
 
 import type { ToastType } from "@/app/context/ToastContext";
-import { getAddress as getFreighterAddress, isConnected as isFreighterConnected } from "@stellar/freighter-api";
+import {
+  getAddress as getFreighterAddress,
+  isConnected as isFreighterConnected,
+} from "@stellar/freighter-api";
 import {
   applyMultiSigSignature,
   createMultiSigSplit,
@@ -58,9 +61,7 @@ export class FreighterSignatureTimeoutError extends Error {
 }
 
 /** Zeroes and drops a sensitive buffer so it cannot be retained after abort. */
-export function clearFreighterSensitiveMemory(
-  request: FreighterSignRequest
-): FreighterSignRequest {
+export function clearFreighterSensitiveMemory(request: FreighterSignRequest): FreighterSignRequest {
   if (request.payload) {
     request.payload.fill(0);
   }
@@ -125,9 +126,7 @@ export function detectFreighterExtension(detector?: () => boolean): boolean {
  * Checks Freighter extension availability and returns fallback setup
  * instructions when the extension is missing or the check itself throws.
  */
-export function checkFreighterAvailability(
-  detector?: () => boolean
-): FreighterAvailabilityState {
+export function checkFreighterAvailability(detector?: () => boolean): FreighterAvailabilityState {
   try {
     const available = detectFreighterExtension(detector);
     if (available) {
@@ -247,9 +246,7 @@ function isValidFreighterActiveAddress(value: unknown): value is FreighterActive
   return true;
 }
 
-function sanitizeFreighterActiveAddress(
-  value: unknown
-): FreighterActiveAddress | null {
+function sanitizeFreighterActiveAddress(value: unknown): FreighterActiveAddress | null {
   if (!isValidFreighterActiveAddress(value)) return null;
   return {
     address: value.address,
@@ -258,9 +255,7 @@ function sanitizeFreighterActiveAddress(
   };
 }
 
-function isValidSerializedPayload(
-  value: unknown
-): value is FreighterActiveAddressSerializedV1 {
+function isValidSerializedPayload(value: unknown): value is FreighterActiveAddressSerializedV1 {
   if (!isRecord(value)) return false;
   if (value.version !== FREIGHTER_ACTIVE_ADDRESS_SCHEMA_VERSION) return false;
   if (typeof value.address !== "string" || value.address.length === 0) return false;
@@ -286,8 +281,7 @@ export class FreighterActiveAddressStore {
   private storage: Storage | null;
 
   constructor(storageOverride?: Storage | null) {
-    this.storage =
-      storageOverride !== undefined ? storageOverride : getStorageAdapter();
+    this.storage = storageOverride !== undefined ? storageOverride : getStorageAdapter();
     this.rehydrate();
   }
 
@@ -301,10 +295,7 @@ export class FreighterActiveAddressStore {
           network: this.activeAddress.network,
           connectedAt: this.activeAddress.connectedAt,
         };
-        this.storage.setItem(
-          FREIGHTER_ACTIVE_ADDRESS_STORAGE_KEY,
-          JSON.stringify(payload)
-        );
+        this.storage.setItem(FREIGHTER_ACTIVE_ADDRESS_STORAGE_KEY, JSON.stringify(payload));
       } else {
         this.storage.removeItem(FREIGHTER_ACTIVE_ADDRESS_STORAGE_KEY);
       }
@@ -418,9 +409,9 @@ export async function verifyAndRehydrateFreighterAddress(
       const isConnected =
         typeof conn === "boolean"
           ? conn
-          : (conn && typeof conn === "object" && "isConnected" in conn)
-          ? Boolean((conn as { isConnected?: unknown }).isConnected)
-          : false;
+          : conn && typeof conn === "object" && "isConnected" in conn
+            ? Boolean((conn as { isConnected?: unknown }).isConnected)
+            : false;
 
       if (!isConnected) {
         freighterActiveAddress.clear();
@@ -431,9 +422,9 @@ export async function verifyAndRehydrateFreighterAddress(
       const liveAddress =
         typeof liveResult === "string"
           ? liveResult
-          : (liveResult && typeof liveResult === "object" && "address" in liveResult)
-          ? String((liveResult as { address?: unknown }).address ?? "")
-          : "";
+          : liveResult && typeof liveResult === "object" && "address" in liveResult
+            ? String((liveResult as { address?: unknown }).address ?? "")
+            : "";
 
       if (!liveAddress) {
         freighterActiveAddress.clear();
@@ -496,11 +487,7 @@ export async function signFreighterMultiSigSplit(
   signFn: FreighterMultiSigSignFn,
   timeoutMs: number = DEFAULT_FREIGHTER_SIGNATURE_TIMEOUT_MS
 ): Promise<FreighterMultiSigSplit> {
-  const signedXdr = await signFreighterWithTimeout(
-    { xdr: split.baseXdr },
-    signFn,
-    timeoutMs
-  );
+  const signedXdr = await signFreighterWithTimeout({ xdr: split.baseXdr }, signFn, timeoutMs);
   return applyMultiSigSignature(split, signedXdr);
 }
 
@@ -535,9 +522,7 @@ export class FreighterNetworkMismatchError extends Error {
     public readonly walletNetwork: FreighterNetwork,
     public readonly appNetwork: FreighterNetwork
   ) {
-    super(
-      `Network mismatch: Freighter wallet is on ${walletNetwork}, app expects ${appNetwork}`
-    );
+    super(`Network mismatch: Freighter wallet is on ${walletNetwork}, app expects ${appNetwork}`);
     this.name = "FreighterNetworkMismatchError";
   }
 }
@@ -624,16 +609,12 @@ export function formatStackTrace(err?: unknown): string {
     return err;
   }
 
-  const synthetic = new Error(
-    typeof err === "string" ? err : "Freighter connector trace"
-  );
+  const synthetic = new Error(typeof err === "string" ? err : "Freighter connector trace");
   return synthetic.stack ?? "Error: Freighter connector trace";
 }
 
 /** Render a boxed, prefixed console block with the stack trace appended. */
-export function formatConsoleWarningBlock(
-  block: FreighterConsoleWarningBlock
-): string {
+export function formatConsoleWarningBlock(block: FreighterConsoleWarningBlock): string {
   const lines = [
     `${LOG_PREFIX} ╔══════════════════════════════════════╗`,
     `${LOG_PREFIX} ║ ${block.title.padEnd(36).slice(0, 36)} ║`,
@@ -783,9 +764,7 @@ export function warnOnSimulationFee(
   const state = checkSimulationFeeWarning(result);
 
   if (state.hasWarning && state.warningMessage) {
-    const title = state.simulationError
-      ? "SIMULATION ERROR"
-      : "HIGH FEE WARNING";
+    const title = state.simulationError ? "SIMULATION ERROR" : "HIGH FEE WARNING";
     logFreighterWarning(title, state.warningMessage, {
       err: new Error(state.warningMessage),
       txId: options?.txId,

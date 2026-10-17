@@ -36,9 +36,7 @@ export default function LedgerWalletWarningBanner({
       role="alert"
       className={`bg-warning/40 border-b border-warning px-6 py-3 text-warning-soft text-sm text-center ${className}`}
     >
-      <p data-testid="ledger-wallet-setup-instruction">
-        {state.setupInstruction}
-      </p>
+      <p data-testid="ledger-wallet-setup-instruction">{state.setupInstruction}</p>
       <a
         href={LEDGER_SETUP_URL}
         target="_blank"

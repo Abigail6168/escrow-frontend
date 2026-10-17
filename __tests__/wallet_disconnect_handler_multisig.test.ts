@@ -22,8 +22,7 @@ function makeValidXdr(byteLength = 160): string {
     return Buffer.from(bytes).toString("base64");
   }
   let binary = "";
-  for (let i = 0; i < bytes.length; i++)
-    binary += String.fromCharCode(bytes[i]);
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
   return btoa(binary);
 }
 
@@ -183,7 +182,7 @@ describe("splitDisconnectMultiSigTransaction (#239)", () => {
   it("handles many signers", () => {
     const signers = Array.from(
       { length: 5 },
-      (_, i) => `G${"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[i]}${"X".repeat(53)}`,
+      (_, i) => `G${"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[i]}${"X".repeat(53)}`
     );
     const snapshot: DisconnectMultiSigSnapshot = {
       baseXdr: makeValidXdr(),

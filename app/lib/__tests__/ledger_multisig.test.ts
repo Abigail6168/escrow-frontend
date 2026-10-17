@@ -7,10 +7,7 @@ import {
 
 describe("ledger_usb_bridge - MultiSig Transaction Helpers", () => {
   const validPayload: MultiSigTxPayload = {
-    signatures: [
-      { publicKey: "pubkey_1", signature: "sig_1" },
-      { publicKey: "pubkey_2" },
-    ],
+    signatures: [{ publicKey: "pubkey_1", signature: "sig_1" }, { publicKey: "pubkey_2" }],
     threshold: 2,
     rawTransaction: "0x1234567890abcdef",
   };

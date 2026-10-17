@@ -25,7 +25,7 @@ describe("Create page", () => {
       vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ success: true, data: [{ address: "CTOKEN", symbol: "USDC" }] }),
-      }),
+      })
     );
     mockUseWallet.mockReturnValue({
       address: "GCLIENTADDRESS",
@@ -50,9 +50,7 @@ describe("Create page", () => {
     const submitButton = screen.getByRole("button", { name: "Create Job" });
     expect(submitButton).toBeDisabled();
     expect(submitButton).toHaveClass("disabled:cursor-not-allowed");
-    expect(
-      screen.getByText("Complete each milestone amount to continue.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Complete each milestone amount to continue.")).toBeInTheDocument();
   });
 
   it("supports keyboard focus cues and wizard section selection", () => {
@@ -81,9 +79,7 @@ describe("Create page", () => {
     expect(screen.getByText("No milestones available.")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Add first milestone" }));
-    expect(
-      screen.getByLabelText("Milestone 1 amount in stroops")
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Milestone 1 amount in stroops")).toBeInTheDocument();
   });
 
   it("renders asset and requirement placeholders for empty list data and recovers from them", () => {

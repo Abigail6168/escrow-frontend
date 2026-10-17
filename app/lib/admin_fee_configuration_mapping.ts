@@ -24,7 +24,9 @@ export const MOCK_FEE_CONFIG: FeeConfigResponse = {
 };
 
 /** Map a backend payload (basis points) to form values (percent). */
-export function mapFeeConfigResponse(data: FeeConfigResponse | null | undefined): FeeConfigFormValues {
+export function mapFeeConfigResponse(
+  data: FeeConfigResponse | null | undefined
+): FeeConfigFormValues {
   const bps = Number(data?.fee_bps);
   return {
     feePercent: Number.isFinite(bps) && bps >= 0 ? String(bps / 100) : "",
@@ -43,7 +45,7 @@ export function toFeeConfigPayload(values: Pick<FeeConfigFormValues, "feePercent
 
 /** Load values via an injectable fetcher (defaults to the mock dataset). */
 export async function loadFeeConfig(
-  fetcher: (url: string) => Promise<FeeConfigResponse> = async () => MOCK_FEE_CONFIG,
+  fetcher: (url: string) => Promise<FeeConfigResponse> = async () => MOCK_FEE_CONFIG
 ): Promise<FeeConfigFormValues> {
   return mapFeeConfigResponse(await fetcher(FEE_CONFIG_ENDPOINT));
 }

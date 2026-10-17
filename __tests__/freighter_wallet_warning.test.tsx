@@ -14,9 +14,9 @@ describe("FreighterWalletWarningBanner (#103)", () => {
     const banner = screen.getByTestId("freighter-wallet-warning-banner");
     expect(banner).toBeInTheDocument();
     expect(banner).toHaveAttribute("role", "alert");
-    expect(
-      screen.getByTestId("freighter-wallet-setup-instruction")
-    ).toHaveTextContent(FREIGHTER_SETUP_INSTRUCTION);
+    expect(screen.getByTestId("freighter-wallet-setup-instruction")).toHaveTextContent(
+      FREIGHTER_SETUP_INSTRUCTION
+    );
     expect(screen.getByTestId("freighter-wallet-install-link")).toHaveAttribute(
       "href",
       FREIGHTER_INSTALL_URL
@@ -24,13 +24,9 @@ describe("FreighterWalletWarningBanner (#103)", () => {
   });
 
   it("does not render when wallet is available", () => {
-    const { container } = render(
-      <FreighterWalletWarningBanner detector={() => true} />
-    );
+    const { container } = render(<FreighterWalletWarningBanner detector={() => true} />);
 
-    expect(
-      screen.queryByTestId("freighter-wallet-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("freighter-wallet-warning-banner")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -44,9 +40,9 @@ describe("FreighterWalletWarningBanner (#103)", () => {
 
     render(<FreighterWalletWarningBanner availability={availability} />);
 
-    expect(
-      screen.getByTestId("freighter-wallet-setup-instruction")
-    ).toHaveTextContent(/Freighter wallet extension not detected/i);
+    expect(screen.getByTestId("freighter-wallet-setup-instruction")).toHaveTextContent(
+      /Freighter wallet extension not detected/i
+    );
   });
 
   it("does not render when availability reports available", () => {
@@ -57,9 +53,7 @@ describe("FreighterWalletWarningBanner (#103)", () => {
       warningMessage: null,
     };
 
-    const { container } = render(
-      <FreighterWalletWarningBanner availability={availability} />
-    );
+    const { container } = render(<FreighterWalletWarningBanner availability={availability} />);
 
     expect(container).toBeEmptyDOMElement();
   });

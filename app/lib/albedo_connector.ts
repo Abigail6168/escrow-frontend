@@ -8,11 +8,7 @@
  */
 
 import type { ToastType } from "@/app/context/ToastContext";
-import {
-  FeeBumpTransaction,
-  type Transaction,
-  TransactionBuilder,
-} from "@stellar/stellar-sdk";
+import { FeeBumpTransaction, type Transaction, TransactionBuilder } from "@stellar/stellar-sdk";
 
 export type AlbedoTxPhase =
   | "idle"
@@ -74,9 +70,7 @@ export function formatStackTrace(err?: unknown): string {
     return err;
   }
 
-  const synthetic = new Error(
-    typeof err === "string" ? err : "Albedo connector trace"
-  );
+  const synthetic = new Error(typeof err === "string" ? err : "Albedo connector trace");
   return synthetic.stack ?? "Error: Albedo connector trace";
 }
 
@@ -84,19 +78,14 @@ export function formatStackTrace(err?: unknown): string {
 export function sanitizeAlbedoLogText(text: string): string {
   return text
     .replace(/S[A-Z2-7]{55}/g, "[REDACTED_SECRET]")
-    .replace(
-      /(secret|privateKey|seed|mnemonic|password|token)\s*[:=]\s*\S+/gi,
-      "$1=[REDACTED]"
-    );
+    .replace(/(secret|privateKey|seed|mnemonic|password|token)\s*[:=]\s*\S+/gi, "$1=[REDACTED]");
 }
 
 function assertNoSensitiveFields(context?: AlbedoLogContext): void {
   if (!context) return;
   for (const key of Object.keys(context)) {
     if (SENSITIVE_KEY_PATTERN.test(key)) {
-      throw new Error(
-        `${WARN_PREFIX} refused to log sensitive field "${key}"`
-      );
+      throw new Error(`${WARN_PREFIX} refused to log sensitive field "${key}"`);
     }
   }
 }
@@ -118,22 +107,16 @@ export function formatConsoleWarningBlock(block: AlbedoConsoleBlock): string {
     lines.push(`${WARN_PREFIX} txId: ${sanitizeAlbedoLogText(block.txId)}`);
   }
   if (block.txHash) {
-    lines.push(
-      `${WARN_PREFIX} txHash: ${sanitizeAlbedoLogText(block.txHash)}`
-    );
+    lines.push(`${WARN_PREFIX} txHash: ${sanitizeAlbedoLogText(block.txHash)}`);
   }
   if (block.phase) {
     lines.push(`${WARN_PREFIX} phase: ${block.phase}`);
   }
   if (block.network) {
-    lines.push(
-      `${WARN_PREFIX} network: ${sanitizeAlbedoLogText(block.network)}`
-    );
+    lines.push(`${WARN_PREFIX} network: ${sanitizeAlbedoLogText(block.network)}`);
   }
   if (block.operationType) {
-    lines.push(
-      `${WARN_PREFIX} operation: ${sanitizeAlbedoLogText(block.operationType)}`
-    );
+    lines.push(`${WARN_PREFIX} operation: ${sanitizeAlbedoLogText(block.operationType)}`);
   }
 
   lines.push(`${WARN_PREFIX} --- stack trace ---`);
@@ -166,11 +149,7 @@ function buildBlock(
 }
 
 /** Logs a formatted warning block (including stack) via console.warn. */
-export function logAlbedoWarning(
-  title: string,
-  body: string,
-  options?: AlbedoLogContext
-): string {
+export function logAlbedoWarning(title: string, body: string, options?: AlbedoLogContext): string {
   const { formatted } = buildBlock(title, body, options);
   console.warn(formatted);
   return formatted;
@@ -180,11 +159,7 @@ export function logAlbedoWarning(
  * Logs a formatted error block via console.error while preserving the original
  * error object (and its stack) as a secondary argument when available.
  */
-export function logAlbedoError(
-  title: string,
-  body: string,
-  options?: AlbedoLogContext
-): string {
+export function logAlbedoError(title: string, body: string, options?: AlbedoLogContext): string {
   const { formatted } = buildBlock(title, body, options);
   if (options?.err instanceof Error) {
     console.error(formatted, options.err);
@@ -304,9 +279,7 @@ export function detectAlbedoExtension(detector?: () => boolean): boolean {
  * Checks Albedo availability and returns fallback setup instructions when
  * the wallet is missing or the check itself throws.
  */
-export function checkAlbedoAvailability(
-  detector?: () => boolean
-): AlbedoAvailabilityState {
+export function checkAlbedoAvailability(detector?: () => boolean): AlbedoAvailabilityState {
   try {
     const available = detectAlbedoExtension(detector);
     if (available) {
@@ -370,9 +343,7 @@ export class AlbedoNetworkMismatchError extends Error {
     public readonly walletNetwork: AlbedoNetwork,
     public readonly appNetwork: AlbedoNetwork
   ) {
-    super(
-      `Network mismatch: Albedo wallet is on ${walletNetwork}, app expects ${appNetwork}`
-    );
+    super(`Network mismatch: Albedo wallet is on ${walletNetwork}, app expects ${appNetwork}`);
     this.name = "AlbedoNetworkMismatchError";
   }
 }
@@ -442,9 +413,7 @@ export class AlbedoSignatureTimeoutError extends Error {
  * Zeroes and drops a sensitive buffer so it cannot be retained after the
  * operation is aborted or completes.
  */
-export function clearAlbedoSensitiveMemory(
-  request: AlbedoSignRequest
-): AlbedoSignRequest {
+export function clearAlbedoSensitiveMemory(request: AlbedoSignRequest): AlbedoSignRequest {
   if (request.payload) {
     request.payload.fill(0);
   }
@@ -529,10 +498,7 @@ export async function runAlbedoSign<T>(
       logAlbedoWarning("SIGNATURE REJECTED", "signature rejected by user", {
         err,
       });
-      showToast(
-        "Signature cancelled — you rejected the request in Albedo.",
-        "warning"
-      );
+      showToast("Signature cancelled — you rejected the request in Albedo.", "warning");
       return null;
     }
     throw err;
@@ -652,9 +618,7 @@ export interface AlbedoPersistOptions {
   storage?: StorageAdapter | null;
 }
 
-function resolveStorageAdapter(
-  storage?: StorageAdapter | null
-): StorageAdapter | null {
+function resolveStorageAdapter(storage?: StorageAdapter | null): StorageAdapter | null {
   if (storage !== undefined) return storage;
   if (typeof window === "undefined") return null;
   try {
@@ -693,9 +657,7 @@ export function saveAlbedoState(
   }
 }
 
-export function loadAlbedoState(
-  options?: AlbedoPersistOptions
-): AlbedoRestoredState {
+export function loadAlbedoState(options?: AlbedoPersistOptions): AlbedoRestoredState {
   const empty: AlbedoRestoredState = {
     restored: false,
     parseError: null,
@@ -724,9 +686,7 @@ export function loadAlbedoState(
       };
     } catch (err) {
       const message =
-        err instanceof AlbedoStateParseError
-          ? err.message
-          : "invalid persisted state";
+        err instanceof AlbedoStateParseError ? err.message : "invalid persisted state";
       try {
         storage.removeItem(ALBEDO_STORAGE_KEY);
       } catch {
@@ -760,8 +720,7 @@ export class AlbedoSessionManager {
   private storage: StorageAdapter | null;
 
   constructor(storage?: StorageAdapter | null) {
-    this.storage =
-      storage !== undefined ? storage : resolveStorageAdapter(undefined);
+    this.storage = storage !== undefined ? storage : resolveStorageAdapter(undefined);
     this.memory = loadAlbedoState({ storage: this.storage });
   }
 
@@ -769,11 +728,7 @@ export class AlbedoSessionManager {
     return { ...this.memory };
   }
 
-  persist(input: {
-    address: string;
-    network: AlbedoNetwork;
-    connectedAt?: number;
-  }): boolean {
+  persist(input: { address: string; network: AlbedoNetwork; connectedAt?: number }): boolean {
     const ok = saveAlbedoState(input, { storage: this.storage });
     if (ok) {
       const connectedAt = input.connectedAt ?? Date.now();
@@ -809,12 +764,7 @@ export class AlbedoSessionManager {
 // Loading spinner states (#128)
 // ---------------------------------------------------------------------------
 
-export type AlbedoLoadingOperation =
-  | "sign"
-  | "connect"
-  | "submit"
-  | "popup"
-  | "other";
+export type AlbedoLoadingOperation = "sign" | "connect" | "submit" | "popup" | "other";
 
 export interface AlbedoLoadingState {
   isLoading: boolean;
@@ -862,10 +812,7 @@ export class AlbedoLoadingManager {
     this.notify();
   }
 
-  async runWithLoading<T>(
-    operation: AlbedoLoadingOperation,
-    fn: () => Promise<T>
-  ): Promise<T> {
+  async runWithLoading<T>(operation: AlbedoLoadingOperation, fn: () => Promise<T>): Promise<T> {
     this.pendingCount++;
     if (this.activeOperation === null) {
       this.activeOperation = operation;
@@ -875,11 +822,7 @@ export class AlbedoLoadingManager {
     try {
       return await fn();
     } catch (err) {
-      logAlbedoWarning(
-        "LOADING OPERATION FAILED",
-        `${operation} operation failed`,
-        { err }
-      );
+      logAlbedoWarning("LOADING OPERATION FAILED", `${operation} operation failed`, { err });
       throw err;
     } finally {
       this.pendingCount = Math.max(0, this.pendingCount - 1);
@@ -954,10 +897,7 @@ export interface AlbedoTransactionStructure {
   sourceAccount: string;
 }
 
-function readTransactionEnvelope(
-  transactionXdr: string,
-  networkPassphrase: string
-): Transaction {
+function readTransactionEnvelope(transactionXdr: string, networkPassphrase: string): Transaction {
   const tx = TransactionBuilder.fromXDR(transactionXdr, networkPassphrase);
   return tx instanceof FeeBumpTransaction ? tx.innerTransaction : tx;
 }
@@ -981,11 +921,7 @@ export function parseAlbedoTransactionStructure(
     };
   } catch (err) {
     if (err instanceof AlbedoTransactionAssemblyError) throw err;
-    logAlbedoWarning(
-      "ASSEMBLY PARSE FAILED",
-      "failed to parse transaction XDR",
-      { err }
-    );
+    logAlbedoWarning("ASSEMBLY PARSE FAILED", "failed to parse transaction XDR", { err });
     throw new AlbedoTransactionAssemblyError(
       err instanceof Error ? err.message : "invalid transaction XDR"
     );
@@ -1009,9 +945,7 @@ export function createAlbedoMultiSigAssemblyPlan(
   networkPassphrase: string
 ): AlbedoMultiSigAssemblyPlan {
   if (!signerPublicKeys.length) {
-    throw new AlbedoTransactionAssemblyError(
-      "at least one signer public key is required"
-    );
+    throw new AlbedoTransactionAssemblyError("at least one signer public key is required");
   }
 
   for (const key of signerPublicKeys) {
@@ -1061,15 +995,10 @@ export function assembleAlbedoMultiSigTransaction(
 
   try {
     const merged = TransactionBuilder.fromXDR(baseXdr, networkPassphrase);
-    const existing = new Set(
-      merged.signatures.map((sig) => sig.signature().toString("base64"))
-    );
+    const existing = new Set(merged.signatures.map((sig) => sig.signature().toString("base64")));
 
     for (const part of parts) {
-      const signed = TransactionBuilder.fromXDR(
-        part.signedXdr,
-        networkPassphrase
-      );
+      const signed = TransactionBuilder.fromXDR(part.signedXdr, networkPassphrase);
       for (const signature of signed.signatures) {
         const key = signature.signature().toString("base64");
         if (!existing.has(key)) {
@@ -1082,11 +1011,9 @@ export function assembleAlbedoMultiSigTransaction(
     return merged.toXDR();
   } catch (err) {
     if (err instanceof AlbedoTransactionAssemblyError) throw err;
-    logAlbedoWarning(
-      "MULTISIG ASSEMBLY FAILED",
-      "failed to assemble multi-signature transaction",
-      { err }
-    );
+    logAlbedoWarning("MULTISIG ASSEMBLY FAILED", "failed to assemble multi-signature transaction", {
+      err,
+    });
     throw new AlbedoTransactionAssemblyError(
       err instanceof Error ? err.message : "assembly failed"
     );
@@ -1107,9 +1034,7 @@ export function splitAlbedoMultiSigTransactionParts(
   networkPassphrase: string
 ): AlbedoMultiSigPart[] {
   if (!signerPublicKeys.length) {
-    throw new AlbedoTransactionAssemblyError(
-      "at least one signer public key is required"
-    );
+    throw new AlbedoTransactionAssemblyError("at least one signer public key is required");
   }
 
   const structure = parseAlbedoTransactionStructure(signedXdr, networkPassphrase);
@@ -1185,9 +1110,7 @@ export class AlbedoSimulationError extends Error {
  * Soroban transactions carry a `minResourceFee`; classic transactions use
  * `fee`.  Both are accepted so callers need not branch on transaction type.
  */
-export function extractEstimatedFee(
-  simulation: AlbedoSimulationResult
-): number {
+export function extractEstimatedFee(simulation: AlbedoSimulationResult): number {
   const raw = simulation.minResourceFee ?? simulation.fee;
   if (raw === undefined || raw === null) return 0;
   const parsed = Number(raw);
@@ -1232,10 +1155,7 @@ export function warnOnAlbedoFeeExceeded(
   const state = checkAlbedoFeeWarning(simulation, feeLimitStroops);
   if (state.exceeded && state.warningMessage) {
     logAlbedoWarning("HIGH FEE WARNING", state.warningMessage, {
-      err: new AlbedoFeeExceededError(
-        state.estimatedFeeStroops,
-        state.feeLimitStroops
-      ),
+      err: new AlbedoFeeExceededError(state.estimatedFeeStroops, state.feeLimitStroops),
       phase: "simulating",
     });
   }

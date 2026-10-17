@@ -190,9 +190,10 @@ describe("WalletDisconnectGasWarningBanner (#240)", () => {
 
   it("marks the banner as an alert for assistive technology", () => {
     render(<WalletDisconnectGasWarningBanner simulation={highFee} />);
-    expect(
-      screen.getByTestId("wallet-disconnect-gas-warning-banner"),
-    ).toHaveAttribute("role", "alert");
+    expect(screen.getByTestId("wallet-disconnect-gas-warning-banner")).toHaveAttribute(
+      "role",
+      "alert"
+    );
   });
 
   it("flags the high-fee case on the banner element", () => {
@@ -204,9 +205,7 @@ describe("WalletDisconnectGasWarningBanner (#240)", () => {
 
   it("displays the simulation error banner when the simulation failed", () => {
     render(
-      <WalletDisconnectGasWarningBanner
-        simulation={{ fee: 100, error: "contract trapped" }}
-      />,
+      <WalletDisconnectGasWarningBanner simulation={{ fee: 100, error: "contract trapped" }} />
     );
     const banner = screen.getByTestId("wallet-disconnect-gas-warning-banner");
     expect(banner).toHaveTextContent("contract trapped");
@@ -214,31 +213,18 @@ describe("WalletDisconnectGasWarningBanner (#240)", () => {
   });
 
   it("does not render when the fee is within standard bounds", () => {
-    const { container } = render(
-      <WalletDisconnectGasWarningBanner simulation={{ fee: 500 }} />,
-    );
-    expect(
-      screen.queryByTestId("wallet-disconnect-gas-warning-banner"),
-    ).not.toBeInTheDocument();
+    const { container } = render(<WalletDisconnectGasWarningBanner simulation={{ fee: 500 }} />);
+    expect(screen.queryByTestId("wallet-disconnect-gas-warning-banner")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 
   it("does not render when no simulation has run yet", () => {
-    const { container } = render(
-      <WalletDisconnectGasWarningBanner simulation={null} />,
-    );
+    const { container } = render(<WalletDisconnectGasWarningBanner simulation={null} />);
     expect(container).toBeEmptyDOMElement();
   });
 
   it("appends a caller-supplied className", () => {
-    render(
-      <WalletDisconnectGasWarningBanner
-        simulation={highFee}
-        className="mb-4"
-      />,
-    );
-    expect(
-      screen.getByTestId("wallet-disconnect-gas-warning-banner"),
-    ).toHaveClass("mb-4");
+    render(<WalletDisconnectGasWarningBanner simulation={highFee} className="mb-4" />);
+    expect(screen.getByTestId("wallet-disconnect-gas-warning-banner")).toHaveClass("mb-4");
   });
 });

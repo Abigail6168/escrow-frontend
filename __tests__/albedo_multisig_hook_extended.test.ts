@@ -48,16 +48,14 @@ describe("useAlbedoMultiSigAssembly — extended lifecycle", () => {
 
     it("throws on empty XDR", () => {
       const { result } = renderHook(() => useAlbedoMultiSigAssembly(NETWORK));
-      expect(() => result.current.prepareTransaction("")).toThrow(
-        AlbedoTransactionAssemblyError
-      );
+      expect(() => result.current.prepareTransaction("")).toThrow(AlbedoTransactionAssemblyError);
     });
 
     it("throws on malformed XDR", () => {
       const { result } = renderHook(() => useAlbedoMultiSigAssembly(NETWORK));
-      expect(() =>
-        result.current.prepareTransaction("not-valid-xdr")
-      ).toThrow(AlbedoTransactionAssemblyError);
+      expect(() => result.current.prepareTransaction("not-valid-xdr")).toThrow(
+        AlbedoTransactionAssemblyError
+      );
     });
 
     it("throws on whitespace-only XDR", () => {
@@ -90,12 +88,8 @@ describe("useAlbedoMultiSigAssembly — extended lifecycle", () => {
       const originalStructure = result.current.parseStructure(originalXdr);
       const roundTrippedStructure = result.current.parseStructure(serialized);
 
-      expect(roundTrippedStructure.operationCount).toBe(
-        originalStructure.operationCount
-      );
-      expect(roundTrippedStructure.sourceAccount).toBe(
-        originalStructure.sourceAccount
-      );
+      expect(roundTrippedStructure.operationCount).toBe(originalStructure.operationCount);
+      expect(roundTrippedStructure.sourceAccount).toBe(originalStructure.sourceAccount);
       expect(roundTrippedStructure.fee).toBe(originalStructure.fee);
     });
   });
@@ -105,9 +99,9 @@ describe("useAlbedoMultiSigAssembly — extended lifecycle", () => {
       const { result } = renderHook(() => useAlbedoMultiSigAssembly(NETWORK));
       const signFn = vi.fn().mockResolvedValue("signed-xdr");
 
-      await expect(
-        result.current.signTransaction("bad-xdr", signFn)
-      ).rejects.toThrow(AlbedoTransactionAssemblyError);
+      await expect(result.current.signTransaction("bad-xdr", signFn)).rejects.toThrow(
+        AlbedoTransactionAssemblyError
+      );
       expect(signFn).not.toHaveBeenCalled();
     });
 
@@ -124,13 +118,11 @@ describe("useAlbedoMultiSigAssembly — extended lifecycle", () => {
     it("propagates signing errors", async () => {
       const { tx } = buildSampleTransaction();
       const { result } = renderHook(() => useAlbedoMultiSigAssembly(NETWORK));
-      const signFn = vi
-        .fn()
-        .mockRejectedValue(new Error("user rejected signature"));
+      const signFn = vi.fn().mockRejectedValue(new Error("user rejected signature"));
 
-      await expect(
-        result.current.signTransaction(tx.toXDR(), signFn)
-      ).rejects.toThrow("user rejected signature");
+      await expect(result.current.signTransaction(tx.toXDR(), signFn)).rejects.toThrow(
+        "user rejected signature"
+      );
     });
   });
 
@@ -190,10 +182,7 @@ describe("useAlbedoMultiSigAssembly — extended lifecycle", () => {
       expect(structure.operationCount).toBe(1);
 
       // Step 2: Create assembly plan
-      const plan = result.current.planAssembly(baseXdr, [
-        source.publicKey(),
-        cosigner.publicKey(),
-      ]);
+      const plan = result.current.planAssembly(baseXdr, [source.publicKey(), cosigner.publicKey()]);
       expect(plan.pendingSigners).toHaveLength(2);
 
       // Step 3: Sign (simulated)
@@ -203,10 +192,10 @@ describe("useAlbedoMultiSigAssembly — extended lifecycle", () => {
       second.sign(cosigner);
 
       // Step 4: Split parts from a signed XDR (requires at least one signature)
-      const parts = result.current.splitParts(
-        first.toXDR(),
-        [source.publicKey(), cosigner.publicKey()]
-      );
+      const parts = result.current.splitParts(first.toXDR(), [
+        source.publicKey(),
+        cosigner.publicKey(),
+      ]);
       expect(parts).toHaveLength(2);
 
       // Step 5: Assemble

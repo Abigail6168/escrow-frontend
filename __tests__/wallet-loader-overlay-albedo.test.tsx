@@ -13,9 +13,7 @@ afterEach(() => {
 
 describe("WalletLoaderOverlay — Albedo integration", () => {
   it("overlay component exists and can be imported", async () => {
-    const mod = await import(
-      "@/app/components/WalletLoaderOverlay"
-    );
+    const mod = await import("@/app/components/WalletLoaderOverlay");
     expect(mod.default).toBeDefined();
     expect(typeof mod.default).toBe("function");
   });

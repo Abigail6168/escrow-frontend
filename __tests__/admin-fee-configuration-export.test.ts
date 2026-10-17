@@ -7,7 +7,9 @@ import {
 
 describe("admin_fee_configuration export", () => {
   it("writes header and correct cell values", () => {
-    const csv = feeRowsToCsv([{ token: "USDC", feeBps: 250, state: "active", updatedAt: "2026-01-01" }]);
+    const csv = feeRowsToCsv([
+      { token: "USDC", feeBps: 250, state: "active", updatedAt: "2026-01-01" },
+    ]);
     const [header, row] = csv.split("\r\n");
     expect(header).toBe("Token,Fee (bps),Fee (%),State,Updated At");
     expect(row).toBe("USDC,250,2.50,active,2026-01-01");
@@ -20,6 +22,8 @@ describe("admin_fee_configuration export", () => {
   });
 
   it("builds a dated filename", () => {
-    expect(feeExportFilename(new Date("2026-03-04T10:00:00Z"))).toBe("admin-fee-configuration-2026-03-04.csv");
+    expect(feeExportFilename(new Date("2026-03-04T10:00:00Z"))).toBe(
+      "admin-fee-configuration-2026-03-04.csv"
+    );
   });
 });

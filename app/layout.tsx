@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-  IBM_Plex_Mono,
-  Instrument_Serif,
-  Inter,
-} from "next/font/google";
+import { Geist, Geist_Mono, IBM_Plex_Mono, Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 import { WalletProvider } from "./context/WalletContext";
 import { ToastProvider } from "./context/ToastContext";

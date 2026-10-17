@@ -11,6 +11,7 @@ This checklist helps backend developers integrate with the admin page implementa
 **Endpoint**: `POST /api/jobs/query`
 
 **Request Body**:
+
 ```json
 {
   "contractId": "CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH",
@@ -20,17 +21,22 @@ This checklist helps backend developers integrate with the admin page implementa
 ```
 
 **Response** (any of these formats work):
+
 ```json
 "GADMINADDRESS123..."
 ```
+
 or
+
 ```json
 {
   "success": true,
   "data": "GADMINADDRESS123..."
 }
 ```
+
 or
+
 ```json
 {
   "result": "GADMINADDRESS123..."
@@ -38,6 +44,7 @@ or
 ```
 
 **Error Response**:
+
 ```json
 {
   "error": "Query failed"
@@ -45,6 +52,7 @@ or
 ```
 
 **Implementation Notes**:
+
 - Must invoke `get_admin()` on the contract
 - Return the admin's Stellar address (starts with G)
 - Should be a read-only query (no transaction needed)
@@ -59,29 +67,26 @@ or
 **Endpoint**: `GET /api/jobs/whitelisted-tokens?contractId={contractId}`
 
 **Query Params**:
+
 - `contractId` (required): The escrow contract ID
 
 **Response** (either format works):
+
 ```json
 {
   "success": true,
-  "data": [
-    "CTOKEN1ABC...",
-    "CTOKEN2DEF...",
-    "CTOKEN3GHI..."
-  ]
+  "data": ["CTOKEN1ABC...", "CTOKEN2DEF...", "CTOKEN3GHI..."]
 }
 ```
+
 or
+
 ```json
-[
-  "CTOKEN1ABC...",
-  "CTOKEN2DEF...",
-  "CTOKEN3GHI..."
-]
+["CTOKEN1ABC...", "CTOKEN2DEF...", "CTOKEN3GHI..."]
 ```
 
 **Error Response**:
+
 ```json
 {
   "error": "Failed to fetch whitelist"
@@ -89,6 +94,7 @@ or
 ```
 
 **Implementation Notes**:
+
 - Query contract's storage or call a getter method
 - Return array of token contract addresses
 - Empty array if no tokens whitelisted
@@ -103,6 +109,7 @@ or
 **Endpoint**: `POST /api/jobs/build-tx`
 
 **Request Body** (Add Token):
+
 ```json
 {
   "contractId": "CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH",
@@ -122,6 +129,7 @@ or
 ```
 
 **Request Body** (Remove Token):
+
 ```json
 {
   "contractId": "CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH",
@@ -141,6 +149,7 @@ or
 ```
 
 **Response**:
+
 ```json
 {
   "xdr": "AAAAAgAAAABXk3..."
@@ -148,6 +157,7 @@ or
 ```
 
 **Error Response**:
+
 ```json
 {
   "error": "Failed to build transaction"
@@ -155,6 +165,7 @@ or
 ```
 
 **Implementation Notes**:
+
 - Build a Soroban contract invocation transaction
 - Use provided sourceAddress as transaction source
 - Set appropriate fee (recommend BASE_FEE or higher)
@@ -172,6 +183,7 @@ or
 **Endpoint**: `POST /api/jobs/submit`
 
 **Request Body**:
+
 ```json
 {
   "signedXdr": "AAAAAgAAAABXk3..."
@@ -179,6 +191,7 @@ or
 ```
 
 **Response** (any field name works):
+
 ```json
 {
   "hash": "abc123def456...",
@@ -188,6 +201,7 @@ or
 ```
 
 **Error Response**:
+
 ```json
 {
   "error": "Transaction failed",
@@ -196,6 +210,7 @@ or
 ```
 
 **Implementation Notes**:
+
 - Submit the signed XDR to Stellar network
 - Wait for transaction to complete
 - Return transaction hash on success
@@ -232,6 +247,7 @@ pub fn add_whitelisted_token(env: Env, admin: Address, token: Address) {
 ```
 
 **Requirements**:
+
 - Must verify `admin` is the contract admin
 - Must check token address is valid
 - Should prevent duplicates
@@ -251,6 +267,7 @@ pub fn remove_whitelisted_token(env: Env, admin: Address, token: Address) {
 ```
 
 **Requirements**:
+
 - Must verify `admin` is the contract admin
 - Should handle non-existent token gracefully
 - Should emit event
@@ -260,6 +277,7 @@ pub fn remove_whitelisted_token(env: Env, admin: Address, token: Address) {
 ## Testing the Integration
 
 ### 1. Test Admin Query
+
 ```bash
 curl -X POST http://localhost:3001/api/jobs/query \
   -H "Content-Type: application/json" \
@@ -273,6 +291,7 @@ curl -X POST http://localhost:3001/api/jobs/query \
 Expected: Admin address returned
 
 ### 2. Test Whitelist Fetch
+
 ```bash
 curl http://localhost:3001/api/jobs/whitelisted-tokens?contractId=CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH
 ```
@@ -280,6 +299,7 @@ curl http://localhost:3001/api/jobs/whitelisted-tokens?contractId=CDD5WKK3WT3QVK
 Expected: Array of token addresses
 
 ### 3. Test Build Transaction
+
 ```bash
 curl -X POST http://localhost:3001/api/jobs/build-tx \
   -H "Content-Type: application/json" \
@@ -297,6 +317,7 @@ curl -X POST http://localhost:3001/api/jobs/build-tx \
 Expected: XDR string returned
 
 ### 4. Test Submit
+
 (Requires signed XDR from Freighter)
 
 ---
@@ -316,6 +337,7 @@ Expected: XDR string returned
 ## Error Scenarios to Handle
 
 ### Backend Should Handle:
+
 1. Invalid contract ID
 2. Contract method not found
 3. Invalid argument types
@@ -326,6 +348,7 @@ Expected: XDR string returned
 8. Insufficient balance for fees
 
 ### Contract Should Handle:
+
 1. Non-admin caller
 2. Invalid token address
 3. Duplicate token (add)
@@ -337,6 +360,7 @@ Expected: XDR string returned
 ## Environment Variables
 
 Backend may need:
+
 ```env
 STELLAR_NETWORK=TESTNET
 STELLAR_RPC_URL=https://soroban-testnet.stellar.org
@@ -344,6 +368,7 @@ CONTRACT_ID=CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH
 ```
 
 Frontend needs:
+
 ```env
 NEXT_PUBLIC_BACKEND_URL=http://localhost:3001
 NEXT_PUBLIC_CONTRACT_ID=CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH
@@ -372,22 +397,26 @@ NEXT_PUBLIC_CONTRACT_ID=CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH
 ## Common Issues
 
 ### "Admin address not found"
+
 - Check contract has `get_admin` method
 - Verify method returns Address type
 - Check response format matches expectations
 
 ### "Could not load whitelisted tokens"
+
 - Verify whitelist endpoint exists
 - Check contract storage structure
 - Ensure response is array format
 
 ### "Transaction simulation failed"
+
 - Verify contract method signatures match
 - Check argument types are correct
 - Ensure admin has proper permissions
 - Verify contract is deployed
 
 ### "Backend returns 500"
+
 - Check Stellar RPC connectivity
 - Verify contract ID is correct
 - Check logs for detailed error
@@ -398,6 +427,7 @@ NEXT_PUBLIC_CONTRACT_ID=CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH
 ## Support
 
 For questions or issues:
+
 1. Check technical docs: `ADMIN_PAGE_IMPLEMENTATION.md`
 2. Review flow diagrams: `docs/admin-flow-diagram.md`
 3. Check frontend code: `app/admin/page.tsx`

@@ -102,18 +102,12 @@ describe("WalletSelectorModal wallet availability (#103)", () => {
   });
 
   it("renders nothing when isOpen is false", () => {
-    render(
-      <WalletSelectorModal isOpen={false} onClose={vi.fn()} />
-    );
-    expect(
-      screen.queryByTestId("wallet-selector-modal")
-    ).not.toBeInTheDocument();
+    render(<WalletSelectorModal isOpen={false} onClose={vi.fn()} />);
+    expect(screen.queryByTestId("wallet-selector-modal")).not.toBeInTheDocument();
   });
 
   it("renders the modal dialog when isOpen is true", () => {
-    render(
-      <WalletSelectorModal isOpen={true} onClose={vi.fn()} />
-    );
+    render(<WalletSelectorModal isOpen={true} onClose={vi.fn()} />);
 
     expect(screen.getByTestId("wallet-selector-modal")).toBeInTheDocument();
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -121,42 +115,24 @@ describe("WalletSelectorModal wallet availability (#103)", () => {
   });
 
   it("renders all supported wallet options", () => {
-    render(
-      <WalletSelectorModal isOpen={true} onClose={vi.fn()} />
-    );
+    render(<WalletSelectorModal isOpen={true} onClose={vi.fn()} />);
 
-    expect(
-      screen.getByTestId("wallet-selector-option-freighter")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("wallet-selector-option-albedo")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("wallet-selector-option-xbull")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("wallet-selector-option-hana")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("wallet-selector-option-freighter")).toBeInTheDocument();
+    expect(screen.getByTestId("wallet-selector-option-albedo")).toBeInTheDocument();
+    expect(screen.getByTestId("wallet-selector-option-xbull")).toBeInTheDocument();
+    expect(screen.getByTestId("wallet-selector-option-hana")).toBeInTheDocument();
   });
 
   it("shows availability warning when Freighter extension is missing", () => {
-    render(
-      <WalletSelectorModal
-        isOpen={true}
-        onClose={vi.fn()}
-        freighterDetector={() => false}
-      />
-    );
+    render(<WalletSelectorModal isOpen={true} onClose={vi.fn()} freighterDetector={() => false} />);
 
-    const warning = screen.getByTestId(
-      "wallet-selector-availability-warning"
-    );
+    const warning = screen.getByTestId("wallet-selector-availability-warning");
     expect(warning).toBeInTheDocument();
     expect(warning).toHaveAttribute("role", "alert");
 
-    expect(
-      screen.getByTestId("wallet-selector-setup-instruction")
-    ).toHaveTextContent(/not detected/i);
+    expect(screen.getByTestId("wallet-selector-setup-instruction")).toHaveTextContent(
+      /not detected/i
+    );
 
     const installLink = screen.getByTestId("wallet-selector-install-link");
     expect(installLink).toHaveAttribute("href", FREIGHTER_INSTALL_URL);
@@ -164,24 +140,14 @@ describe("WalletSelectorModal wallet availability (#103)", () => {
   });
 
   it("hides availability warning when Freighter extension is detected", () => {
-    render(
-      <WalletSelectorModal
-        isOpen={true}
-        onClose={vi.fn()}
-        freighterDetector={() => true}
-      />
-    );
+    render(<WalletSelectorModal isOpen={true} onClose={vi.fn()} freighterDetector={() => true} />);
 
-    expect(
-      screen.queryByTestId("wallet-selector-availability-warning")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("wallet-selector-availability-warning")).not.toBeInTheDocument();
   });
 
   it("calls onClose when the close button is clicked", () => {
     const onClose = vi.fn();
-    render(
-      <WalletSelectorModal isOpen={true} onClose={onClose} />
-    );
+    render(<WalletSelectorModal isOpen={true} onClose={onClose} />);
 
     fireEvent.click(screen.getByTestId("wallet-selector-modal-close"));
     expect(onClose).toHaveBeenCalledTimes(1);
@@ -189,13 +155,7 @@ describe("WalletSelectorModal wallet availability (#103)", () => {
 
   it("calls onConnect with the selected wallet id", () => {
     const onConnect = vi.fn();
-    render(
-      <WalletSelectorModal
-        isOpen={true}
-        onClose={vi.fn()}
-        onConnect={onConnect}
-      />
-    );
+    render(<WalletSelectorModal isOpen={true} onClose={vi.fn()} onConnect={onConnect} />);
 
     fireEvent.click(screen.getByTestId("wallet-selector-option-freighter"));
     expect(onConnect).toHaveBeenCalledWith("freighter");
@@ -240,11 +200,7 @@ describe("WalletSelectorModal design tokens", () => {
     );
 
     const errorMessage = screen.getByTestId("wallet-selector-error-message");
-    expect(errorMessage).toHaveClass(
-      "bg-danger/20",
-      "border-danger/40",
-      "text-danger-soft"
-    );
+    expect(errorMessage).toHaveClass("bg-danger/20", "border-danger/40", "text-danger-soft");
   });
 
   it("uses design-token classes for wallet rows and status badges", () => {
@@ -260,11 +216,7 @@ describe("WalletSelectorModal design tokens", () => {
     );
 
     const selectedOption = screen.getByTestId("wallet-selector-option-freighter");
-    expect(selectedOption).toHaveClass(
-      "border-accent-soft",
-      "bg-accent/10",
-      "text-text-primary"
-    );
+    expect(selectedOption).toHaveClass("border-accent-soft", "bg-accent/10", "text-text-primary");
 
     const connectedBadge = screen.getByTestId("wallet-selector-connected-badge");
     expect(connectedBadge).toHaveClass("text-success-soft");
@@ -277,9 +229,7 @@ describe("WalletSelectorModal signature rejection handling (#105)", () => {
   });
 
   it("shows rejection warning toast when handleWalletError catches a user rejection", () => {
-    const result = handleWalletError(
-      new Error("user rejected transaction")
-    );
+    const result = handleWalletError(new Error("user rejected transaction"));
     expect(result.isRejection).toBe(true);
 
     // Simulate what the component does with this result
@@ -312,9 +262,7 @@ describe("WalletSelectorModal signature rejection handling (#105)", () => {
   it("logs a console warning when a rejection is caught", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    const result = handleWalletError(
-      new Error("User Declined the request")
-    );
+    const result = handleWalletError(new Error("User Declined the request"));
     expect(result.isRejection).toBe(true);
     expect(warnSpy).toHaveBeenCalledWith(
       "[wallet_selector_modal] signature rejected by user:",
@@ -371,26 +319,14 @@ describe("WalletSelectorModal gas estimation warnings", () => {
   });
 
   it("does not show a simulation warning banner when the simulation result has no error", () => {
-    render(
-      <WalletSelectorModal
-        isOpen={true}
-        onClose={vi.fn()}
-        simulationResult={{ fee: 100 }}
-      />
-    );
+    render(<WalletSelectorModal isOpen={true} onClose={vi.fn()} simulationResult={{ fee: 100 }} />);
 
-    expect(
-      screen.queryByTestId("wallet-selector-gas-warning")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("wallet-selector-gas-warning")).not.toBeInTheDocument();
   });
 
   it("does not show a simulation warning banner when no simulation result is provided", () => {
-    render(
-      <WalletSelectorModal isOpen={true} onClose={vi.fn()} />
-    );
+    render(<WalletSelectorModal isOpen={true} onClose={vi.fn()} />);
 
-    expect(
-      screen.queryByTestId("wallet-selector-gas-warning")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("wallet-selector-gas-warning")).not.toBeInTheDocument();
   });
 });

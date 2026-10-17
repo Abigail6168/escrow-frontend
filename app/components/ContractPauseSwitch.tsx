@@ -51,9 +51,7 @@ export default function ContractPauseSwitch({
   onToggle,
   className = "",
 }: ContractPauseSwitchProps) {
-  const [state, setState] = useState<ContractPauseState | null>(
-    initialState ?? null,
-  );
+  const [state, setState] = useState<ContractPauseState | null>(initialState ?? null);
   const [loading, setLoading] = useState<boolean>(!initialState);
   const [, startTransition] = useTransition();
 
@@ -152,14 +150,8 @@ export default function ContractPauseSwitch({
               data-testid="contract-pause-loading"
               aria-hidden="true"
             />
-            <div
-              className={CONTRACT_PAUSE_GRID_CLASSES.loadingCell}
-              aria-hidden="true"
-            />
-            <div
-              className={CONTRACT_PAUSE_GRID_CLASSES.loadingCell}
-              aria-hidden="true"
-            />
+            <div className={CONTRACT_PAUSE_GRID_CLASSES.loadingCell} aria-hidden="true" />
+            <div className={CONTRACT_PAUSE_GRID_CLASSES.loadingCell} aria-hidden="true" />
           </>
         ) : (
           <>
@@ -167,9 +159,7 @@ export default function ContractPauseSwitch({
               className={CONTRACT_PAUSE_GRID_CLASSES.statusCell}
               data-testid="contract-pause-cell-contract"
             >
-              <span className={CONTRACT_PAUSE_GRID_CLASSES.statusLabel}>
-                Contract
-              </span>
+              <span className={CONTRACT_PAUSE_GRID_CLASSES.statusLabel}>Contract</span>
               <span className={CONTRACT_PAUSE_GRID_CLASSES.statusValue}>
                 {readouts?.contractId ?? "—"}
               </span>
@@ -179,9 +169,7 @@ export default function ContractPauseSwitch({
               className={CONTRACT_PAUSE_GRID_CLASSES.statusCell}
               data-testid="contract-pause-cell-state"
             >
-              <span className={CONTRACT_PAUSE_GRID_CLASSES.statusLabel}>
-                Freeze State
-              </span>
+              <span className={CONTRACT_PAUSE_GRID_CLASSES.statusLabel}>Freeze State</span>
               <span className="mt-1 block">
                 <span
                   className={badge.className}
@@ -198,9 +186,7 @@ export default function ContractPauseSwitch({
               className={CONTRACT_PAUSE_GRID_CLASSES.statusCell}
               data-testid="contract-pause-cell-updated"
             >
-              <span className={CONTRACT_PAUSE_GRID_CLASSES.statusLabel}>
-                Last Updated
-              </span>
+              <span className={CONTRACT_PAUSE_GRID_CLASSES.statusLabel}>Last Updated</span>
               <span className={CONTRACT_PAUSE_GRID_CLASSES.statusValue}>
                 {readouts?.updatedAt ?? "—"}
               </span>
@@ -215,9 +201,7 @@ export default function ContractPauseSwitch({
               className={`${CONTRACT_PAUSE_GRID_CLASSES.statusCell} sm:col-span-2 lg:col-span-3`}
               data-testid="contract-pause-cell-reason"
             >
-              <span className={CONTRACT_PAUSE_GRID_CLASSES.statusLabel}>
-                Reason
-              </span>
+              <span className={CONTRACT_PAUSE_GRID_CLASSES.statusLabel}>Reason</span>
               <span className={CONTRACT_PAUSE_GRID_CLASSES.statusValue}>
                 {readouts?.reason ?? "—"}
               </span>

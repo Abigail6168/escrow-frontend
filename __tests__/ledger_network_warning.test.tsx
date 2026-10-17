@@ -4,9 +4,7 @@ import LedgerNetworkWarningBar from "@/app/components/LedgerNetworkWarningBar";
 
 describe("LedgerNetworkWarningBar", () => {
   it("renders a warning bar when wallet and app networks differ", () => {
-    render(
-      <LedgerNetworkWarningBar walletNetwork="mainnet" appNetwork="testnet" />
-    );
+    render(<LedgerNetworkWarningBar walletNetwork="mainnet" appNetwork="testnet" />);
 
     const bar = screen.getByTestId("ledger-network-warning-bar");
     expect(bar).toBeInTheDocument();
@@ -21,16 +19,12 @@ describe("LedgerNetworkWarningBar", () => {
       <LedgerNetworkWarningBar walletNetwork="testnet" appNetwork="testnet" />
     );
 
-    expect(
-      screen.queryByTestId("ledger-network-warning-bar")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("ledger-network-warning-bar")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 
   it("renders the inverse mismatch (testnet wallet on mainnet app)", () => {
-    render(
-      <LedgerNetworkWarningBar walletNetwork="testnet" appNetwork="mainnet" />
-    );
+    render(<LedgerNetworkWarningBar walletNetwork="testnet" appNetwork="mainnet" />);
 
     expect(screen.getByRole("alert")).toHaveTextContent(/Testnet/);
     expect(screen.getByRole("alert")).toHaveTextContent(/Mainnet/);

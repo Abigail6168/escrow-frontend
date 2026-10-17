@@ -73,10 +73,7 @@ describe("albedo_connector loading spinner states", () => {
   });
 
   it("stops the spinner after success", async () => {
-    const result = await signWithAlbedoLoading(
-      async () => "signed-xdr",
-      manager
-    );
+    const result = await signWithAlbedoLoading(async () => "signed-xdr", manager);
     expect(result).toBe("signed-xdr");
     expect(manager.getState().isLoading).toBe(false);
     expect(manager.getState().pendingCount).toBe(0);

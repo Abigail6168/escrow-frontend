@@ -13,6 +13,7 @@ This PR implements gas estimation error warning banners in the `network_sync_che
 ### Core Module (`app/lib/network_sync_checker.ts`)
 
 Added comprehensive gas estimation warning support:
+
 - **New Types**: `NetworkSyncSimulationResult` and `NetworkSyncGasWarningState` interfaces
 - **New Constant**: `HIGH_FEE_THRESHOLD_STROOPS = 1_000_000` (0.1 XLM)
 - **New Functions**:
@@ -23,6 +24,7 @@ Added comprehensive gas estimation warning support:
 ### Banner Component (`app/components/NetworkSyncGasWarningBanner.tsx`)
 
 New React component that:
+
 - Displays warnings when simulation results exceed fee thresholds or contain errors
 - Follows existing banner component patterns (Freighter, Ledger, Albedo)
 - Includes accessibility attributes (`role="alert"`)
@@ -36,6 +38,7 @@ New React component that:
 ## Implementation Details
 
 The implementation mirrors the established pattern from `freighter_connector` and `ledger_usb_bridge`:
+
 - Same interface structure for simulation results
 - Same warning state derivation logic
 - Same threshold value (1M stroops / 0.1 XLM)
@@ -65,6 +68,7 @@ if (warningState.hasWarning) {
 ## Testing
 
 All tests follow the existing test patterns and conventions:
+
 - Uses Vitest and React Testing Library
 - Includes comprehensive edge case coverage
 - Tests both success and error scenarios
@@ -72,6 +76,7 @@ All tests follow the existing test patterns and conventions:
 ## Documentation
 
 Added comprehensive implementation documentation in `GAS_ESTIMATION_WARNING_IMPLEMENTATION.md` including:
+
 - Overview of changes
 - API documentation
 - Usage examples

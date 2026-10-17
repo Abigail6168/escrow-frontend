@@ -4,17 +4,14 @@
  * rejection handling, and network mismatch checks.
  */
 
-import {
-  FeeBumpTransaction,
-  Transaction,
-  TransactionBuilder,
-} from "@stellar/stellar-sdk";
+import { FeeBumpTransaction, Transaction, TransactionBuilder } from "@stellar/stellar-sdk";
 import type { ToastType } from "@/app/context/ToastContext";
 
 export const DEFAULT_SIGNATURE_TIMEOUT_MS = 60_000;
 
 /** Official Ledger setup/support URL surfaced when the browser transport is unsupported. */
-export const LEDGER_SETUP_URL = "https://support.ledger.com/article/4404389482525-connect-my-ledger-to-ledger-live";
+export const LEDGER_SETUP_URL =
+  "https://support.ledger.com/article/4404389482525-connect-my-ledger-to-ledger-live";
 
 /** Supported browsers list shown in setup instructions. */
 export const LEDGER_SUPPORTED_BROWSERS = "Chrome, Edge, Brave, or Opera";
@@ -51,13 +48,7 @@ export interface LedgerSignResult {
 
 export type LedgerToastHandler = (message: string, type: ToastType) => void;
 
-export type LedgerTxPhase =
-  | "idle"
-  | "building"
-  | "signing"
-  | "submitting"
-  | "success"
-  | "error";
+export type LedgerTxPhase = "idle" | "building" | "signing" | "submitting" | "success" | "error";
 
 export interface LedgerTxTrackEntry {
   txId: string;
@@ -189,16 +180,12 @@ export function formatStackTrace(err?: unknown): string {
     return err;
   }
 
-  const synthetic = new Error(
-    typeof err === "string" ? err : "Ledger USB bridge trace"
-  );
+  const synthetic = new Error(typeof err === "string" ? err : "Ledger USB bridge trace");
   return synthetic.stack ?? "Error: Ledger USB bridge trace";
 }
 
 /** Builds a multi-line console warning block for transaction debug tracking. */
-export function formatConsoleWarningBlock(
-  block: LedgerConsoleWarningBlock
-): string {
+export function formatConsoleWarningBlock(block: LedgerConsoleWarningBlock): string {
   const lines = [
     `${WARN_PREFIX} ╔══════════════════════════════════════╗`,
     `${WARN_PREFIX} ║ ${block.title.padEnd(36).slice(0, 36)} ║`,
@@ -243,12 +230,7 @@ export function logLedgerWarning(
 export class LedgerTransactionTracker {
   private entries: LedgerTxTrackEntry[] = [];
 
-  track(
-    txId: string,
-    phase: LedgerTxPhase,
-    message: string,
-    err?: unknown
-  ): LedgerTxTrackEntry {
+  track(txId: string, phase: LedgerTxPhase, message: string, err?: unknown): LedgerTxTrackEntry {
     const entry: LedgerTxTrackEntry = {
       txId,
       phase,
@@ -298,9 +280,7 @@ export class LedgerNetworkMismatchError extends Error {
     public readonly walletNetwork: LedgerNetwork,
     public readonly appNetwork: LedgerNetwork
   ) {
-    super(
-      `Network mismatch: wallet is on ${walletNetwork}, app expects ${appNetwork}`
-    );
+    super(`Network mismatch: wallet is on ${walletNetwork}, app expects ${appNetwork}`);
     this.name = "LedgerNetworkMismatchError";
   }
 }
@@ -318,9 +298,7 @@ export function isUserRejectedError(err: unknown): boolean {
 }
 
 /** Zeroes and drops a sensitive buffer so it cannot be retained after abort. */
-export function clearSensitiveMemory(
-  request: LedgerSignRequest
-): LedgerSignRequest {
+export function clearSensitiveMemory(request: LedgerSignRequest): LedgerSignRequest {
   if (request.payload) {
     request.payload.fill(0);
   }
@@ -336,9 +314,7 @@ export function isLedgerLoading(): boolean {
   return activeOperationsCount > 0;
 }
 
-export function subscribeToLedgerLoading(
-  listener: (isLoading: boolean) => void
-): () => void {
+export function subscribeToLedgerLoading(listener: (isLoading: boolean) => void): () => void {
   listeners.add(listener);
   // Initial emit
   listener(activeOperationsCount > 0);
@@ -457,15 +433,11 @@ export async function signCatchingRejection(
       return await signFn();
     } catch (err) {
       if (isUserRejectedError(err)) {
-        logLedgerWarning(
-          "SIGNATURE REJECTED",
-          err instanceof Error ? err.message : String(err),
-          { err, phase: "signing" }
-        );
-        showToast(
-          "Transaction cancelled — you rejected the signature on your Ledger.",
-          "warning"
-        );
+        logLedgerWarning("SIGNATURE REJECTED", err instanceof Error ? err.message : String(err), {
+          err,
+          phase: "signing",
+        });
+        showToast("Transaction cancelled — you rejected the signature on your Ledger.", "warning");
         return null;
       }
       throw err;
@@ -517,14 +489,8 @@ export interface LedgerMultiSigAssemblyPlan {
   pendingSigners: string[];
 }
 
-function readLedgerTransaction(
-  transactionXdr: string,
-  networkPassphrase: string
-): Transaction {
-  const envelope = TransactionBuilder.fromXDR(
-    transactionXdr,
-    networkPassphrase
-  );
+function readLedgerTransaction(transactionXdr: string, networkPassphrase: string): Transaction {
+  const envelope = TransactionBuilder.fromXDR(transactionXdr, networkPassphrase);
   if (envelope instanceof FeeBumpTransaction) {
     return envelope.innerTransaction;
   }
@@ -550,9 +516,7 @@ export function validateMultiSigParts(
   parts: LedgerMultiSigPart[],
   networkPassphrase: string
 ): LedgerTransactionStructure[] {
-  return parts.map((part) =>
-    parseLedgerTransactionStructure(part.signedXdr, networkPassphrase)
-  );
+  return parts.map((part) => parseLedgerTransactionStructure(part.signedXdr, networkPassphrase));
 }
 
 /**
@@ -563,10 +527,7 @@ export function createMultiSigAssemblyPlan(
   signerPublicKeys: string[],
   networkPassphrase: string
 ): LedgerMultiSigAssemblyPlan {
-  const structure = parseLedgerTransactionStructure(
-    baseXdr,
-    networkPassphrase
-  );
+  const structure = parseLedgerTransactionStructure(baseXdr, networkPassphrase);
   return {
     baseXdr,
     structure,
@@ -643,9 +604,7 @@ export const HIGH_FEE_THRESHOLD_STROOPS = 1_000_000;
  * Inspects a simulation result and produces a user-facing warning state
  * when fee limits exceed standard bounds or the simulation reported an error.
  */
-export function checkSimulationFeeWarning(
-  result: LedgerSimulationResult
-): LedgerGasWarningState {
+export function checkSimulationFeeWarning(result: LedgerSimulationResult): LedgerGasWarningState {
   if (result.error || result.simulationError) {
     const message =
       typeof result.error === "string" && result.error
@@ -700,8 +659,7 @@ export function warnOnSimulationFee(
   return state;
 }
 
-export const LEDGER_ACTIVE_ADDRESSES_STORAGE_KEY =
-  "ledger_usb_bridge_active_addresses";
+export const LEDGER_ACTIVE_ADDRESSES_STORAGE_KEY = "ledger_usb_bridge_active_addresses";
 export const LEDGER_ACTIVE_ADDRESSES_SCHEMA_VERSION = 1;
 
 export interface LedgerActiveAddress {
@@ -745,9 +703,7 @@ function isValidLedgerActiveAddress(value: unknown): value is LedgerActiveAddres
   return true;
 }
 
-function sanitizeLedgerActiveAddress(
-  value: unknown
-): LedgerActiveAddress | null {
+function sanitizeLedgerActiveAddress(value: unknown): LedgerActiveAddress | null {
   if (!isValidLedgerActiveAddress(value)) return null;
   const sanitized: LedgerActiveAddress = {
     address: value.address,
@@ -762,9 +718,7 @@ function sanitizeLedgerActiveAddress(
   return sanitized;
 }
 
-function isValidSerializedPayload(
-  value: unknown
-): value is LedgerActiveAddressesSerialized {
+function isValidSerializedPayload(value: unknown): value is LedgerActiveAddressesSerialized {
   if (!isRecord(value)) return false;
   if (value.version !== LEDGER_ACTIVE_ADDRESSES_SCHEMA_VERSION) return false;
   if (!Array.isArray(value.addresses)) return false;
@@ -788,8 +742,7 @@ export class LedgerActiveAddressStore {
   private storage: Storage | null;
 
   constructor(storageOverride?: Storage | null) {
-    this.storage =
-      storageOverride !== undefined ? storageOverride : getStorageAdapter();
+    this.storage = storageOverride !== undefined ? storageOverride : getStorageAdapter();
     this.rehydrate();
   }
 
@@ -800,16 +753,12 @@ export class LedgerActiveAddressStore {
         version: LEDGER_ACTIVE_ADDRESSES_SCHEMA_VERSION,
         addresses: this.addresses,
       };
-      this.storage.setItem(
-        LEDGER_ACTIVE_ADDRESSES_STORAGE_KEY,
-        JSON.stringify(payload)
-      );
+      this.storage.setItem(LEDGER_ACTIVE_ADDRESSES_STORAGE_KEY, JSON.stringify(payload));
     } catch (err) {
-      logLedgerWarning(
-        "PERSIST FAILED",
-        err instanceof Error ? err.message : String(err),
-        { err, phase: "error" }
-      );
+      logLedgerWarning("PERSIST FAILED", err instanceof Error ? err.message : String(err), {
+        err,
+        phase: "error",
+      });
     }
   }
 
@@ -833,11 +782,10 @@ export class LedgerActiveAddressStore {
         .map(sanitizeLedgerActiveAddress)
         .filter((a): a is LedgerActiveAddress => a !== null);
     } catch (err) {
-      logLedgerWarning(
-        "REHYDRATE FAILED",
-        err instanceof Error ? err.message : String(err),
-        { err, phase: "error" }
-      );
+      logLedgerWarning("REHYDRATE FAILED", err instanceof Error ? err.message : String(err), {
+        err,
+        phase: "error",
+      });
       try {
         this.storage.removeItem(LEDGER_ACTIVE_ADDRESSES_STORAGE_KEY);
       } catch {
@@ -862,9 +810,7 @@ export class LedgerActiveAddressStore {
     const sanitized = sanitizeLedgerActiveAddress(address);
     if (!sanitized) return;
     const existingIndex = this.addresses.findIndex(
-      (a) =>
-        a.address === sanitized.address &&
-        a.derivationPath === sanitized.derivationPath
+      (a) => a.address === sanitized.address && a.derivationPath === sanitized.derivationPath
     );
     if (existingIndex >= 0) {
       this.addresses[existingIndex] = sanitized;
@@ -885,18 +831,16 @@ export class LedgerActiveAddressStore {
       try {
         this.storage.removeItem(LEDGER_ACTIVE_ADDRESSES_STORAGE_KEY);
       } catch (err) {
-        logLedgerWarning(
-          "CLEAR STORAGE FAILED",
-          err instanceof Error ? err.message : String(err),
-          { err, phase: "error" }
-        );
+        logLedgerWarning("CLEAR STORAGE FAILED", err instanceof Error ? err.message : String(err), {
+          err,
+          phase: "error",
+        });
       }
     }
   }
 }
 
 export const ledgerActiveAddresses = new LedgerActiveAddressStore();
-
 
 export interface MultiSigTxPayload {
   signatures: Array<{ publicKey: string; signature?: string }>;
@@ -930,7 +874,10 @@ export function parseMultiSigTxPayload(payload: unknown): MultiSigTxPayload {
  * its threshold. Distinct from `assembleMultiSigTransaction` above, which
  * merges co-signer envelopes into a single signed XDR.
  */
-export function evaluateMultiSigAssembly(tx: MultiSigTxPayload): { isReady: boolean; validSignaturesCount: number } {
+export function evaluateMultiSigAssembly(tx: MultiSigTxPayload): {
+  isReady: boolean;
+  validSignaturesCount: number;
+} {
   const validSignaturesCount = tx.signatures.filter((s) => Boolean(s.signature)).length;
   return {
     isReady: validSignaturesCount >= tx.threshold,

@@ -18,18 +18,12 @@ describe("albedo_connector user rejection handling (#125)", () => {
 
   it("detects user rejected transaction exceptions", () => {
     expect(isAlbedoUserRejected(new AlbedoUserRejectedError())).toBe(true);
-    expect(isAlbedoUserRejected(new Error("user rejected transaction"))).toBe(
-      true
-    );
-    expect(isAlbedoUserRejected(new Error("User Declined the request"))).toBe(
-      true
-    );
+    expect(isAlbedoUserRejected(new Error("user rejected transaction"))).toBe(true);
+    expect(isAlbedoUserRejected(new Error("User Declined the request"))).toBe(true);
     expect(isAlbedoUserRejected(new Error("request rejected"))).toBe(true);
     expect(isAlbedoUserRejected(new Error("denied by the user"))).toBe(true);
     expect(isAlbedoUserRejected(new Error("Rejected by user"))).toBe(true);
-    expect(isAlbedoUserRejected(new Error("popup was canceled by user"))).toBe(
-      true
-    );
+    expect(isAlbedoUserRejected(new Error("popup was canceled by user"))).toBe(true);
     expect(isAlbedoUserRejected(new Error("rpc timeout"))).toBe(false);
     expect(isAlbedoUserRejected("not an error")).toBe(false);
   });

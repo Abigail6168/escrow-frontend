@@ -37,17 +37,14 @@ export function useFreighterMultiSigAssembly(networkPassphrase: string) {
    * operation is in flight, `isLoading` becomes true, allowing
    * transaction_signer_component to display a spinner overlay.
    */
-  const withLoading = useCallback(
-    async <T>(operation: () => Promise<T>): Promise<T> => {
-      setPendingOps((count) => count + 1);
-      try {
-        return await operation();
-      } finally {
-        setPendingOps((count) => count - 1);
-      }
-    },
-    []
-  );
+  const withLoading = useCallback(async <T>(operation: () => Promise<T>): Promise<T> => {
+    setPendingOps((count) => count + 1);
+    try {
+      return await operation();
+    } finally {
+      setPendingOps((count) => count - 1);
+    }
+  }, []);
 
   const parseStructure = useCallback(
     (transactionXdr: string): WalletMultiSigEnvelopeShape => {
@@ -67,16 +64,10 @@ export function useFreighterMultiSigAssembly(networkPassphrase: string) {
   const prepareTransaction = useCallback(
     (transactionXdr: string) => {
       if (!transactionXdr || transactionXdr.trim().length === 0) {
-        throw new WalletMultiSigStructureError(
-          "empty_xdr",
-          "missing transaction XDR"
-        );
+        throw new WalletMultiSigStructureError("empty_xdr", "missing transaction XDR");
       }
       try {
-        const tx = TransactionBuilder.fromXDR(
-          transactionXdr.trim(),
-          networkPassphrase
-        );
+        const tx = TransactionBuilder.fromXDR(transactionXdr.trim(), networkPassphrase);
         return tx;
       } catch (err) {
         if (err instanceof WalletMultiSigStructureError) throw err;
@@ -100,9 +91,7 @@ export function useFreighterMultiSigAssembly(networkPassphrase: string) {
       } catch (err) {
         throw new WalletMultiSigStructureError(
           "envelope_parse_failure",
-          err instanceof Error
-            ? err.message
-            : "failed to serialize transaction"
+          err instanceof Error ? err.message : "failed to serialize transaction"
         );
       }
     },
@@ -115,10 +104,7 @@ export function useFreighterMultiSigAssembly(networkPassphrase: string) {
    * signatures independently. Triggers loading state during execution.
    */
   const signTransaction = useCallback(
-    async (
-      transactionXdr: string,
-      signFn: (xdr: string) => Promise<string>
-    ): Promise<string> => {
+    async (transactionXdr: string, signFn: (xdr: string) => Promise<string>): Promise<string> => {
       const trimmed = transactionXdr.trim();
       parseStructure(trimmed);
       return withLoading(() => signFn(trimmed));

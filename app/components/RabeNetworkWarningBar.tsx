@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  checkRabeNetworkMatch,
-  type RabeNetwork,
-} from "@/app/lib/rabe_connector";
+import { checkRabeNetworkMatch, type RabeNetwork } from "@/app/lib/rabe_connector";
 
 interface Props {
   walletNetwork: RabeNetwork;

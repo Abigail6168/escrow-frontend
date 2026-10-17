@@ -110,10 +110,7 @@ describe("wallet_disconnect_handler checkDisconnectNetworkMatch (#236)", () => {
   });
 
   it("detects a mismatch across full passphrases", () => {
-    const state = checkDisconnectNetworkMatch(
-      TESTNET_PASSPHRASE,
-      MAINNET_PASSPHRASE,
-    );
+    const state = checkDisconnectNetworkMatch(TESTNET_PASSPHRASE, MAINNET_PASSPHRASE);
     expect(state.mismatched).toBe(true);
     expect(state.warningMessage).toMatch(/switch networks/i);
   });
@@ -186,12 +183,7 @@ describe("wallet_disconnect_handler warnOnDisconnectNetworkMismatch (#236)", () 
 
 describe("WalletDisconnectNetworkWarningBar (#236)", () => {
   it("renders the warning bar on a Mainnet/Testnet mismatch", () => {
-    render(
-      <WalletDisconnectNetworkWarningBar
-        walletNetwork="mainnet"
-        appNetwork="testnet"
-      />,
-    );
+    render(<WalletDisconnectNetworkWarningBar walletNetwork="mainnet" appNetwork="testnet" />);
 
     const bar = screen.getByTestId(BAR);
     expect(bar).toBeInTheDocument();
@@ -201,12 +193,7 @@ describe("WalletDisconnectNetworkWarningBar (#236)", () => {
   });
 
   it("marks the bar as an alert for assistive technology", () => {
-    render(
-      <WalletDisconnectNetworkWarningBar
-        walletNetwork="mainnet"
-        appNetwork="testnet"
-      />,
-    );
+    render(<WalletDisconnectNetworkWarningBar walletNetwork="mainnet" appNetwork="testnet" />);
     expect(screen.getByTestId(BAR)).toHaveAttribute("role", "alert");
   });
 
@@ -215,39 +202,26 @@ describe("WalletDisconnectNetworkWarningBar (#236)", () => {
       <WalletDisconnectNetworkWarningBar
         walletNetwork={TESTNET_PASSPHRASE}
         appNetwork={MAINNET_PASSPHRASE}
-      />,
+      />
     );
     expect(screen.getByTestId(BAR)).toBeInTheDocument();
   });
 
   it("renders an unknown-network bar when the wallet network is unrecognized", () => {
-    render(
-      <WalletDisconnectNetworkWarningBar
-        walletNetwork="futurenet"
-        appNetwork="testnet"
-      />,
-    );
+    render(<WalletDisconnectNetworkWarningBar walletNetwork="futurenet" appNetwork="testnet" />);
     const bar = screen.getByTestId(BAR);
     expect(bar).toHaveAttribute("data-unknown-network", "true");
     expect(bar).toHaveTextContent(/unable to determine/i);
   });
 
   it("renders the bar when the wallet network is missing", () => {
-    render(
-      <WalletDisconnectNetworkWarningBar
-        walletNetwork={null}
-        appNetwork="testnet"
-      />,
-    );
+    render(<WalletDisconnectNetworkWarningBar walletNetwork={null} appNetwork="testnet" />);
     expect(screen.getByTestId(BAR)).toBeInTheDocument();
   });
 
   it("does not render when the networks match", () => {
     const { container } = render(
-      <WalletDisconnectNetworkWarningBar
-        walletNetwork="testnet"
-        appNetwork="testnet"
-      />,
+      <WalletDisconnectNetworkWarningBar walletNetwork="testnet" appNetwork="testnet" />
     );
     expect(screen.queryByTestId(BAR)).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
@@ -255,10 +229,7 @@ describe("WalletDisconnectNetworkWarningBar (#236)", () => {
 
   it("does not render when a label matches a passphrase", () => {
     const { container } = render(
-      <WalletDisconnectNetworkWarningBar
-        walletNetwork={MAINNET_PASSPHRASE}
-        appNetwork="mainnet"
-      />,
+      <WalletDisconnectNetworkWarningBar walletNetwork={MAINNET_PASSPHRASE} appNetwork="mainnet" />
     );
     expect(container).toBeEmptyDOMElement();
   });
@@ -269,7 +240,7 @@ describe("WalletDisconnectNetworkWarningBar (#236)", () => {
         walletNetwork="mainnet"
         appNetwork="testnet"
         className="sticky top-0"
-      />,
+      />
     );
     expect(screen.getByTestId(BAR)).toHaveClass("sticky");
   });

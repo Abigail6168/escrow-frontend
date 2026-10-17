@@ -59,9 +59,7 @@ describe("albedo_connector signature timeout bounds (#124)", () => {
     );
 
     const promise = signAlbedoWithTimeout(request, signFn, 1_000);
-    const assertion = expect(promise).rejects.toBeInstanceOf(
-      AlbedoSignatureTimeoutError
-    );
+    const assertion = expect(promise).rejects.toBeInstanceOf(AlbedoSignatureTimeoutError);
 
     await vi.advanceTimersByTimeAsync(1_000);
     await assertion;
@@ -85,8 +83,7 @@ describe("albedo_connector signature timeout bounds (#124)", () => {
     const request: AlbedoSignRequest = { xdr: "FFFF..." };
 
     const signFn = vi.fn(
-      () =>
-        new Promise<string>((resolve) => setTimeout(() => resolve("ok"), 500))
+      () => new Promise<string>((resolve) => setTimeout(() => resolve("ok"), 500))
     );
 
     const promise = signAlbedoWithTimeout(request, signFn, 1_000);

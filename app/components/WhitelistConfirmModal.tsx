@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  getConfirmCopy,
-  type WhitelistAction,
-} from "@/app/lib/admin_whitelist_panel";
+import { getConfirmCopy, type WhitelistAction } from "@/app/lib/admin_whitelist_panel";
 
 export interface WhitelistConfirmModalProps {
   /** Action awaiting confirmation; `null` keeps the modal closed. */

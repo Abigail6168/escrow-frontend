@@ -9,13 +9,7 @@
 // Types
 // =============================================================
 
-export type MetricChartState =
-  | "loading"
-  | "healthy"
-  | "degraded"
-  | "stale"
-  | "error"
-  | "empty";
+export type MetricChartState = "loading" | "healthy" | "degraded" | "stale" | "error" | "empty";
 
 export interface MetricChartBadge {
   state: MetricChartState;
@@ -33,45 +27,44 @@ export interface MetricChartBadge {
 const BADGE_BASE =
   "inline-flex items-center gap-1 shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium";
 
-export const METRIC_CHART_BADGES: Record<MetricChartState, MetricChartBadge> =
-  {
-    loading: {
-      state: "loading",
-      label: "Loading",
-      icon: "…",
-      className: `${BADGE_BASE} border-blue-700 bg-blue-950/40 text-blue-400`,
-    },
-    healthy: {
-      state: "healthy",
-      label: "Healthy",
-      icon: "●",
-      className: `${BADGE_BASE} border-green-700 bg-green-950/40 text-green-400`,
-    },
-    degraded: {
-      state: "degraded",
-      label: "Degraded",
-      icon: "▲",
-      className: `${BADGE_BASE} border-amber-700 bg-amber-950/40 text-amber-400`,
-    },
-    stale: {
-      state: "stale",
-      label: "Stale",
-      icon: "◌",
-      className: `${BADGE_BASE} border-yellow-700 bg-yellow-950/40 text-yellow-400`,
-    },
-    error: {
-      state: "error",
-      label: "Error",
-      icon: "!",
-      className: `${BADGE_BASE} border-red-700 bg-red-950/40 text-red-400`,
-    },
-    empty: {
-      state: "empty",
-      label: "No Data",
-      icon: "○",
-      className: `${BADGE_BASE} border-gray-600 bg-gray-800 text-gray-400`,
-    },
-  };
+export const METRIC_CHART_BADGES: Record<MetricChartState, MetricChartBadge> = {
+  loading: {
+    state: "loading",
+    label: "Loading",
+    icon: "…",
+    className: `${BADGE_BASE} border-blue-700 bg-blue-950/40 text-blue-400`,
+  },
+  healthy: {
+    state: "healthy",
+    label: "Healthy",
+    icon: "●",
+    className: `${BADGE_BASE} border-green-700 bg-green-950/40 text-green-400`,
+  },
+  degraded: {
+    state: "degraded",
+    label: "Degraded",
+    icon: "▲",
+    className: `${BADGE_BASE} border-amber-700 bg-amber-950/40 text-amber-400`,
+  },
+  stale: {
+    state: "stale",
+    label: "Stale",
+    icon: "◌",
+    className: `${BADGE_BASE} border-yellow-700 bg-yellow-950/40 text-yellow-400`,
+  },
+  error: {
+    state: "error",
+    label: "Error",
+    icon: "!",
+    className: `${BADGE_BASE} border-red-700 bg-red-950/40 text-red-400`,
+  },
+  empty: {
+    state: "empty",
+    label: "No Data",
+    icon: "○",
+    className: `${BADGE_BASE} border-gray-600 bg-gray-800 text-gray-400`,
+  },
+};
 
 // =============================================================
 // Selector helpers
@@ -81,9 +74,7 @@ export const METRIC_CHART_BADGES: Record<MetricChartState, MetricChartBadge> =
  * Resolve the badge for a metric chart state.
  * Unknown or nullish values map to `"empty"`.
  */
-export function getMetricChartBadge(
-  state: string | null | undefined,
-): MetricChartBadge {
+export function getMetricChartBadge(state: string | null | undefined): MetricChartBadge {
   const key = (state ?? "").trim().toLowerCase();
   return Object.prototype.hasOwnProperty.call(METRIC_CHART_BADGES, key)
     ? METRIC_CHART_BADGES[key as MetricChartState]

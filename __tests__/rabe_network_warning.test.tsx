@@ -4,9 +4,7 @@ import RabeNetworkWarningBar from "@/app/components/RabeNetworkWarningBar";
 
 describe("RabeNetworkWarningBar", () => {
   it("renders a warning bar when wallet and app networks differ", () => {
-    render(
-      <RabeNetworkWarningBar walletNetwork="mainnet" appNetwork="testnet" />
-    );
+    render(<RabeNetworkWarningBar walletNetwork="mainnet" appNetwork="testnet" />);
 
     const bar = screen.getByTestId("rabe-network-warning-bar");
     expect(bar).toBeInTheDocument();
@@ -21,16 +19,12 @@ describe("RabeNetworkWarningBar", () => {
       <RabeNetworkWarningBar walletNetwork="testnet" appNetwork="testnet" />
     );
 
-    expect(
-      screen.queryByTestId("rabe-network-warning-bar")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("rabe-network-warning-bar")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 
   it("renders the inverse mismatch (testnet wallet on mainnet app)", () => {
-    render(
-      <RabeNetworkWarningBar walletNetwork="testnet" appNetwork="mainnet" />
-    );
+    render(<RabeNetworkWarningBar walletNetwork="testnet" appNetwork="mainnet" />);
 
     expect(screen.getByRole("alert")).toHaveTextContent(/Testnet/);
     expect(screen.getByRole("alert")).toHaveTextContent(/Mainnet/);
@@ -45,8 +39,6 @@ describe("RabeNetworkWarningBar", () => {
       />
     );
 
-    expect(screen.getByTestId("rabe-network-warning-bar")).toHaveClass(
-      "custom-class"
-    );
+    expect(screen.getByTestId("rabe-network-warning-bar")).toHaveClass("custom-class");
   });
 });

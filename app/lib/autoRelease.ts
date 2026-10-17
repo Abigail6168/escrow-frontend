@@ -45,13 +45,13 @@ function toEpochMs(value: number | string): number | null {
 export async function fetchAutoReleaseInfo(
   jobId: string,
   milestoneIndex: number,
-  options?: { signal?: AbortSignal; now?: () => number },
+  options?: { signal?: AbortSignal; now?: () => number }
 ): Promise<AutoReleaseInfo> {
   const now = options?.now ?? Date.now;
   try {
     const res = await fetch(
       `${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}/milestones/${milestoneIndex}/auto-release`,
-      { signal: options?.signal },
+      { signal: options?.signal }
     );
     if (!res.ok) {
       return { deadlineMs: null, eligible: false };

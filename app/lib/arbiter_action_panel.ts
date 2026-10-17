@@ -40,9 +40,7 @@ export const ARBITER_PANEL_DESKTOP_MIN_WIDTH = 1024;
  * Non-finite or negative widths fall back to `"mobile"`: the narrowest
  * layout is the safe default, since it never overflows a wider screen.
  */
-export function classifyArbiterPanelViewport(
-  width: number,
-): ArbiterPanelViewport {
+export function classifyArbiterPanelViewport(width: number): ArbiterPanelViewport {
   if (typeof width !== "number" || !Number.isFinite(width) || width < 0) {
     return "mobile";
   }
@@ -76,9 +74,7 @@ export interface ArbiterPanelLayout {
  * place both outcomes side by side, right-align an auto-width submit button,
  * and let the panel grow to its content.
  */
-export function getArbiterPanelLayout(
-  viewport: ArbiterPanelViewport,
-): ArbiterPanelLayout {
+export function getArbiterPanelLayout(viewport: ArbiterPanelViewport): ArbiterPanelLayout {
   switch (viewport) {
     case "desktop":
     case "tablet":
@@ -112,7 +108,7 @@ export function readArbiterPanelViewportWidth(): number {
   } catch (err) {
     console.warn(
       `${LOG_PREFIX} VIEWPORT READ FAILED:`,
-      err instanceof Error ? err.message : String(err),
+      err instanceof Error ? err.message : String(err)
     );
     return 0;
   }
@@ -295,12 +291,9 @@ export const ARBITER_PANEL_CLASSES = {
 
 /** Submit button tone for each outcome, including its hover and disabled state. */
 export const ARBITER_SUBMIT_TONE: Record<ArbiterOutcome | "none", string> = {
-  release:
-    "bg-success text-surface-page hover:bg-success-soft disabled:hover:bg-success",
-  refund:
-    "bg-danger text-text-primary hover:bg-danger/80 disabled:hover:bg-danger",
-  none:
-    "bg-accent text-text-primary hover:bg-accent/80 disabled:hover:bg-accent",
+  release: "bg-success text-surface-page hover:bg-success-soft disabled:hover:bg-success",
+  refund: "bg-danger text-text-primary hover:bg-danger/80 disabled:hover:bg-danger",
+  none: "bg-accent text-text-primary hover:bg-accent/80 disabled:hover:bg-accent",
 };
 
 // =============================================================
@@ -354,7 +347,7 @@ export function isValidMilestoneIndex(value: unknown): value is number {
  * A missing or non-array list counts as empty.
  */
 export function getArbiterJobEmptyState(
-  milestones: ReadonlyArray<{ status?: unknown } | null | undefined> | null | undefined,
+  milestones: ReadonlyArray<{ status?: unknown } | null | undefined> | null | undefined
 ): Exclude<ArbiterEmptyVariant, "no-milestone"> | null {
   if (!Array.isArray(milestones) || milestones.length === 0) return "no-milestones";
   const hasDispute = milestones.some((m) => m?.status === "Disputed");
@@ -395,7 +388,7 @@ export const ARBITER_CONFIRMATION_REQUIRED_ERROR =
  * failing field is reported at once so all indicators light up together.
  */
 export function validateArbiterResolution(
-  input: ArbiterResolutionInput,
+  input: ArbiterResolutionInput
 ): ArbiterResolutionValidation {
   const errors: ArbiterFieldErrors = {};
 
@@ -422,16 +415,13 @@ export interface ArbiterPanelConfig {
 export const ARBITER_NO_HANDLER_ERROR =
   "Dispute resolution is unavailable right now. Reconnect your wallet and try again.";
 
-export const ARBITER_NO_FUNDS_ERROR =
-  "This milestone has no escrowed funds left to distribute.";
+export const ARBITER_NO_FUNDS_ERROR = "This milestone has no escrowed funds left to distribute.";
 
 /**
  * Checks that the panel is configured well enough to submit a resolution.
  * Returns the panel-level error message, or `null` when it can proceed.
  */
-export function getArbiterPanelConfigError(
-  config: ArbiterPanelConfig,
-): string | null {
+export function getArbiterPanelConfigError(config: ArbiterPanelConfig): string | null {
   if (!config.hasHandler) return ARBITER_NO_HANDLER_ERROR;
 
   if (typeof config.escrowAmount === "string" && config.escrowAmount.trim() !== "") {
@@ -500,11 +490,11 @@ export const ARBITER_PANEL_TOKENS = {
   "text-primary": "#f9fafb",
   "text-secondary": "#d1d5db",
   "text-muted": "#9ca3af",
-  "accent": "#4f46e5",
+  accent: "#4f46e5",
   "accent-soft": "#818cf8",
-  "success": "#16a34a",
+  success: "#16a34a",
   "success-soft": "#4ade80",
-  "danger": "#991b1b",
+  danger: "#991b1b",
   "danger-soft": "#f87171",
 } as const;
 
@@ -531,18 +521,88 @@ export interface ArbiterContrastPair {
 
 /** Every foreground/background pairing the panel renders in its enabled state. */
 export const ARBITER_PANEL_CONTRAST_PAIRS: readonly ArbiterContrastPair[] = [
-  { usage: "heading", foreground: "text-primary", background: "surface-card", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "description", foreground: "text-muted", background: "surface-card", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "outcome legend", foreground: "text-secondary", background: "surface-card", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "confirmation label", foreground: "text-secondary", background: "surface-card", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "outcome option label", foreground: "text-primary", background: "surface-field", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "outcome option hint", foreground: "text-muted", background: "surface-field", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "field error", foreground: "danger-soft", background: "surface-card", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "release button", foreground: "surface-page", background: "success", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "refund button", foreground: "text-primary", background: "danger", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "resolve button", foreground: "text-primary", background: "accent", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "placeholder title", foreground: "text-secondary", background: "surface-field", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "placeholder description", foreground: "text-muted", background: "surface-field", minRatio: WCAG_AA_NORMAL_TEXT },
-  { usage: "focus ring", foreground: "accent-soft", background: "surface-card", minRatio: WCAG_AA_NON_TEXT },
-  { usage: "invalid option border", foreground: "danger-soft", background: "surface-card", minRatio: WCAG_AA_NON_TEXT },
+  {
+    usage: "heading",
+    foreground: "text-primary",
+    background: "surface-card",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "description",
+    foreground: "text-muted",
+    background: "surface-card",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "outcome legend",
+    foreground: "text-secondary",
+    background: "surface-card",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "confirmation label",
+    foreground: "text-secondary",
+    background: "surface-card",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "outcome option label",
+    foreground: "text-primary",
+    background: "surface-field",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "outcome option hint",
+    foreground: "text-muted",
+    background: "surface-field",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "field error",
+    foreground: "danger-soft",
+    background: "surface-card",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "release button",
+    foreground: "surface-page",
+    background: "success",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "refund button",
+    foreground: "text-primary",
+    background: "danger",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "resolve button",
+    foreground: "text-primary",
+    background: "accent",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "placeholder title",
+    foreground: "text-secondary",
+    background: "surface-field",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "placeholder description",
+    foreground: "text-muted",
+    background: "surface-field",
+    minRatio: WCAG_AA_NORMAL_TEXT,
+  },
+  {
+    usage: "focus ring",
+    foreground: "accent-soft",
+    background: "surface-card",
+    minRatio: WCAG_AA_NON_TEXT,
+  },
+  {
+    usage: "invalid option border",
+    foreground: "danger-soft",
+    background: "surface-card",
+    minRatio: WCAG_AA_NON_TEXT,
+  },
 ];

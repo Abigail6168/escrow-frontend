@@ -11,11 +11,7 @@ import { ArbiterPanelPlaceholder } from "@/app/components/ArbiterActionPanel";
 import { getArbiterJobEmptyState } from "@/app/lib/arbiter_action_panel";
 import { useActionStates } from "@/app/hooks/useActionStates";
 import { useToast } from "@/app/context/ToastContext";
-import {
-  BACKEND_URL,
-  runContractAction,
-  submitContractTransaction,
-} from "@/app/lib/transactions";
+import { BACKEND_URL, runContractAction, submitContractTransaction } from "@/app/lib/transactions";
 import { fetchAutoReleaseInfo } from "@/app/lib/autoRelease";
 
 interface Milestone {
@@ -69,9 +65,7 @@ function normalizeJob(item: unknown): Job | null {
     arbiter: typeof item.arbiter === "string" ? item.arbiter : "",
     admin: typeof item.admin === "string" ? item.admin : undefined,
     funded: Boolean(item.funded),
-    milestones: Array.isArray(item.milestones)
-      ? (item.milestones as Milestone[])
-      : undefined,
+    milestones: Array.isArray(item.milestones) ? (item.milestones as Milestone[]) : undefined,
     token: typeof item.token === "string" ? item.token : undefined,
     tokenSymbol: typeof item.tokenSymbol === "string" ? item.tokenSymbol : undefined,
     tokenDecimals:
@@ -119,9 +113,7 @@ function parsePageResponse(payload: JobPageResponse): {
     if (typeof embedded.totalItems === "number") total = embedded.totalItems;
   }
 
-  const jobs = rows
-    .map(normalizeJob)
-    .filter((job): job is Job => job !== null);
+  const jobs = rows.map(normalizeJob).filter((job): job is Job => job !== null);
 
   return {
     jobs,
@@ -156,8 +148,7 @@ export default function Dashboard() {
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
   const [disputeMilestoneIndex, setDisputeMilestoneIndex] = useState<number | null>(null);
 
-  const { getState, isPending, setPhase, setError: setActionError, setTxHash } =
-    useActionStates();
+  const { getState, isPending, setPhase, setError: setActionError, setTxHash } = useActionStates();
 
   const totalPages = Math.max(1, Math.ceil((total || jobs.length || 1) / limit));
 
@@ -300,10 +291,8 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [address, expandedJobId, fetchJobs, fetchJobDetails]);
 
-  const expandedJob = expandedJobId ? jobDetails[expandedJobId] ?? null : null;
-  const milestoneList = Array.isArray(expandedJob?.milestones)
-    ? expandedJob.milestones
-    : [];
+  const expandedJob = expandedJobId ? (jobDetails[expandedJobId] ?? null) : null;
+  const milestoneList = Array.isArray(expandedJob?.milestones) ? expandedJob.milestones : [];
 
   const isClient = !!(expandedJob && address === expandedJob.client);
   const isFreelancer = !!(expandedJob && address === expandedJob.freelancer);
@@ -313,17 +302,14 @@ export default function Dashboard() {
   const showArbiterNoDisputes =
     isArbiter && getArbiterJobEmptyState(milestoneList) === "no-disputes";
 
-  const [autoReleaseDeadlines, setAutoReleaseDeadlines] = useState<
-    Record<number, number | null>
-  >({});
+  const [autoReleaseDeadlines, setAutoReleaseDeadlines] = useState<Record<number, number | null>>(
+    {}
+  );
 
   useEffect(() => {
     const controller = new AbortController();
     const jobId = expandedJob?.id;
-    const deliveredIndexes = (Array.isArray(expandedJob?.milestones)
-      ? expandedJob.milestones
-      : []
-    )
+    const deliveredIndexes = (Array.isArray(expandedJob?.milestones) ? expandedJob.milestones : [])
       .filter((m) => m.status === "Delivered")
       .map((m) => m.index);
 
@@ -469,7 +455,11 @@ export default function Dashboard() {
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">Job Dashboard</h1>
 
         {!address ? (
-          <p className="text-center text-gray-400 text-sm sm:text-base" role="status" aria-live="polite">
+          <p
+            className="text-center text-gray-400 text-sm sm:text-base"
+            role="status"
+            aria-live="polite"
+          >
             Connect your wallet to view your jobs
           </p>
         ) : (
@@ -500,7 +490,11 @@ export default function Dashboard() {
               </button>
             </form>
 
-            <div className="flex flex-wrap gap-2 sm:gap-3" role="tablist" aria-label="Filter jobs by role">
+            <div
+              className="flex flex-wrap gap-2 sm:gap-3"
+              role="tablist"
+              aria-label="Filter jobs by role"
+            >
               {roleFilterLabels.map((role) => {
                 const active = roleFilter === role.id;
                 return (
@@ -549,7 +543,11 @@ export default function Dashboard() {
               />
             ) : (
               <div className="space-y-3 sm:space-y-5">
-                <div className="border border-gray-800 rounded-lg sm:rounded-xl bg-gray-900 overflow-hidden overflow-x-auto" role="region" aria-label="Jobs list">
+                <div
+                  className="border border-gray-800 rounded-lg sm:rounded-xl bg-gray-900 overflow-hidden overflow-x-auto"
+                  role="region"
+                  aria-label="Jobs list"
+                >
                   {jobs.map((job, index) => {
                     const isExpanded = expandedJobId === job.id;
                     const roleBadges = [
@@ -574,7 +572,9 @@ export default function Dashboard() {
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                             <div className="min-w-0">
-                              <p className="font-semibold text-sm sm:text-base truncate">Job #{job.id.slice(0, 8)}</p>
+                              <p className="font-semibold text-sm sm:text-base truncate">
+                                Job #{job.id.slice(0, 8)}
+                              </p>
                               <p className="text-xs text-gray-400 mt-0.5 sm:mt-1">
                                 {job.funded ? "Funded" : "Not funded"}
                               </p>
@@ -590,7 +590,10 @@ export default function Dashboard() {
                                   {badge}
                                 </span>
                               ))}
-                              <span className="text-xs text-indigo-300 whitespace-nowrap" aria-hidden="true">
+                              <span
+                                className="text-xs text-indigo-300 whitespace-nowrap"
+                                aria-hidden="true"
+                              >
                                 {isExpanded ? "Collapse" : "Expand"}
                               </span>
                             </div>
@@ -608,25 +611,52 @@ export default function Dashboard() {
                             {detailsLoading[job.id] ? (
                               <LoadingSkeleton />
                             ) : !expandedJob ? (
-                              <p className="text-xs sm:text-sm text-gray-400" role="status">Unable to load job details.</p>
+                              <p className="text-xs sm:text-sm text-gray-400" role="status">
+                                Unable to load job details.
+                              </p>
                             ) : (
                               <>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 text-xs sm:text-sm">
                                   <div className="bg-gray-800 rounded-lg p-2 sm:p-3 min-w-0">
-                                    <p className="text-gray-400 text-xs mb-1 font-semibold">Client</p>
-                                    <p className="font-mono text-xs break-all" aria-label={`Client address: ${expandedJob.client}`}>{expandedJob.client}</p>
+                                    <p className="text-gray-400 text-xs mb-1 font-semibold">
+                                      Client
+                                    </p>
+                                    <p
+                                      className="font-mono text-xs break-all"
+                                      aria-label={`Client address: ${expandedJob.client}`}
+                                    >
+                                      {expandedJob.client}
+                                    </p>
                                   </div>
                                   <div className="bg-gray-800 rounded-lg p-2 sm:p-3 min-w-0">
-                                    <p className="text-gray-400 text-xs mb-1 font-semibold">Freelancer</p>
-                                    <p className="font-mono text-xs break-all" aria-label={`Freelancer address: ${expandedJob.freelancer}`}>{expandedJob.freelancer}</p>
+                                    <p className="text-gray-400 text-xs mb-1 font-semibold">
+                                      Freelancer
+                                    </p>
+                                    <p
+                                      className="font-mono text-xs break-all"
+                                      aria-label={`Freelancer address: ${expandedJob.freelancer}`}
+                                    >
+                                      {expandedJob.freelancer}
+                                    </p>
                                   </div>
                                   <div className="bg-gray-800 rounded-lg p-2 sm:p-3 min-w-0">
-                                    <p className="text-gray-400 text-xs mb-1 font-semibold">Arbiter</p>
-                                    <p className="font-mono text-xs break-all" aria-label={`Arbiter address: ${expandedJob.arbiter}`}>{expandedJob.arbiter}</p>
+                                    <p className="text-gray-400 text-xs mb-1 font-semibold">
+                                      Arbiter
+                                    </p>
+                                    <p
+                                      className="font-mono text-xs break-all"
+                                      aria-label={`Arbiter address: ${expandedJob.arbiter}`}
+                                    >
+                                      {expandedJob.arbiter}
+                                    </p>
                                   </div>
                                 </div>
 
-                                <div className="space-y-3 sm:space-y-4" role="region" aria-label="Milestones">
+                                <div
+                                  className="space-y-3 sm:space-y-4"
+                                  role="region"
+                                  aria-label="Milestones"
+                                >
                                   {showArbiterNoDisputes && (
                                     <ArbiterPanelPlaceholder variant="no-disputes" />
                                   )}
@@ -676,7 +706,10 @@ export default function Dashboard() {
                   })}
                 </div>
 
-                <nav className="flex flex-col xs:flex-row items-center justify-between gap-3 overflow-x-auto" aria-label="Pagination navigation">
+                <nav
+                  className="flex flex-col xs:flex-row items-center justify-between gap-3 overflow-x-auto"
+                  aria-label="Pagination navigation"
+                >
                   <button
                     type="button"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -687,7 +720,11 @@ export default function Dashboard() {
                     Previous
                   </button>
 
-                  <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto" aria-label="Pagination buttons" role="group">
+                  <div
+                    className="flex items-center gap-1 sm:gap-2 overflow-x-auto"
+                    aria-label="Pagination buttons"
+                    role="group"
+                  >
                     {paginationButtons.map((value) => {
                       const active = value === page;
                       return (
@@ -696,7 +733,9 @@ export default function Dashboard() {
                           type="button"
                           onClick={() => setPage(value)}
                           aria-current={active ? "page" : undefined}
-                          aria-label={active ? `Current page, page ${value}` : `Go to page ${value}`}
+                          aria-label={
+                            active ? `Current page, page ${value}` : `Go to page ${value}`
+                          }
                           className={`h-8 min-w-8 px-1.5 sm:px-2 rounded-md text-xs sm:text-sm border whitespace-nowrap transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${
                             active
                               ? "bg-indigo-600 border-indigo-500 text-white focus-visible:ring-indigo-400"

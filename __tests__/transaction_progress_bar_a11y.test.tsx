@@ -44,11 +44,9 @@ describe("step state helpers", () => {
   });
 
   it("names steps with position, title and state", () => {
-    expect(getProgressStepName("Sign", 1, 4, "active")).toBe(
-      "Step 2 of 4: Sign, in progress",
-    );
+    expect(getProgressStepName("Sign", 1, 4, "active")).toBe("Step 2 of 4: Sign, in progress");
     expect(getProgressStepName("Confirm", 3, 4, "pending")).toBe(
-      "Step 4 of 4: Confirm, not started",
+      "Step 4 of 4: Confirm, not started"
     );
   });
 
@@ -57,7 +55,7 @@ describe("step state helpers", () => {
     expect(getProgressAnnouncement(steps, 1, "active")).toBe("Step 2 of 4: Sign, in progress.");
     expect(getProgressAnnouncement(steps, 2, "failed")).toBe("Step 3 of 4: Submit, failed.");
     expect(getProgressAnnouncement(steps, 3, "completed")).toBe(
-      "Transaction complete. Step 4 of 4: Confirm, completed.",
+      "Transaction complete. Step 4 of 4: Confirm, completed."
     );
     expect(getProgressAnnouncement(steps, 9, "active")).toBeNull();
   });
@@ -82,19 +80,19 @@ describe("ARIA structure", () => {
     (status) => {
       render(<TransactionProgressBar currentStepIndex={3} status={status} />);
       expect(screen.getByTestId("progress-step-3")).toHaveAttribute("aria-current", "step");
-    },
+    }
   );
 
   it("exposes each static step's position and state to screen readers", () => {
     render(<TransactionProgressBar currentStepIndex={1} />);
     expect(screen.getByTestId("progress-step-0")).toHaveTextContent(
-      "Step 1 of 4: Prepare, completed",
+      "Step 1 of 4: Prepare, completed"
     );
     expect(screen.getByTestId("progress-step-1")).toHaveTextContent(
-      "Step 2 of 4: Sign, in progress",
+      "Step 2 of 4: Sign, in progress"
     );
     expect(screen.getByTestId("progress-step-3")).toHaveTextContent(
-      "Step 4 of 4: Confirm, not started",
+      "Step 4 of 4: Confirm, not started"
     );
   });
 
@@ -148,9 +146,11 @@ describe("ARIA structure", () => {
     render(<TransactionProgressBar mobileOverlay onCloseOverlay={vi.fn()} />);
     expect(screen.getByRole("dialog", { name: "Transaction Status" })).toHaveAttribute(
       "aria-modal",
-      "true",
+      "true"
     );
-    expect(screen.getByRole("heading", { level: 2, name: "Transaction Status" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Transaction Status" })
+    ).toBeInTheDocument();
   });
 
   it("hides the close glyph so the button reads only its label", () => {
@@ -167,7 +167,7 @@ describe("keyboard navigation", () => {
       <>
         <TransactionProgressBar currentStepIndex={2} />
         <button type="button">after</button>
-      </>,
+      </>
     );
     await user.tab();
     expect(screen.getByRole("button", { name: "after" })).toHaveFocus();
@@ -179,7 +179,7 @@ describe("keyboard navigation", () => {
       <>
         <TransactionProgressBar currentStepIndex={1} onStepClick={vi.fn()} />
         <button type="button">after</button>
-      </>,
+      </>
     );
     await user.tab();
     expect(screen.getByTestId("step-node-0")).toHaveFocus();
@@ -204,7 +204,7 @@ describe("keyboard navigation", () => {
       <>
         <TransactionProgressBar currentStepIndex={2} onStepClick={vi.fn()} disabled />
         <button type="button">after</button>
-      </>,
+      </>
     );
     await user.tab();
     expect(screen.getByRole("button", { name: "after" })).toHaveFocus();
@@ -248,7 +248,7 @@ describe("colour contrast (WCAG 2.1 AA)", () => {
     "token %s mirrors globals.css",
     (token, hex) => {
       expect(theme.get(token)).toBe(hex);
-    },
+    }
   );
 
   it.each(PROGRESS_BAR_CONTRAST_PAIRS.map((p) => [p.usage, p] as const))(
@@ -256,10 +256,10 @@ describe("colour contrast (WCAG 2.1 AA)", () => {
     (_usage, pair) => {
       const ratio = contrastRatio(
         resolveProgressBarColour(pair.foreground),
-        resolveProgressBarColour(pair.background),
+        resolveProgressBarColour(pair.background)
       );
       expect(ratio).toBeGreaterThanOrEqual(pair.minRatio);
-    },
+    }
   );
 
   it("keeps the active step number AA-compliant at the dimmest point of its pulse", () => {
@@ -289,7 +289,7 @@ describe("colour contrast (WCAG 2.1 AA)", () => {
     const block = /@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*?)\n\}/.exec(globalsCss);
     expect(block).not.toBeNull();
     ["animate-fade-in", "animate-slide-in", "animate-shake", "animate-pulse-soft"].forEach((cls) =>
-      expect(block![1]).toContain(`.${cls}`),
+      expect(block![1]).toContain(`.${cls}`)
     );
     expect(block![1]).toContain("animation: none");
   });

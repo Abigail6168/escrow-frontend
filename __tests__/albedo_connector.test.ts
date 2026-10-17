@@ -111,11 +111,7 @@ describe("albedo_connector console warning blocks", () => {
 
     const history = tracker.getHistory("tx-10");
     expect(history).toHaveLength(3);
-    expect(history.map((e) => e.phase)).toEqual([
-      "building",
-      "simulating",
-      "error",
-    ]);
+    expect(history.map((e) => e.phase)).toEqual(["building", "simulating", "error"]);
     expect(history[2].stack).toContain("Error: popup closed");
     // Non-error phases go to console.warn; the error phase is routed to
     // console.error so it surfaces at the right level in devtools.
@@ -223,14 +219,8 @@ describe("albedo_connector fee inspection — checkAlbedoFeeWarning", () => {
 
   it("uses a custom fee limit when provided", () => {
     const customLimit = 250_000;
-    const stateUnder = checkAlbedoFeeWarning(
-      { minResourceFee: 200_000 },
-      customLimit
-    );
-    const stateOver = checkAlbedoFeeWarning(
-      { minResourceFee: 300_000 },
-      customLimit
-    );
+    const stateUnder = checkAlbedoFeeWarning({ minResourceFee: 200_000 }, customLimit);
+    const stateOver = checkAlbedoFeeWarning({ minResourceFee: 300_000 }, customLimit);
 
     expect(stateUnder.exceeded).toBe(false);
     expect(stateOver.exceeded).toBe(true);

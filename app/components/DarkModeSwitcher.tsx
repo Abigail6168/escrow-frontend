@@ -28,11 +28,7 @@ export interface DarkModeSwitcherProps {
  * Displayed when theme data is unavailable (isDarkMode is null/undefined).
  * Uses design tokens and is fully accessible.
  */
-export function DarkModeSwitcherEmptyState({
-  className = "",
-}: {
-  className?: string;
-}) {
+export function DarkModeSwitcherEmptyState({ className = "" }: { className?: string }) {
   return (
     <div
       data-testid="dark-mode-switcher-empty-state"
@@ -46,13 +42,10 @@ export function DarkModeSwitcherEmptyState({
       >
         &#9790;
       </div>
-      <p className="text-sm font-semibold text-text-primary">
-        No theme preferences available
-      </p>
+      <p className="text-sm font-semibold text-text-primary">No theme preferences available</p>
       <p className="max-w-xs text-xs text-text-muted">
-        Theme data is empty. Once theme preferences are configured, the
-        dark/light toggle will appear here. You can still browse in the default
-        light theme.
+        Theme data is empty. Once theme preferences are configured, the dark/light toggle will
+        appear here. You can still browse in the default light theme.
       </p>
       <span
         aria-hidden="true"
@@ -180,11 +173,7 @@ export default function DarkModeSwitcher({
         </span>
       </button>
       {error && (
-        <p
-          id={errorId}
-          role="alert"
-          className="text-xs text-red-400 mt-1"
-        >
+        <p id={errorId} role="alert" className="text-xs text-red-400 mt-1">
           {error}
         </p>
       )}

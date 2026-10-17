@@ -10,16 +10,10 @@ import { subscribeToWalletLoading } from "@/app/lib/wallet_state_context";
 describe("freighter_connector loader overlay integration (#108)", () => {
   it("signFreighterWithTimeout toggles the shared wallet loader on execution start/end", async () => {
     const states: boolean[] = [];
-    const unsubscribe = subscribeToWalletLoading((isLoading) =>
-      states.push(isLoading)
-    );
+    const unsubscribe = subscribeToWalletLoading((isLoading) => states.push(isLoading));
 
     const request: FreighterSignRequest = { xdr: "AAAA..." };
-    const result = await signFreighterWithTimeout(
-      request,
-      async () => "signed-xdr",
-      5_000
-    );
+    const result = await signFreighterWithTimeout(request, async () => "signed-xdr", 5_000);
 
     expect(result).toBe("signed-xdr");
     expect(states).toEqual([false, true, false]);
@@ -28,9 +22,7 @@ describe("freighter_connector loader overlay integration (#108)", () => {
 
   it("signFreighterWithTimeout clears the loader even when the call rejects", async () => {
     const states: boolean[] = [];
-    const unsubscribe = subscribeToWalletLoading((isLoading) =>
-      states.push(isLoading)
-    );
+    const unsubscribe = subscribeToWalletLoading((isLoading) => states.push(isLoading));
 
     const request: FreighterSignRequest = { xdr: "AAAA..." };
     await expect(
@@ -49,9 +41,7 @@ describe("freighter_connector loader overlay integration (#108)", () => {
 
   it("runFreighterSign toggles the shared wallet loader on execution start/end", async () => {
     const states: boolean[] = [];
-    const unsubscribe = subscribeToWalletLoading((isLoading) =>
-      states.push(isLoading)
-    );
+    const unsubscribe = subscribeToWalletLoading((isLoading) => states.push(isLoading));
     const showToast = vi.fn();
 
     const result = await runFreighterSign(async () => "ok", showToast);
@@ -62,9 +52,7 @@ describe("freighter_connector loader overlay integration (#108)", () => {
   });
 
   it("verifyAndRehydrateFreighterAddress toggles the loader while checking live wallet state", async () => {
-    const { freighterActiveAddress } = await import(
-      "@/app/lib/freighter_connector"
-    );
+    const { freighterActiveAddress } = await import("@/app/lib/freighter_connector");
     freighterActiveAddress.setActiveAddress({
       address: "GABC",
       network: "testnet",
@@ -72,9 +60,7 @@ describe("freighter_connector loader overlay integration (#108)", () => {
     });
 
     const states: boolean[] = [];
-    const unsubscribe = subscribeToWalletLoading((isLoading) =>
-      states.push(isLoading)
-    );
+    const unsubscribe = subscribeToWalletLoading((isLoading) => states.push(isLoading));
 
     const result = await verifyAndRehydrateFreighterAddress(
       async () => "GABC",
@@ -88,15 +74,11 @@ describe("freighter_connector loader overlay integration (#108)", () => {
   });
 
   it("verifyAndRehydrateFreighterAddress does not toggle the loader when there is no persisted address", async () => {
-    const { freighterActiveAddress } = await import(
-      "@/app/lib/freighter_connector"
-    );
+    const { freighterActiveAddress } = await import("@/app/lib/freighter_connector");
     freighterActiveAddress.clear();
 
     const states: boolean[] = [];
-    const unsubscribe = subscribeToWalletLoading((isLoading) =>
-      states.push(isLoading)
-    );
+    const unsubscribe = subscribeToWalletLoading((isLoading) => states.push(isLoading));
 
     const result = await verifyAndRehydrateFreighterAddress(
       async () => "GABC",

@@ -88,8 +88,7 @@ export function useWalletMultiSigAssembly(
     (transactionXdr: string): MultiSigTransactionStructure => {
       try {
         if (selectedWalletId === "albedo") {
-          const s: AlbedoTransactionStructure =
-            albedo.parseStructure(transactionXdr);
+          const s: AlbedoTransactionStructure = albedo.parseStructure(transactionXdr);
           return {
             sourceAccount: s.sourceAccount,
             fee: s.fee,
@@ -98,9 +97,8 @@ export function useWalletMultiSigAssembly(
           };
         }
 
-        if (selectedWalletId === "ledger" as string) {
-          const s: LedgerTransactionStructure =
-            ledger.parseStructure(transactionXdr);
+        if (selectedWalletId === ("ledger" as string)) {
+          const s: LedgerTransactionStructure = ledger.parseStructure(transactionXdr);
           return {
             sourceAccount: s.sourceAccount,
             fee: s.fee,
@@ -120,9 +118,7 @@ export function useWalletMultiSigAssembly(
       } catch (err) {
         if (err instanceof WalletMultiSigParseError) throw err;
         throw new WalletMultiSigParseError(
-          err instanceof Error
-            ? err.message
-            : "Failed to parse transaction XDR"
+          err instanceof Error ? err.message : "Failed to parse transaction XDR"
         );
       }
     },
@@ -134,16 +130,10 @@ export function useWalletMultiSigAssembly(
   // -------------------------------------------------------------------------
 
   const planAssembly = useCallback(
-    (
-      baseXdr: string,
-      signerPublicKeys: string[]
-    ): MultiSigAssemblyPlan => {
+    (baseXdr: string, signerPublicKeys: string[]): MultiSigAssemblyPlan => {
       try {
         if (selectedWalletId === "albedo") {
-          const plan: AlbedoMultiSigAssemblyPlan = albedo.planAssembly(
-            baseXdr,
-            signerPublicKeys
-          );
+          const plan: AlbedoMultiSigAssemblyPlan = albedo.planAssembly(baseXdr, signerPublicKeys);
           return {
             baseXdr: plan.baseXdr,
             pendingSigners: plan.pendingSigners,
@@ -156,11 +146,8 @@ export function useWalletMultiSigAssembly(
           };
         }
 
-        if (selectedWalletId === "ledger" as string) {
-          const plan: LedgerMultiSigAssemblyPlan = ledger.planAssembly(
-            baseXdr,
-            signerPublicKeys
-          );
+        if (selectedWalletId === ("ledger" as string)) {
+          const plan: LedgerMultiSigAssemblyPlan = ledger.planAssembly(baseXdr, signerPublicKeys);
           return {
             baseXdr: plan.baseXdr,
             pendingSigners: plan.pendingSigners,
@@ -183,9 +170,7 @@ export function useWalletMultiSigAssembly(
       } catch (err) {
         if (err instanceof WalletMultiSigParseError) throw err;
         throw new WalletMultiSigParseError(
-          err instanceof Error
-            ? err.message
-            : "Failed to build assembly plan"
+          err instanceof Error ? err.message : "Failed to build assembly plan"
         );
       }
     },
@@ -197,10 +182,7 @@ export function useWalletMultiSigAssembly(
   // -------------------------------------------------------------------------
 
   const signTransaction = useCallback(
-    async (
-      transactionXdr: string,
-      signFn: (xdr: string) => Promise<string>
-    ): Promise<string> => {
+    async (transactionXdr: string, signFn: (xdr: string) => Promise<string>): Promise<string> => {
       if (selectedWalletId === "albedo") {
         return albedo.signTransaction(transactionXdr, signFn);
       }
@@ -224,7 +206,7 @@ export function useWalletMultiSigAssembly(
           return albedo.assemble(baseXdr, parts as AlbedoMultiSigPart[]);
         }
 
-        if (selectedWalletId === "ledger" as string) {
+        if (selectedWalletId === ("ledger" as string)) {
           return ledger.assemble(baseXdr, parts as LedgerMultiSigPart[]);
         }
 
@@ -235,16 +217,13 @@ export function useWalletMultiSigAssembly(
             hint: p.signerPublicKey.slice(-4),
           })
         );
-        const result: WalletMultiSigAssemblyResult =
-          validateMultiSigAssembly(splits);
+        const result: WalletMultiSigAssemblyResult = validateMultiSigAssembly(splits);
         void result; // validation only; return baseXdr as assembled envelope
         return baseXdr;
       } catch (err) {
         if (err instanceof WalletMultiSigParseError) throw err;
         throw new WalletMultiSigParseError(
-          err instanceof Error
-            ? err.message
-            : "Failed to assemble multi-sig transaction"
+          err instanceof Error ? err.message : "Failed to assemble multi-sig transaction"
         );
       }
     },
@@ -263,7 +242,7 @@ export function useWalletMultiSigAssembly(
           return;
         }
 
-        if (selectedWalletId === "ledger" as string) {
+        if (selectedWalletId === ("ledger" as string)) {
           ledger.validateParts(parts as LedgerMultiSigPart[]);
           return;
         }
@@ -275,9 +254,7 @@ export function useWalletMultiSigAssembly(
       } catch (err) {
         if (err instanceof WalletMultiSigParseError) throw err;
         throw new WalletMultiSigParseError(
-          err instanceof Error
-            ? err.message
-            : "One or more transaction parts failed validation"
+          err instanceof Error ? err.message : "One or more transaction parts failed validation"
         );
       }
     },
@@ -305,13 +282,6 @@ export function useWalletMultiSigAssembly(
       validateParts,
       missingSigners,
     }),
-    [
-      parseStructure,
-      planAssembly,
-      signTransaction,
-      assemble,
-      validateParts,
-      missingSigners,
-    ]
+    [parseStructure, planAssembly, signTransaction, assemble, validateParts, missingSigners]
   );
 }

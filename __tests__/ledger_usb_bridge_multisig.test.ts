@@ -83,23 +83,21 @@ describe("ledger_usb_bridge multi-signature assembly", () => {
 
     const merged = parseLedgerTransactionStructure(mergedXdr, NETWORK);
     expect(merged.signatureCount).toBe(2);
-    expect(validateMultiSigParts(
-      [
-        { signerPublicKey: source.publicKey(), signedXdr: first.toXDR() },
-        { signerPublicKey: cosigner.publicKey(), signedXdr: second.toXDR() },
-      ],
-      NETWORK
-    )).toHaveLength(2);
+    expect(
+      validateMultiSigParts(
+        [
+          { signerPublicKey: source.publicKey(), signedXdr: first.toXDR() },
+          { signerPublicKey: cosigner.publicKey(), signedXdr: second.toXDR() },
+        ],
+        NETWORK
+      )
+    ).toHaveLength(2);
   });
 
   it("splits signer metadata for Ledger co-signing flows", () => {
     const { tx, source } = buildSampleTransaction();
     tx.sign(source);
-    const parts = splitMultiSigTransactionParts(
-      tx.toXDR(),
-      [source.publicKey()],
-      NETWORK
-    );
+    const parts = splitMultiSigTransactionParts(tx.toXDR(), [source.publicKey()], NETWORK);
 
     expect(parts).toHaveLength(1);
     expect(parts[0].signerPublicKey).toBe(source.publicKey());

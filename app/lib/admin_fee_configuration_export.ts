@@ -24,7 +24,7 @@ export function feeRowsToCsv(rows: FeeConfigRow[]): string {
     lines.push(
       [r.token, r.feeBps, (r.feeBps / 100).toFixed(2), r.state, r.updatedAt ?? ""]
         .map(escapeCsvCell)
-        .join(","),
+        .join(",")
     );
   }
   return lines.join("\r\n");

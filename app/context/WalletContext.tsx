@@ -19,7 +19,10 @@ import {
   type LedgerSimulationResult,
   type LedgerGasWarningState,
 } from "@/app/lib/ledger_usb_bridge";
-import { freighterActiveAddress, verifyAndRehydrateFreighterAddress } from "@/app/lib/freighter_connector";
+import {
+  freighterActiveAddress,
+  verifyAndRehydrateFreighterAddress,
+} from "@/app/lib/freighter_connector";
 import {
   logWalletWarning,
   validateMultiSigAssembly,
@@ -41,10 +44,15 @@ const APP_NETWORK_DISPLAY = "Testnet";
 
 function buildMismatchMessage(walletId: string, walletNetwork: string): string {
   const walletDisplay =
-    walletId === "freighter" ? "Freighter" :
-    walletId === "albedo"   ? "Albedo"   :
-    walletId === "xbull"    ? "xBull"    :
-    walletId === "hana"     ? "Hana"     : "your wallet";
+    walletId === "freighter"
+      ? "Freighter"
+      : walletId === "albedo"
+        ? "Albedo"
+        : walletId === "xbull"
+          ? "xBull"
+          : walletId === "hana"
+            ? "Hana"
+            : "your wallet";
 
   return `Network mismatch: your ${walletDisplay} is on ${walletNetwork} but this app expects Stellar ${APP_NETWORK_DISPLAY}. Please switch networks.`;
 }
@@ -112,18 +120,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [selectedWalletId, setSelectedWalletId] = useState<SupportedWalletId>(() => {
     const persisted = walletStateStore.getActiveState();
-    return persisted?.selectedWalletId as SupportedWalletId ?? SUPPORTED_WALLETS[0].id;
+    return (persisted?.selectedWalletId as SupportedWalletId) ?? SUPPORTED_WALLETS[0].id;
   });
-  const [networkMismatchMessage, setNetworkMismatchMessage] = useState<
-    string | null
-  >(null);
+  const [networkMismatchMessage, setNetworkMismatchMessage] = useState<string | null>(null);
   const [signatureTimeoutError, setSignatureTimeoutError] =
     useState<WalletSignatureTimeoutError | null>(null);
-  const [signatureTimeoutXdr, setSignatureTimeoutXdr] = useState<string | null>(
-    null
-  );
-  const [simulationResult, setSimulationResult] =
-    useState<LedgerSimulationResult | null>(null);
+  const [signatureTimeoutXdr, setSignatureTimeoutXdr] = useState<string | null>(null);
+  const [simulationResult, setSimulationResult] = useState<LedgerSimulationResult | null>(null);
   const initializedRef = useRef(false);
   const { showToast } = useToast();
 
@@ -219,11 +222,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             return;
           }
         } catch (e) {
-          logWalletWarning(
-            "REHYDRATE FAILED",
-            "Failed to rehydrate freighter active address",
-            { err: e, phase: "error" }
-          );
+          logWalletWarning("REHYDRATE FAILED", "Failed to rehydrate freighter active address", {
+            err: e,
+            phase: "error",
+          });
         }
 
         if (!active) return;
@@ -319,58 +321,56 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setAddress(null);
   }, []);
 
-  const signTransaction = useCallback(async (xdr: string): Promise<string> => {
-    if (!address) throw new Error("Wallet not connected");
-    setSignatureTimeoutError(null);
-    setSignatureTimeoutXdr(null);
+  const signTransaction = useCallback(
+    async (xdr: string): Promise<string> => {
+      if (!address) throw new Error("Wallet not connected");
+      setSignatureTimeoutError(null);
+      setSignatureTimeoutXdr(null);
 
-    return withWalletLoader(async () => {
-      try {
-        ensureKitInitialized();
-        StellarWalletsKit.setWallet(selectedWalletId);
+      return withWalletLoader(async () => {
+        try {
+          ensureKitInitialized();
+          StellarWalletsKit.setWallet(selectedWalletId);
 
-        const result = await signWalletWithTimeout(
-          { xdr },
-          async (transactionXdr) =>
-            (await StellarWalletsKit.signTransaction(transactionXdr, {
-              address,
-              networkPassphrase: NETWORK_PASSPHRASE,
-            })) as KitSignResult
-        );
-
-        return result.signedTxXdr ?? "";
-      } catch (e) {
-        const rejected = isWalletRejectedError(e);
-        walletTracker.track(
-          "sign",
-          "error",
-          rejected
-            ? "Wallet signTransaction rejected by user"
-            : "Wallet signTransaction failed",
-          e
-        );
-
-        if (e instanceof WalletSignatureTimeoutError) {
-          setSignatureTimeoutError(e);
-          setSignatureTimeoutXdr(xdr);
-        }
-
-        // A user declining in their wallet is an expected outcome, not a
-        // fault: surface it as a warning and normalise it to
-        // WalletRejectedError so callers can branch on it. Every other
-        // failure is rethrown untouched.
-        if (rejected) {
-          showToast(
-            "Signature cancelled - you rejected the request in your wallet.",
-            "warning"
+          const result = await signWalletWithTimeout(
+            { xdr },
+            async (transactionXdr) =>
+              (await StellarWalletsKit.signTransaction(transactionXdr, {
+                address,
+                networkPassphrase: NETWORK_PASSPHRASE,
+              })) as KitSignResult
           );
-          throw new WalletRejectedError();
-        }
 
-        throw e;
-      }
-    });
-  }, [address, ensureKitInitialized, selectedWalletId, showToast]);
+          return result.signedTxXdr ?? "";
+        } catch (e) {
+          const rejected = isWalletRejectedError(e);
+          walletTracker.track(
+            "sign",
+            "error",
+            rejected ? "Wallet signTransaction rejected by user" : "Wallet signTransaction failed",
+            e
+          );
+
+          if (e instanceof WalletSignatureTimeoutError) {
+            setSignatureTimeoutError(e);
+            setSignatureTimeoutXdr(xdr);
+          }
+
+          // A user declining in their wallet is an expected outcome, not a
+          // fault: surface it as a warning and normalise it to
+          // WalletRejectedError so callers can branch on it. Every other
+          // failure is rethrown untouched.
+          if (rejected) {
+            showToast("Signature cancelled - you rejected the request in your wallet.", "warning");
+            throw new WalletRejectedError();
+          }
+
+          throw e;
+        }
+      });
+    },
+    [address, ensureKitInitialized, selectedWalletId, showToast]
+  );
 
   const clearSignatureTimeout = useCallback(() => {
     setSignatureTimeoutError(null);
@@ -386,12 +386,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         try {
           return validateMultiSigAssembly(splits, options);
         } catch (e) {
-          walletTracker.track(
-            "multisig",
-            "error",
-            "Multi-sig transaction assembly failed",
-            e
-          );
+          walletTracker.track("multisig", "error", "Multi-sig transaction assembly failed", e);
           throw e;
         }
       });

@@ -24,4 +24,8 @@ export function getFeeConfigSkeleton(isLoading: boolean): readonly FeeConfigSkel
   return isLoading ? FEE_CONFIG_SKELETON_FRAMES : [];
 }
 
-export const FEE_CONFIG_SKELETON_ARIA = { role: "status", "aria-busy": true, "aria-label": "Loading fee configuration" } as const;
+export const FEE_CONFIG_SKELETON_ARIA = {
+  role: "status",
+  "aria-busy": true,
+  "aria-label": "Loading fee configuration",
+} as const;

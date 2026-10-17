@@ -37,9 +37,11 @@ describe("ledger_usb_bridge signature timeout bounds", () => {
       payload: new Uint8Array([1, 2, 3, 4]),
     };
 
-    const signFn = vi.fn(async (): Promise<LedgerSignResult> => ({
-      signedXdr: "signed-xdr",
-    }));
+    const signFn = vi.fn(
+      async (): Promise<LedgerSignResult> => ({
+        signedXdr: "signed-xdr",
+      })
+    );
 
     const promise = signWithTimeout(request, signFn, 5_000);
     await vi.runAllTimersAsync();
@@ -64,9 +66,7 @@ describe("ledger_usb_bridge signature timeout bounds", () => {
     );
 
     const promise = signWithTimeout(request, signFn, 1_000);
-    const assertion = expect(promise).rejects.toBeInstanceOf(
-      LedgerSignatureTimeoutError
-    );
+    const assertion = expect(promise).rejects.toBeInstanceOf(LedgerSignatureTimeoutError);
 
     await vi.advanceTimersByTimeAsync(1_000);
     await assertion;
@@ -101,12 +101,8 @@ describe("ledger_usb_bridge user rejection handling", () => {
 
   it("detects user rejected transaction exceptions", () => {
     expect(isUserRejectedError(new LedgerUserRejectedError())).toBe(true);
-    expect(isUserRejectedError(new Error("user rejected transaction"))).toBe(
-      true
-    );
-    expect(isUserRejectedError(new Error("User Declined the request"))).toBe(
-      true
-    );
+    expect(isUserRejectedError(new Error("user rejected transaction"))).toBe(true);
+    expect(isUserRejectedError(new Error("User Declined the request"))).toBe(true);
     expect(isUserRejectedError(new Error("device locked"))).toBe(false);
   });
 
@@ -144,10 +140,7 @@ describe("ledger_usb_bridge user rejection handling", () => {
 
   it("returns the signed result when the user approves", async () => {
     const showToast = vi.fn();
-    const result = await signCatchingRejection(
-      async () => ({ signedXdr: "ok" }),
-      showToast
-    );
+    const result = await signCatchingRejection(async () => ({ signedXdr: "ok" }), showToast);
     expect(result).toEqual({ signedXdr: "ok" });
     expect(showToast).not.toHaveBeenCalled();
   });
@@ -228,20 +221,11 @@ describe("ledger_usb_bridge console warning blocks", () => {
 
     tracker.track("tx-99", "building", "Preparing XDR");
     tracker.track("tx-99", "signing", "Prompting Ledger device");
-    tracker.track(
-      "tx-99",
-      "error",
-      "Ledger returned failure",
-      new Error("locked device")
-    );
+    tracker.track("tx-99", "error", "Ledger returned failure", new Error("locked device"));
 
     const history = tracker.getHistory("tx-99");
     expect(history).toHaveLength(3);
-    expect(history.map((e) => e.phase)).toEqual([
-      "building",
-      "signing",
-      "error",
-    ]);
+    expect(history.map((e) => e.phase)).toEqual(["building", "signing", "error"]);
     expect(history[2].stack).toContain("Error: locked device");
     expect(warnSpy).toHaveBeenCalledTimes(3);
 
@@ -362,9 +346,7 @@ describe("ledger_usb_bridge active address persistence", () => {
     store.addOrUpdateAddress(addr);
     expect(store.getActiveAddresses()).toHaveLength(1);
 
-    store.addOrUpdateAddress(
-      makeAddress({ address: "G2", derivationPath: "m/1" })
-    );
+    store.addOrUpdateAddress(makeAddress({ address: "G2", derivationPath: "m/1" }));
     expect(store.getActiveAddresses()).toHaveLength(2);
 
     store.addOrUpdateAddress(
@@ -450,9 +432,7 @@ describe("ledger_usb_bridge active address persistence", () => {
     expect(store.getActiveAddresses()).toEqual([]);
     expect(storage.getItem(LEDGER_ACTIVE_ADDRESSES_STORAGE_KEY)).toBeNull();
     expect(warnSpy).toHaveBeenCalled();
-    const logged = warnSpy.mock.calls
-      .map((c: unknown[]) => String(c[0]))
-      .join("\n");
+    const logged = warnSpy.mock.calls.map((c: unknown[]) => String(c[0])).join("\n");
     expect(logged).toContain("REHYDRATE FAILED");
   });
 
@@ -467,9 +447,7 @@ describe("ledger_usb_bridge active address persistence", () => {
 
     expect(store.getActiveAddresses()).toEqual([]);
     expect(storage.getItem(LEDGER_ACTIVE_ADDRESSES_STORAGE_KEY)).toBeNull();
-    const logged = warnSpy.mock.calls
-      .map((c: unknown[]) => String(c[0]))
-      .join("\n");
+    const logged = warnSpy.mock.calls.map((c: unknown[]) => String(c[0])).join("\n");
     expect(logged).toContain("REHYDRATE SCHEMA MISMATCH");
   });
 
@@ -489,10 +467,7 @@ describe("ledger_usb_bridge active address persistence", () => {
   it("handles address entries with missing required fields during rehydrate", () => {
     const badEntries = JSON.stringify({
       version: LEDGER_ACTIVE_ADDRESSES_SCHEMA_VERSION,
-      addresses: [
-        { address: "GTEST" },
-        makeAddress({ address: "GGOOD" }),
-      ],
+      addresses: [{ address: "GTEST" }, makeAddress({ address: "GGOOD" })],
     });
     storage.setItem(LEDGER_ACTIVE_ADDRESSES_STORAGE_KEY, badEntries);
 

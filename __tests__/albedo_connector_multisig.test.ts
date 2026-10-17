@@ -58,9 +58,9 @@ describe("albedo_connector multi-signature assembly", () => {
     expect(() => parseAlbedoTransactionStructure("", NETWORK)).toThrow(
       AlbedoTransactionAssemblyError
     );
-    expect(() =>
-      parseAlbedoTransactionStructure("not-valid-xdr", NETWORK)
-    ).toThrow(AlbedoTransactionAssemblyError);
+    expect(() => parseAlbedoTransactionStructure("not-valid-xdr", NETWORK)).toThrow(
+      AlbedoTransactionAssemblyError
+    );
   });
 
   it("creates an assembly plan with pending signers", () => {
@@ -79,9 +79,9 @@ describe("albedo_connector multi-signature assembly", () => {
 
   it("rejects assembly plans without signers", () => {
     const { tx } = buildSampleTransaction();
-    expect(() =>
-      createAlbedoMultiSigAssemblyPlan(tx.toXDR(), [], NETWORK)
-    ).toThrow(/signer public key/i);
+    expect(() => createAlbedoMultiSigAssemblyPlan(tx.toXDR(), [], NETWORK)).toThrow(
+      /signer public key/i
+    );
   });
 
   it("merges co-signer envelopes into one multi-sig XDR", () => {
@@ -128,9 +128,7 @@ describe("albedo_connector multi-signature assembly", () => {
       NETWORK
     );
 
-    expect(parseAlbedoTransactionStructure(mergedXdr, NETWORK).signatureCount).toBe(
-      1
-    );
+    expect(parseAlbedoTransactionStructure(mergedXdr, NETWORK).signatureCount).toBe(1);
   });
 
   it("detects missing signatures against an assembly plan", () => {
@@ -142,23 +140,14 @@ describe("albedo_connector multi-signature assembly", () => {
       NETWORK
     );
 
-    expect(findMissingAlbedoSigners(plan, [source.publicKey()])).toEqual([
-      cosigner,
-    ]);
-    expect(
-      findMissingAlbedoSigners(plan, [source.publicKey(), cosigner])
-    ).toEqual([]);
+    expect(findMissingAlbedoSigners(plan, [source.publicKey()])).toEqual([cosigner]);
+    expect(findMissingAlbedoSigners(plan, [source.publicKey(), cosigner])).toEqual([]);
   });
 
   it("rejects empty / incomplete multi-sig parts", () => {
-    expect(() => validateAlbedoMultiSigParts([], NETWORK)).toThrow(
-      AlbedoTransactionAssemblyError
-    );
+    expect(() => validateAlbedoMultiSigParts([], NETWORK)).toThrow(AlbedoTransactionAssemblyError);
     expect(() =>
-      validateAlbedoMultiSigParts(
-        [{ signerPublicKey: "", signedXdr: "x" }],
-        NETWORK
-      )
+      validateAlbedoMultiSigParts([{ signerPublicKey: "", signedXdr: "x" }], NETWORK)
     ).toThrow(/Missing signer/);
   });
 
@@ -180,11 +169,7 @@ describe("albedo_connector multi-signature assembly", () => {
   it("splits signer metadata for Albedo co-signing flows", () => {
     const { tx, source } = buildSampleTransaction();
     tx.sign(source);
-    const parts = splitAlbedoMultiSigTransactionParts(
-      tx.toXDR(),
-      [source.publicKey()],
-      NETWORK
-    );
+    const parts = splitAlbedoMultiSigTransactionParts(tx.toXDR(), [source.publicKey()], NETWORK);
 
     expect(parts).toHaveLength(1);
     expect(parts[0].signerPublicKey).toBe(source.publicKey());
@@ -217,8 +202,6 @@ describe("useAlbedoMultiSigAssembly hook", () => {
 
     const plan = result.current.planAssembly(baseXdr, [source.publicKey()]);
     expect(plan.pendingSigners).toHaveLength(1);
-    expect(
-      result.current.missingSigners(plan, [])
-    ).toEqual([source.publicKey()]);
+    expect(result.current.missingSigners(plan, [])).toEqual([source.publicKey()]);
   });
 });

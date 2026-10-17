@@ -4,8 +4,8 @@ Next.js frontend for the Soroban milestone escrow smart contract on Stellar.
 
 ## Live Contract
 
-| Network | Contract ID |
-|---|---|
+| Network | Contract ID                                                |
+| ------- | ---------------------------------------------------------- |
 | Testnet | `CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH` |
 
 ## Tech Stack
@@ -36,8 +36,7 @@ NEXT_PUBLIC_CONTRACT_ID=CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH
 
 ## Related Repos
 
-- `https://github.com/Goldii-locks/escrow-contract`  — Soroban smart contract
+- `https://github.com/Goldii-locks/escrow-contract` — Soroban smart contract
 - Update README with latest progress
-
 
 Design tokens integration for dark mode switcher.

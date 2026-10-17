@@ -9,18 +9,14 @@ import {
 
 describe("LedgerWalletWarningBanner", () => {
   it("renders fallback setup instructions when transport is unavailable", () => {
-    render(
-      <LedgerWalletWarningBanner
-        detector={() => ({ hasWebUsb: false, hasWebHid: false })}
-      />
-    );
+    render(<LedgerWalletWarningBanner detector={() => ({ hasWebUsb: false, hasWebHid: false })} />);
 
     const banner = screen.getByTestId("ledger-wallet-warning-banner");
     expect(banner).toBeInTheDocument();
     expect(banner).toHaveAttribute("role", "alert");
-    expect(
-      screen.getByTestId("ledger-wallet-setup-instruction")
-    ).toHaveTextContent(LEDGER_SETUP_INSTRUCTION);
+    expect(screen.getByTestId("ledger-wallet-setup-instruction")).toHaveTextContent(
+      LEDGER_SETUP_INSTRUCTION
+    );
     expect(screen.getByTestId("ledger-wallet-setup-link")).toHaveAttribute(
       "href",
       LEDGER_SETUP_URL
@@ -32,35 +28,25 @@ describe("LedgerWalletWarningBanner", () => {
 
   it("does not render when WebUSB transport is available", () => {
     const { container } = render(
-      <LedgerWalletWarningBanner
-        detector={() => ({ hasWebUsb: true, hasWebHid: false })}
-      />
+      <LedgerWalletWarningBanner detector={() => ({ hasWebUsb: true, hasWebHid: false })} />
     );
 
-    expect(
-      screen.queryByTestId("ledger-wallet-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("ledger-wallet-warning-banner")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 
   it("does not render when only WebHID transport is available", () => {
     const { container } = render(
-      <LedgerWalletWarningBanner
-        detector={() => ({ hasWebUsb: false, hasWebHid: true })}
-      />
+      <LedgerWalletWarningBanner detector={() => ({ hasWebUsb: false, hasWebHid: true })} />
     );
 
-    expect(
-      screen.queryByTestId("ledger-wallet-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("ledger-wallet-warning-banner")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 
   it("does not render when both transports are available", () => {
     const { container } = render(
-      <LedgerWalletWarningBanner
-        detector={() => ({ hasWebUsb: true, hasWebHid: true })}
-      />
+      <LedgerWalletWarningBanner detector={() => ({ hasWebUsb: true, hasWebHid: true })} />
     );
 
     expect(container).toBeEmptyDOMElement();
@@ -77,9 +63,9 @@ describe("LedgerWalletWarningBanner", () => {
 
     render(<LedgerWalletWarningBanner availability={availability} />);
 
-    expect(
-      screen.getByTestId("ledger-wallet-setup-instruction")
-    ).toHaveTextContent(/browser does not support/i);
+    expect(screen.getByTestId("ledger-wallet-setup-instruction")).toHaveTextContent(
+      /browser does not support/i
+    );
   });
 
   it("uses a precomputed error status availability state", () => {
@@ -106,9 +92,7 @@ describe("LedgerWalletWarningBanner", () => {
       warningMessage: null,
     };
 
-    const { container } = render(
-      <LedgerWalletWarningBanner availability={availability} />
-    );
+    const { container } = render(<LedgerWalletWarningBanner availability={availability} />);
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -122,13 +106,9 @@ describe("LedgerWalletWarningBanner", () => {
       warningMessage: null,
     };
 
-    const { container } = render(
-      <LedgerWalletWarningBanner availability={availability} />
-    );
+    const { container } = render(<LedgerWalletWarningBanner availability={availability} />);
 
-    expect(
-      screen.queryByTestId("ledger-wallet-warning-banner")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("ledger-wallet-warning-banner")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
   });
 });
