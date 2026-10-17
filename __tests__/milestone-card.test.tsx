@@ -62,6 +62,87 @@ describe("MilestoneCard", () => {
     expect(screen.getByRole("button", { name: /mark milestone \d+ as delivered/i })).toBeInTheDocument();
   });
 
+  it("renders the Dispute button for client on a PartiallyReleased milestone", () => {
+    const onDispute = vi.fn();
+
+    render(
+      <MilestoneCard
+        milestone={{ index: 2, amount: "1000", status: "PartiallyReleased", releasedAmount: "400" }}
+        isClient
+        isFreelancer={false}
+        partialReleaseState={idleActionState}
+        claimAutoReleaseState={idleActionState}
+        isPartialReleasePending={false}
+        isClaimAutoReleasePending={false}
+        onDispute={onDispute}
+      />
+    );
+
+    const disputeButton = screen.getByRole("button", { name: /dispute milestone 3/i });
+    expect(disputeButton).toBeInTheDocument();
+    expect(disputeButton).not.toBeDisabled();
+  });
+
+  it("renders the Dispute button for freelancer on a PartiallyReleased milestone", () => {
+    const onDispute = vi.fn();
+
+    render(
+      <MilestoneCard
+        milestone={{ index: 2, amount: "1000", status: "PartiallyReleased", releasedAmount: "400" }}
+        isClient={false}
+        isFreelancer
+        partialReleaseState={idleActionState}
+        claimAutoReleaseState={idleActionState}
+        isPartialReleasePending={false}
+        isClaimAutoReleasePending={false}
+        onDispute={onDispute}
+      />
+    );
+
+    const disputeButton = screen.getByRole("button", { name: /dispute milestone 3/i });
+    expect(disputeButton).toBeInTheDocument();
+    expect(disputeButton).not.toBeDisabled();
+  });
+
+  it("does NOT render the Dispute button for a Released milestone", () => {
+    const onDispute = vi.fn();
+
+    render(
+      <MilestoneCard
+        milestone={{ index: 0, amount: "100", status: "Released" }}
+        isClient
+        isFreelancer={false}
+        partialReleaseState={idleActionState}
+        claimAutoReleaseState={idleActionState}
+        isPartialReleasePending={false}
+        isClaimAutoReleasePending={false}
+        onDispute={onDispute}
+      />
+    );
+
+    expect(
+      screen.queryByRole("button", { name: /dispute milestone 1/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("disables the Dispute button when onDispute is absent on a PartiallyReleased milestone", () => {
+    render(
+      <MilestoneCard
+        milestone={{ index: 1, amount: "100", status: "PartiallyReleased" }}
+        isClient
+        isFreelancer={false}
+        partialReleaseState={idleActionState}
+        claimAutoReleaseState={idleActionState}
+        isPartialReleasePending={false}
+        isClaimAutoReleasePending={false}
+      />
+    );
+
+    expect(
+      screen.getByRole("button", { name: /dispute milestone 2/i })
+    ).toBeDisabled();
+  });
+
   it("keeps empty-state layout spacing stable across breakpoints", () => {
     renderCard(null);
 

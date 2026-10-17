@@ -458,7 +458,9 @@ export default function MilestoneCard({
           )}
 
           {(isClient || isFreelancer) &&
-            ["Pending", "Delivered"].includes(milestone.status) && (
+            ["Pending", "Delivered", "PartiallyReleased"].includes(
+              milestone.status
+            ) && (
               <button
                 onClick={() => setIsDisputeModalOpen(true)}
                 disabled={!onDispute}
