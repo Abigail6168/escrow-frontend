@@ -315,3 +315,43 @@ describe("MilestoneCard", () => {
     expect(screen.getByTestId("milestone-deadline-warning")).toBeInTheDocument();
   });
 });
+
+describe("MilestoneCard claim eligibility from on-chain data", () => {
+  const DAY = 86_400;
+  const renderDelivered = (extra: Record<string, unknown>) =>
+    render(
+      <MilestoneCard
+        milestone={{ index: 0, amount: "100", status: "Delivered", ...extra }}
+        isClient={false}
+        isFreelancer
+        partialReleaseState={idleActionState}
+        claimAutoReleaseState={idleActionState}
+        isPartialReleasePending={false}
+        isClaimAutoReleasePending={false}
+        onClaimAutoRelease={vi.fn()}
+        autoReleaseDeadline={null}
+      />
+    );
+
+  it("shows the claim button when delivered 10 days ago with a 7-day window and no backend deadline", () => {
+    renderDelivered({
+      deliveredAt: Math.floor(Date.now() / 1000) - 10 * DAY,
+      autoReleaseSeconds: 7 * DAY,
+    });
+    expect(screen.getByRole("button", { name: /claim auto-release/i })).toBeInTheDocument();
+  });
+
+  it("hides the claim button while the on-chain window is still open", () => {
+    renderDelivered({
+      deliveredAt: Math.floor(Date.now() / 1000) - 1 * DAY,
+      autoReleaseSeconds: 7 * DAY,
+    });
+    expect(screen.queryByRole("button", { name: /claim auto-release/i })).not.toBeInTheDocument();
+  });
+
+  it("shows the button with a note when the deadline can't be determined", () => {
+    renderDelivered({});
+    expect(screen.getByRole("button", { name: /claim auto-release/i })).toBeInTheDocument();
+    expect(screen.getByText(/contract will reject this/i)).toBeInTheDocument();
+  });
+});
