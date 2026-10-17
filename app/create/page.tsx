@@ -1,4 +1,6 @@
 "use client";
+import { isMilestoneCapReached, milestoneLimitHint } from "../lib/milestone_limits";
+import { validateMilestoneAmount } from "../lib/milestone_amount_validation";
 import { useEffect, useRef, useState } from "react";
 import { useWallet } from "@/app/context/WalletContext";
 import Navbar from "@/app/components/Navbar";
@@ -127,7 +129,10 @@ export default function CreateJob() {
     setRequirements(updated);
   };
 
-  const addMilestone = () => setMilestones([...milestones, { amount: "" }]);
+  const addMilestone = () => {
+    if (isMilestoneCapReached(milestones.length)) return;
+    setMilestones([...milestones, { amount: "" }]);
+  };
   const removeMilestone = (i: number) =>
     setMilestones(milestones.filter((_, idx) => idx !== i));
   const updateMilestone = (i: number, val: string) => {
@@ -152,7 +157,7 @@ export default function CreateJob() {
   const hasInvalidMilestones = normalizedMilestones.some(m => {
     const trimmed = m.amount.trim();
     if (trimmed.length === 0) return false;
-    return !/^[0-9]+$/.test(trimmed);
+    return validateMilestoneAmount(trimmed) !== null;
   });
 
   const hasValidationErrors = !!freelancerError || !!arbiterError || !!tokenError;
@@ -304,7 +309,7 @@ export default function CreateJob() {
     try {
       const milestoneAmounts = normalizedMilestones.map((m) => {
         const trimmed = m.amount.trim();
-        if (!/^[0-9]+$/.test(trimmed)) {
+        if (trimmed === "" || validateMilestoneAmount(trimmed) !== null) {
           throw new Error("Invalid milestone amount");
         }
         return BigInt(trimmed);
@@ -897,11 +902,18 @@ export default function CreateJob() {
                       type="button"
                       onClick={addMilestone}
                       aria-label="Add milestone"
-                      className={`${buttonClassName} text-accent-soft hover:text-accent-soft-hover rounded-sm px-0 py-0 active:scale-95`}
+                      disabled={isMilestoneCapReached(milestones.length)}
+                      className={`${buttonClassName} text-accent-soft hover:text-accent-soft-hover rounded-sm px-0 py-0 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       + Add Milestone
                     </button>
                   </div>
+                  <p
+                    className="mb-2 text-xs text-text-muted"
+                    data-testid="milestone-limit-hint"
+                  >
+                    {milestoneLimitHint()}
+                  </p>
                   {hasNoMilestones ? (
                     <EmptyCollectionState
                       title="No milestones available."
@@ -918,7 +930,7 @@ export default function CreateJob() {
                       aria-label="Milestone amounts"
                     >
                       {normalizedMilestones.map((m, i) => (
-                        <li key={i} className="flex gap-2 items-center animate-slide-in">
+                        <li key={i} className="flex flex-wrap gap-2 items-center animate-slide-in">
                           <input
                             id={`milestone-input-${i}`}
                             className={`${inputClassName} flex-1 min-w-0`}
@@ -928,12 +940,11 @@ export default function CreateJob() {
                             placeholder={`Milestone ${i + 1} amount (stroops)`}
                             aria-label={`Milestone ${i + 1} amount in stroops`}
                             aria-required="true"
-                            type="number"
-                            min="0"
-                            step="any"
+                            type="text"
                             inputMode="numeric"
                             required
                             pattern="^[0-9]+$"
+                            aria-invalid={validateMilestoneAmount(m.amount) !== null}
                             disabled={loading}
                           />
                           <button
@@ -945,6 +956,15 @@ export default function CreateJob() {
                           >
                             ✕
                           </button>
+                          {validateMilestoneAmount(m.amount) && (
+                            <p
+                              role="alert"
+                              className="basis-full text-xs text-danger-soft"
+                              data-testid={`milestone-error-${i}`}
+                            >
+                              {validateMilestoneAmount(m.amount)}
+                            </p>
+                          )}
                         </li>
                       ))}
                     </ul>

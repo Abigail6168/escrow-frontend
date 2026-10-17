@@ -1,4 +1,5 @@
 "use client";
+import { clearAllWalletSessionStorage } from "@/app/lib/wallet_session_storage_cleanup";
 import {
   createContext,
   useContext,
@@ -313,6 +314,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(LEGACY_STORAGE_KEY);
     ledgerActiveAddresses.clear();
     freighterActiveAddress.clear();
+    clearAllWalletSessionStorage();
     setNetworkMismatchMessage(null);
     setAddress(null);
   }, []);
