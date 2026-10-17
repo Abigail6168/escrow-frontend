@@ -413,7 +413,12 @@ export default function Dashboard() {
   };
 
   const handleApprove = async (i: number) => {
-    showToast(`Approve milestone ${i + 1} (wired to contract soon)`, "info");
+    if (!address) return;
+
+    await executeTx(`approve-${i}`, "approve_milestone", [
+      { type: "address", value: address },
+      { type: "u32", value: i.toString() },
+    ]);
   };
 
   const handleDispute = (i: number) => {
@@ -640,6 +645,7 @@ export default function Dashboard() {
                                         isArbiter={isArbiter}
                                         amountDecimals={expandedJob.tokenDecimals ?? 7}
                                         amountSymbol={expandedJob.tokenSymbol ?? "XLM"}
+                                        freelancerAddress={expandedJob.freelancer}
                                         resolveDisputeState={getState(`resolve-${m.index}`)}
                                         isResolveDisputePending={isPending(`resolve-${m.index}`)}
                                         onResolveDispute={handleResolveDispute}
