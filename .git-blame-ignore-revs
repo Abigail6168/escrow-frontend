@@ -1,0 +1,5 @@
+# Prettier formatting commit — does not change logic, only whitespace.
+# Add this file's path to git's blame.ignoreRevsFile setting so
+# `git blame` skips this commit:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+6016611ea5215e82ec5d09a672d4b93154ae791d
