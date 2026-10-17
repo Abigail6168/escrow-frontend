@@ -13,10 +13,10 @@ import {
   extractBackendErrorMessage,
   extractSubmitTxHash,
   submitContractTransaction,
-  TxSignatureTimeoutError,
   type TxPhase,
 } from "@/app/lib/transactions";
 import { WalletRejectedError } from "@/app/lib/errors";
+import { WalletSignatureTimeoutError } from "@/app/lib/wallet_state_context";
 
 /**
  * Builds a minimal `Response`-alike. The production code only touches `ok`
@@ -234,16 +234,17 @@ describe("submitContractTransaction against real backend response shapes (#686)"
       expect(calls).toHaveLength(1);
     });
 
-    it("aborts with TxSignatureTimeoutError once the signing budget expires", async () => {
+    it("propagates the wallet context's signature timeout (#628)", async () => {
       mockHappyPath();
 
       const promise = submitContractTransaction({
         ...BASE_TX,
-        signingTimeoutMs: 5,
-        signTransaction: () => new Promise<string>(() => {}),
+        signTransaction: async () => {
+          throw new WalletSignatureTimeoutError(60_000);
+        },
       });
 
-      await expect(promise).rejects.toBeInstanceOf(TxSignatureTimeoutError);
+      await expect(promise).rejects.toBeInstanceOf(WalletSignatureTimeoutError);
       expect(calls).toHaveLength(1);
     });
 

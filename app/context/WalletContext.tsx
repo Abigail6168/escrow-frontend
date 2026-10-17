@@ -35,7 +35,12 @@ import {
   readTransactionMaxTimeSecs,
 } from "@/app/lib/wallet_state_context";
 import { walletStateStore } from "@/app/lib/wallet_state_store";
-import { WalletRejectedError, isWalletRejectedError } from "@/app/lib/errors";
+import {
+  WalletRejectedError,
+  WalletUnavailableError,
+  isWalletAvailabilityError,
+  isWalletRejectedError,
+} from "@/app/lib/errors";
 import { submitContractTransaction, type ContractArg } from "@/app/lib/transactions";
 
 const LEGACY_STORAGE_KEY = "milesto_wallet_connected";
@@ -436,6 +441,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             "warning"
           );
           throw new WalletRejectedError();
+        }
+
+        // Name the wallet the user actually picked, so formatTxError links
+        // to its install page rather than Freighter's (#687).
+        if (isWalletAvailabilityError(e) && !(e instanceof WalletUnavailableError)) {
+          throw new WalletUnavailableError(selectedWalletId);
         }
 
         throw e;
