@@ -45,11 +45,7 @@ export class ApiShapeError extends Error {
 // ---------------------------------------------------------------------------
 
 /** A Stellar public key (G…) or an empty string (wallet not yet connected). */
-const stellarAddress = z
-  .string()
-  .refine((v) => v === "" || /^G[A-Z0-9]{55}$/.test(v), {
-    message: "Expected a Stellar G-address or empty string",
-  });
+const stellarAddress = z.string();
 
 const optionalStellarAddress = stellarAddress.optional();
 
@@ -77,7 +73,7 @@ export const JobSchema = z.object({
   arbiter: stellarAddress.default(""),
   admin: optionalStellarAddress,
   funded: z.boolean().default(false),
-  milestones: z.array(MilestoneSchema).optional(),
+  milestones: z.array(MilestoneSchema).nullish(),
   token: z.string().optional(),
   tokenSymbol: z.string().optional(),
   tokenDecimals: z.number().finite().optional(),

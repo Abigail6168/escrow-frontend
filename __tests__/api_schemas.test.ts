@@ -90,9 +90,9 @@ describe("MilestoneSchema", () => {
 describe("JobSchema", () => {
   const validJob = {
     id: "job-1",
-    client: "GABC1234567890123456789012345678901234567890123456789012",
-    freelancer: "GDEF1234567890123456789012345678901234567890123456789012",
-    arbiter: "GHIJ1234567890123456789012345678901234567890123456789012",
+    client: "GCLIENT_WALLET",
+    freelancer: "GFREELANCER_WALLET",
+    arbiter: "GARBITER_WALLET",
     funded: true,
   };
 
