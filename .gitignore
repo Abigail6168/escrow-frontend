@@ -82,3 +82,6 @@ Thumbs.db
 # Logs
 *.log
 issues.md
+
+# Kiro IDE
+.kiro/
