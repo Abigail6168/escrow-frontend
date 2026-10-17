@@ -50,8 +50,24 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Milestone Escrow",
+  title: {
+    default: "Milestone Escrow",
+    template: "%s · Milestone Escrow",
+  },
   description: "Trustless milestone-based escrow on Stellar",
+  openGraph: {
+    type: "website",
+    siteName: "Milestone Escrow",
+    title: "Milestone Escrow",
+    description: "Trustless milestone-based escrow on Stellar",
+    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Milestone Escrow" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Milestone Escrow",
+    description: "Trustless milestone-based escrow on Stellar",
+    images: ["/og-image.svg"],
+  },
 };
 
 export default function RootLayout({
