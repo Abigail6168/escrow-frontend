@@ -103,10 +103,113 @@ export function isTxPending(phase: TxPhase): boolean {
   return phase === "building" || phase === "signing" || phase === "submitting";
 }
 
+// =============================================================================
+// Backend response shapes (#686)
+// =============================================================================
+//
+// Both on-chain endpoints wrap their payload in the backend's `ApiSuccessBody`
+// envelope (`{ success: true, data }`), except `POST /api/jobs/build-tx`, which
+// returns `{ success: true, xdr }` inline. Failures come back either as
+// `sendError`'s `{ success: false, error }` or, for schema rejections, as the
+// validate middleware's `ValidationError` body carrying `details` / `fields`.
+// The parsing below is deliberately tolerant of the older flat shapes
+// (`{ hash }`, `{ txHash }`, …) so a backend that has not yet been redeployed
+// still yields a usable hash.
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function firstString(...values: unknown[]): string | null {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim() !== "") {
+      return value.trim();
+    }
+  }
+  return null;
+}
+
+/**
+ * Extracts the transaction hash from a `/api/jobs/submit` success body.
+ *
+ * The current backend answers `{ success: true, data: { status, hash } }`, so
+ * `data.hash` is checked first; the flat `hash` / `txHash` / `transactionHash`
+ * keys are kept as a fallback for older payloads.
+ */
+export function extractSubmitTxHash(body: unknown): string {
+  if (!isRecord(body)) return "";
+
+  const data = isRecord(body.data) ? body.data : undefined;
+
+  return (
+    firstString(
+      data?.hash,
+      data?.txHash,
+      data?.transactionHash,
+      body.hash,
+      body.txHash,
+      body.transactionHash
+    ) ?? ""
+  );
+}
+
+/**
+ * Renders a backend error body as a single user-facing message.
+ *
+ * `ValidationError` bodies are expanded to `message` plus the per-field
+ * messages from `details` (or the `fields` map) so the UI shows the actual
+ * reason the request was rejected instead of a generic "ValidationError".
+ */
+export function extractBackendErrorMessage(
+  body: unknown,
+  fallback: string
+): string {
+  if (typeof body === "string") {
+    return firstString(body) ?? fallback;
+  }
+
+  if (!isRecord(body)) return fallback;
+
+  const message = firstString(body.message);
+  const details = collectValidationDetails(body);
+
+  if (details.length > 0) {
+    return [message ?? firstString(body.error) ?? fallback, ...details].join(": ");
+  }
+
+  return firstString(body.error, body.message) ?? fallback;
+}
+
+/** Flattens `details` / `fields` from a ValidationError body into messages. */
+function collectValidationDetails(body: Record<string, unknown>): string[] {
+  const details: string[] = [];
+
+  if (Array.isArray(body.details)) {
+    for (const entry of body.details) {
+      const detail = firstString(
+        isRecord(entry) ? entry.message : entry
+      );
+      if (detail && !details.includes(detail)) {
+        details.push(detail);
+      }
+    }
+  }
+
+  if (isRecord(body.fields)) {
+    for (const value of Object.values(body.fields)) {
+      const detail = firstString(value);
+      if (detail && !details.includes(detail)) {
+        details.push(detail);
+      }
+    }
+  }
+
+  return details;
+}
+
 async function parseErrorResponse(res: Response, fallback: string): Promise<string> {
   try {
-    const body = await res.json();
-    return body.error || body.message || fallback;
+    return extractBackendErrorMessage(await res.json(), fallback);
   } catch {
     return fallback;
   }
@@ -146,7 +249,14 @@ export async function submitContractTransaction({
     throw new Error(message);
   }
 
-  const { xdr } = await buildTxRes.json();
+  const buildTxBody: unknown = await buildTxRes.json();
+  const xdr = isRecord(buildTxBody) ? firstString(buildTxBody.xdr) : null;
+
+  if (!xdr) {
+    throw new Error(
+      "We could not prepare your transaction. Please try again."
+    );
+  }
 
   onPhase?.("signing");
 
@@ -178,8 +288,16 @@ export async function submitContractTransaction({
     throw new Error(message);
   }
 
-  const result = await submitRes.json();
-  return result.hash || result.txHash || result.transactionHash || "";
+  const result: unknown = await submitRes.json();
+  const txHash = extractSubmitTxHash(result);
+
+  if (!txHash) {
+    throw new Error(
+      "Your transaction was submitted but the backend did not return a transaction hash."
+    );
+  }
+
+  return txHash;
 }
 
 export async function runContractAction(
