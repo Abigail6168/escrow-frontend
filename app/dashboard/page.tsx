@@ -189,6 +189,11 @@ export default function Dashboard() {
       const res = await fetch(
         `${BACKEND_URL}/api/jobs/by-wallet/${encodeURIComponent(address)}?${params.toString()}`
       );
+      if (res.status === 429) {
+        setError("You're doing that too fast. Please wait a moment and try again.");
+        setJobs([]);
+        return;
+      }
       const data = (await res.json()) as JobPageResponse;
 
       if (data.success === false) {
