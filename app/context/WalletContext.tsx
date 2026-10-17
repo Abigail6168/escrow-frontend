@@ -11,7 +11,7 @@ import {
 } from "react";
 import { Networks, StellarWalletsKit } from "@creit.tech/stellar-wallets-kit";
 import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils";
-import { NETWORK_PASSPHRASE } from "@/app/lib/contract";
+import { NETWORK_PASSPHRASE } from "@/app/lib/config";
 import { useToast } from "./ToastContext";
 import {
   ledgerActiveAddresses,
