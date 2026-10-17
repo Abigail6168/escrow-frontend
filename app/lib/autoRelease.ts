@@ -1,4 +1,5 @@
 import { BACKEND_URL } from "@/app/lib/transactions";
+import { AutoReleaseResponseSchema, validateResponse } from "@/app/lib/api_schemas";
 
 /**
  * Auto-release timing for a single milestone, normalized to an absolute
@@ -10,19 +11,6 @@ export interface AutoReleaseInfo {
   deadlineMs: number | null;
   /** True once the deadline has passed and the milestone can be auto-released. */
   eligible: boolean;
-}
-
-interface RawAutoReleaseResponse {
-  success?: boolean;
-  data?: {
-    // The backend may express the deadline in any of these shapes; we accept
-    // whichever is present and normalize to epoch ms.
-    deadline?: number | string;
-    autoReleaseAt?: number | string;
-    secondsRemaining?: number;
-    eligible?: boolean;
-  };
-  error?: string;
 }
 
 function toEpochMs(value: number | string): number | null {
@@ -39,6 +27,8 @@ function toEpochMs(value: number | string): number | null {
  *
  * Endpoint: GET `${BACKEND_URL}/api/jobs/:jobId/milestones/:index/auto-release`
  *
+ * Validates the response with Zod so an unexpected backend shape is caught
+ * explicitly (ApiShapeError) instead of silently ignoring a missing deadline.
  * Returns `{ deadlineMs: null, eligible: false }` on any error or missing data
  * so callers can render gracefully without a timer rather than throwing.
  */
@@ -48,6 +38,7 @@ export async function fetchAutoReleaseInfo(
   options?: { signal?: AbortSignal; now?: () => number },
 ): Promise<AutoReleaseInfo> {
   const now = options?.now ?? Date.now;
+  const endpoint = `/api/jobs/${jobId}/milestones/${milestoneIndex}/auto-release`;
   try {
     const res = await fetch(
       `${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}/milestones/${milestoneIndex}/auto-release`,
@@ -57,7 +48,8 @@ export async function fetchAutoReleaseInfo(
       return { deadlineMs: null, eligible: false };
     }
 
-    const body = (await res.json()) as RawAutoReleaseResponse;
+    const rawBody: unknown = await res.json();
+    const body = validateResponse(AutoReleaseResponseSchema, rawBody, endpoint);
     const data = body.data ?? {};
 
     let deadlineMs: number | null = null;

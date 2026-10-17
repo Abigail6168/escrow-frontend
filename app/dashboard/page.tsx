@@ -17,71 +17,30 @@ import {
   submitContractTransaction,
 } from "@/app/lib/transactions";
 import { fetchAutoReleaseInfo } from "@/app/lib/autoRelease";
-
-interface Milestone {
-  index: number;
-  amount: string;
-  status: string;
-  releasedAmount?: string;
-}
-
-interface Job {
-  id: string;
-  client: string;
-  freelancer: string;
-  arbiter: string;
-  admin?: string;
-  funded: boolean;
-  milestones?: Milestone[];
-  token?: string;
-  tokenSymbol?: string;
-  tokenDecimals?: number;
-}
+import {
+  ApiShapeError,
+  JobListResponseSchema,
+  JobDetailResponseSchema,
+  JobSchema,
+  validateResponse,
+  type Job,
+  type Milestone,
+} from "@/app/lib/api_schemas";
 
 type RoleFilter = "all" | "client" | "freelancer" | "arbiter";
 
-interface JobPageResponse {
-  success?: boolean;
-  data?: unknown;
-  pagination?: {
-    page?: number;
-    limit?: number;
-    total?: number;
-  };
-  page?: number;
-  limit?: number;
-  total?: number;
-  totalItems?: number;
-  error?: string;
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
+/**
+ * Normalises raw (unknown-typed) data from the backend into a `Job`.
+ * Uses Zod's `safeParse` so that a bad shape never silently produces
+ * empty data — it returns `null` so the caller can show an error or fall
+ * back gracefully.
+ */
 function normalizeJob(item: unknown): Job | null {
-  if (!isObject(item) || typeof item.id !== "string") return null;
-
-  return {
-    id: item.id,
-    client: typeof item.client === "string" ? item.client : "",
-    freelancer: typeof item.freelancer === "string" ? item.freelancer : "",
-    arbiter: typeof item.arbiter === "string" ? item.arbiter : "",
-    admin: typeof item.admin === "string" ? item.admin : undefined,
-    funded: Boolean(item.funded),
-    milestones: Array.isArray(item.milestones)
-      ? (item.milestones as Milestone[])
-      : undefined,
-    token: typeof item.token === "string" ? item.token : undefined,
-    tokenSymbol: typeof item.tokenSymbol === "string" ? item.tokenSymbol : undefined,
-    tokenDecimals:
-      typeof item.tokenDecimals === "number" && Number.isFinite(item.tokenDecimals)
-        ? item.tokenDecimals
-        : undefined,
-  };
+  const result = JobSchema.safeParse(item);
+  return result.success ? result.data : null;
 }
 
-function parsePageResponse(payload: JobPageResponse): {
+function parsePageResponse(payload: ReturnType<typeof JobListResponseSchema.parse>): {
   jobs: Job[];
   page: number;
   limit: number;
@@ -100,7 +59,7 @@ function parsePageResponse(payload: JobPageResponse): {
 
   if (Array.isArray(payload.data)) {
     rows = payload.data;
-  } else if (isObject(payload.data)) {
+  } else if (payload.data && typeof payload.data === "object") {
     const embedded = payload.data as Record<string, unknown>;
     if (Array.isArray(embedded.jobs)) {
       rows = embedded.jobs;
@@ -194,7 +153,9 @@ export default function Dashboard() {
         setJobs([]);
         return;
       }
-      const data = (await res.json()) as JobPageResponse;
+      const rawData: unknown = await res.json();
+      const endpoint = `/api/jobs/by-wallet/${address}`;
+      const data = validateResponse(JobListResponseSchema, rawData, endpoint);
 
       if (data.success === false) {
         setError(data.error || "Failed to fetch jobs");
@@ -235,22 +196,37 @@ export default function Dashboard() {
 
       try {
         const res = await fetch(`${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}`);
-        const payload = (await res.json()) as JobPageResponse;
-        const candidate = isObject(payload.data) ? normalizeJob(payload.data) : null;
+        const rawPayload: unknown = await res.json();
+        const payload = validateResponse(
+          JobDetailResponseSchema,
+          rawPayload,
+          `/api/jobs/${jobId}`,
+        );
+        const candidate = normalizeJob(payload.data);
 
         if (candidate) {
           setJobDetails((current) => ({ ...current, [jobId]: candidate }));
           return;
         }
 
+        // Shape parsed OK but data field did not match Job — fall back to list entry
         const fallback = jobs.find((job) => job.id === jobId);
         if (fallback) {
           setJobDetails((current) => ({ ...current, [jobId]: fallback }));
         }
-      } catch {
-        const fallback = jobs.find((job) => job.id === jobId);
-        if (fallback) {
-          setJobDetails((current) => ({ ...current, [jobId]: fallback }));
+      } catch (err) {
+        // ApiShapeError means the server returned an unexpected envelope;
+        // surface it so the user sees "Unexpected response" rather than blank
+        if (err instanceof ApiShapeError) {
+          const fallback = jobs.find((job) => job.id === jobId);
+          if (fallback) {
+            setJobDetails((current) => ({ ...current, [jobId]: fallback }));
+          }
+        } else {
+          const fallback = jobs.find((job) => job.id === jobId);
+          if (fallback) {
+            setJobDetails((current) => ({ ...current, [jobId]: fallback }));
+          }
         }
       } finally {
         setDetailsLoading((current) => ({ ...current, [jobId]: false }));
