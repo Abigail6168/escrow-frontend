@@ -7,6 +7,7 @@
  * Never logs private keys, seeds, credentials, or full sensitive payloads.
  */
 
+import { setLoadingFlag } from "./loading_store";
 import type { ToastType } from "@/app/context/ToastContext";
 import {
   FeeBumpTransaction,
@@ -892,6 +893,7 @@ export class AlbedoLoadingManager {
 }
 
 export const albedoLoading = new AlbedoLoadingManager();
+albedoLoading.subscribe((state) => setLoadingFlag("albedo", state.isLoading));
 
 export async function withAlbedoLoading<T>(
   operation: AlbedoLoadingOperation,

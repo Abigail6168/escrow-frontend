@@ -1,6 +1,5 @@
 import {
   Contract,
-  Networks,
   TransactionBuilder,
   BASE_FEE,
   nativeToScVal,
@@ -9,8 +8,8 @@ import {
 import { Server } from "@stellar/stellar-sdk/rpc";
 
 export const RPC_URL = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || "https://soroban-testnet.stellar.org";
-export const NETWORK_PASSPHRASE = process.env.NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE || Networks.TESTNET;
-export const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
+import { NETWORK_PASSPHRASE, CONTRACT_ID } from "./network_config";
+export { NETWORK_PASSPHRASE, CONTRACT_ID };
 
 export const server = new Server(RPC_URL);
 

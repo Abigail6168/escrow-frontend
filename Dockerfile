@@ -23,8 +23,10 @@ COPY . .
 # environment, and a contract redeploy means a rebuild, not a restart.
 ARG NEXT_PUBLIC_BACKEND_URL
 ARG NEXT_PUBLIC_CONTRACT_ID
-ARG NEXT_PUBLIC_SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
-ARG NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+# No defaults for the network pair: a mainnet build that forgot them would
+# otherwise silently ship a testnet-wired bundle.
+ARG NEXT_PUBLIC_SOROBAN_RPC_URL
+ARG NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE
 
 ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL \
     NEXT_PUBLIC_CONTRACT_ID=$NEXT_PUBLIC_CONTRACT_ID \
@@ -38,6 +40,20 @@ RUN test -n "$NEXT_PUBLIC_BACKEND_URL" \
       || (echo "ERROR: NEXT_PUBLIC_BACKEND_URL must be set at build time" && exit 1)
 RUN test -n "$NEXT_PUBLIC_CONTRACT_ID" \
       || (echo "ERROR: NEXT_PUBLIC_CONTRACT_ID must be set at build time" && exit 1)
+RUN test -n "$NEXT_PUBLIC_SOROBAN_RPC_URL" \
+      || (echo "ERROR: NEXT_PUBLIC_SOROBAN_RPC_URL must be set at build time" && exit 1)
+RUN test -n "$NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE" \
+      || (echo "ERROR: NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE must be set at build time" && exit 1)
+# The passphrase must be a known network, and the RPC host must agree with it.
+RUN case "$NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE" in \
+      "Test SDF Network ; September 2015") \
+        echo "$NEXT_PUBLIC_SOROBAN_RPC_URL" | grep -q testnet \
+          || (echo "ERROR: testnet passphrase but RPC URL is not a testnet host" && exit 1) ;; \
+      "Public Global Stellar Network ; September 2015") \
+        ! echo "$NEXT_PUBLIC_SOROBAN_RPC_URL" | grep -q testnet \
+          || (echo "ERROR: public passphrase but RPC URL is a testnet host" && exit 1) ;; \
+      *) echo "ERROR: unknown NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE" && exit 1 ;; \
+    esac
 
 RUN npm run build
 
@@ -46,15 +62,19 @@ RUN npm run build
 RUN test -d /app/out || (echo "ERROR: out/ missing — is output:'export' set in next.config.ts?" && exit 1)
 
 # ---- serve ----
-FROM nginx:1.27-alpine
+# Unprivileged variant runs as uid 101 (nginx), so it listens on 8080/8443;
+# map 80:8080 and 443:8443 in the compose file.
+FROM nginxinc/nginx-unprivileged:1.27-alpine
 
+USER root
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/app.conf
 COPY --from=build /app/out /usr/share/nginx/html
+USER 101
 
-EXPOSE 80
+EXPOSE 8080 8443
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -q --spider http://127.0.0.1/healthz || exit 1
+  CMD wget -q --spider http://127.0.0.1:8080/healthz || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]

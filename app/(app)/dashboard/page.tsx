@@ -17,6 +17,16 @@ import {
   submitContractTransaction,
 } from "@/app/lib/transactions";
 import { fetchAutoReleaseInfo } from "@/app/lib/autoRelease";
+import {
+  formatLatestActivity,
+  formatMilestoneProgress,
+  getCounterparty,
+  getJobLabel,
+  getJobRoles,
+  roleLabel,
+  setJobLabel,
+  shortAddress,
+} from "@/app/lib/job_list_summary";
 
 interface Milestone {
   index: number;
@@ -36,6 +46,12 @@ interface Job {
   token?: string;
   tokenSymbol?: string;
   tokenDecimals?: number;
+  role?: string;
+  milestoneCount?: number;
+  releasedCount?: number;
+  latestEventType?: string;
+  latestEventAt?: string | number;
+  latestLedger?: number;
 }
 
 type RoleFilter = "all" | "client" | "freelancer" | "arbiter";
@@ -59,11 +75,23 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
+function optionalNumber(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
 function normalizeJob(item: unknown): Job | null {
-  if (!isObject(item) || typeof item.id !== "string") return null;
+  if (!isObject(item)) return null;
+  const id =
+    typeof item.id === "string"
+      ? item.id
+      : typeof item.contract_id === "string"
+        ? item.contract_id
+        : null;
+  if (id === null) return null;
+  const latestEventAt = item.latest_event_at ?? item.latestEventAt;
 
   return {
-    id: item.id,
+    id,
     client: typeof item.client === "string" ? item.client : "",
     freelancer: typeof item.freelancer === "string" ? item.freelancer : "",
     arbiter: typeof item.arbiter === "string" ? item.arbiter : "",
@@ -78,6 +106,18 @@ function normalizeJob(item: unknown): Job | null {
       typeof item.tokenDecimals === "number" && Number.isFinite(item.tokenDecimals)
         ? item.tokenDecimals
         : undefined,
+    role: typeof item.role === "string" ? item.role : undefined,
+    milestoneCount: optionalNumber(item.milestone_count ?? item.milestoneCount),
+    releasedCount: optionalNumber(item.released_count ?? item.releasedCount),
+    latestEventType:
+      typeof (item.latest_event_type ?? item.latestEventType) === "string"
+        ? ((item.latest_event_type ?? item.latestEventType) as string)
+        : undefined,
+    latestEventAt:
+      typeof latestEventAt === "string" || typeof latestEventAt === "number"
+        ? latestEventAt
+        : undefined,
+    latestLedger: optionalNumber(item.latest_ledger ?? item.latestLedger),
   };
 }
 
@@ -145,6 +185,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
+  const [jobLabels, setJobLabels] = useState<Record<string, string>>({});
   const [jobDetails, setJobDetails] = useState<Record<string, Job>>({});
   const [detailsLoading, setDetailsLoading] = useState<Record<string, boolean>>({});
   const [page, setPage] = useState(1);
@@ -552,11 +593,12 @@ export default function Dashboard() {
                 <div className="border border-gray-800 rounded-lg sm:rounded-xl bg-gray-900 overflow-hidden overflow-x-auto" role="region" aria-label="Jobs list">
                   {jobs.map((job, index) => {
                     const isExpanded = expandedJobId === job.id;
-                    const roleBadges = [
-                      address === job.client ? "Client" : null,
-                      address === job.freelancer ? "Freelancer" : null,
-                      address === job.arbiter ? "Arbiter" : null,
-                    ].filter(Boolean) as string[];
+                    const roles = getJobRoles(job, address);
+                    const roleBadges = roles.map(roleLabel);
+                    const counterparty = getCounterparty(job, roles);
+                    const progress = formatMilestoneProgress(job);
+                    const activity = formatLatestActivity(job);
+                    const label = jobLabels[job.id] ?? getJobLabel(job.id);
 
                     return (
                       <div
@@ -574,9 +616,20 @@ export default function Dashboard() {
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                             <div className="min-w-0">
-                              <p className="font-semibold text-sm sm:text-base truncate">Job #{job.id.slice(0, 8)}</p>
+                              <p className="font-semibold text-sm sm:text-base truncate">
+                                {label || `Job #${job.id.slice(0, 8)}`}
+                              </p>
                               <p className="text-xs text-gray-400 mt-0.5 sm:mt-1">
                                 {job.funded ? "Funded" : "Not funded"}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-0.5" data-testid="job-row-summary">
+                                {[
+                                  counterparty ? `with ${shortAddress(counterparty)}` : null,
+                                  progress,
+                                  activity,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" · ")}
                               </p>
                             </div>
                             <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2">
@@ -605,6 +658,21 @@ export default function Dashboard() {
                             role="region"
                             aria-label={`Details for job #${job.id.slice(0, 8)}`}
                           >
+                            <label className="block mb-3 text-xs text-gray-400">
+                              Label (saved on this device)
+                              <input
+                                type="text"
+                                value={label}
+                                maxLength={60}
+                                placeholder={`Job #${job.id.slice(0, 8)}`}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setJobLabels((prev) => ({ ...prev, [job.id]: value }));
+                                  setJobLabel(job.id, value);
+                                }}
+                                className="mt-1 block w-full rounded border border-gray-700 bg-gray-800 px-2 py-1 text-sm text-gray-100"
+                              />
+                            </label>
                             {detailsLoading[job.id] ? (
                               <LoadingSkeleton />
                             ) : !expandedJob ? (

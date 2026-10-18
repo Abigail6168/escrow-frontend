@@ -5,7 +5,7 @@
  * network badge and the explorer link self-correct when NEXT_PUBLIC_SOROBAN_
  * NETWORK_PASSPHRASE and NEXT_PUBLIC_CONTRACT_ID are rebuilt against mainnet.
  */
-import { Networks } from "@stellar/stellar-sdk";
+import { NETWORK_PASSPHRASES as Networks } from "./network_config";
 
 export type NetworkKind = "testnet" | "public" | "futurenet" | "unknown";
 
