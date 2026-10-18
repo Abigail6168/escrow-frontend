@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import Link from "next/link";
 import { useWallet } from "@/app/context/WalletContext";
 import Navbar from "@/app/components/Navbar";
 import MilestoneCard from "@/app/components/MilestoneCard";
 import LoadingSkeleton from "@/app/components/LoadingSkeleton";
 import EmptyStateCard from "@/app/components/EmptyStateCard";
+import JobActivityTimeline from "@/app/components/JobActivityTimeline";
 import DisputeRaiseModal from "@/app/components/DisputeRaiseModal";
 import { ArbiterPanelPlaceholder } from "@/app/components/ArbiterActionPanel";
 import { getArbiterJobEmptyState } from "@/app/lib/arbiter_action_panel";
@@ -17,6 +19,7 @@ import {
   submitContractTransaction,
 } from "@/app/lib/transactions";
 import { fetchAutoReleaseInfo } from "@/app/lib/autoRelease";
+import { reportApiResponse } from "@/app/lib/errorReporter";
 
 interface Milestone {
   index: number;
@@ -139,7 +142,7 @@ const roleFilterLabels: Array<{ id: RoleFilter; label: string }> = [
 ];
 
 export default function Dashboard() {
-  const { address, signTransaction } = useWallet();
+  const { address, signTransaction, connect, isConnecting } = useWallet();
   const { showToast } = useToast();
   const [fetchLoading, setFetchLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -189,6 +192,7 @@ export default function Dashboard() {
       const res = await fetch(
         `${BACKEND_URL}/api/jobs/by-wallet/${encodeURIComponent(address)}?${params.toString()}`
       );
+      reportApiResponse(res, "/api/jobs/by-wallet/:address");
       if (res.status === 429) {
         setError("You're doing that too fast. Please wait a moment and try again.");
         setJobs([]);
@@ -235,6 +239,7 @@ export default function Dashboard() {
 
       try {
         const res = await fetch(`${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}`);
+        reportApiResponse(res, "/api/jobs/:contractId");
         const payload = (await res.json()) as JobPageResponse;
         const candidate = isObject(payload.data) ? normalizeJob(payload.data) : null;
 
@@ -469,9 +474,30 @@ export default function Dashboard() {
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">Job Dashboard</h1>
 
         {!address ? (
-          <p className="text-center text-gray-400 text-sm sm:text-base" role="status" aria-live="polite">
-            Connect your wallet to view your jobs
-          </p>
+          <EmptyStateCard
+            testId="dashboard-connect-wallet"
+            ariaLabel="Connect wallet"
+            title="Connect your wallet to view your jobs"
+            description="Connect a Stellar wallet to see the escrow jobs you're involved in as a client, freelancer, or arbiter."
+            statusTitle
+          >
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <button
+                type="button"
+                onClick={() => void connect()}
+                disabled={isConnecting}
+                className="px-4 py-2 rounded-lg bg-indigo-600 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isConnecting ? "Connecting…" : "Connect wallet"}
+              </button>
+              <Link
+                href="/#how-it-works"
+                className="text-sm text-indigo-400 hover:text-indigo-300 underline-offset-2 hover:underline"
+              >
+                How it works
+              </Link>
+            </div>
+          </EmptyStateCard>
         ) : (
           <div className="space-y-4 sm:space-y-6">
             <form onSubmit={handleSearch} className="flex flex-col gap-2 sm:gap-3">
@@ -667,6 +693,8 @@ export default function Dashboard() {
                                     />
                                   )}
                                 </div>
+
+                                <JobActivityTimeline contractId={expandedJob.id} />
                               </>
                             )}
                           </div>
