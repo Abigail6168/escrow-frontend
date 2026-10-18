@@ -19,6 +19,7 @@ import {
   WhitelistToken,
 } from "@/app/lib/whitelist";
 import { agreementLines } from "@/app/lib/escrow_agreement";
+import { validateTokenContract, TokenValidationResult } from "@/app/lib/token_validation";
 import { formatTxError } from "@/app/lib/errors";
 
 type WizardSection = "details" | "milestones" | "review";
@@ -85,6 +86,11 @@ export default function CreateJob() {
   // Required confirmation that the client has read the escrow rules before
   // the Create button is enabled (issue #669).
   const [agreed, setAgreed] = useState(false);
+  // Token validation state (issue #668): warns when a manually entered token
+  // isn't on the whitelist, and validates it's a SEP-41 token contract.
+  const [tokenValidation, setTokenValidation] = useState<TokenValidationResult | null>(null);
+  const [tokenValidating, setTokenValidating] = useState(false);
+  const [nonWhitelistConfirmed, setNonWhitelistConfirmed] = useState(false);
 
   // Refs for tab-panel sections — used for programmatic focus on tab activation
   const detailsPanelRef = useRef<HTMLDivElement>(null);
@@ -110,6 +116,60 @@ export default function CreateJob() {
     })();
     return () => controller.abort();
   }, []);
+
+  // Whether the currently entered token is on the loaded whitelist.
+  const isTokenWhitelisted =
+    !whitelistLoading &&
+    !whitelistError &&
+    whitelist.length > 0 &&
+    whitelist.some((option) => option.address === token);
+
+  // Validate the token contract via SEP-41 symbol()/decimals() simulation
+  // when a valid-format contract address is entered and it's not on the
+  // whitelist. Debounced so we don't fire on every keystroke.
+  useEffect(() => {
+    // Reset confirmation whenever the token address changes.
+    setNonWhitelistConfirmed(false);
+
+    if (!token || !/^C[A-Z2-7]{55}$/.test(token)) {
+      setTokenValidation(null);
+      setTokenValidating(false);
+      return;
+    }
+
+    // If it's on the whitelist, no need to validate — it's already trusted.
+    if (whitelist.some((option) => option.address === token)) {
+      setTokenValidation(null);
+      setTokenValidating(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    setTokenValidating(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const result = await validateTokenContract(token);
+        if (controller.signal.aborted) return;
+        setTokenValidation(result);
+      } catch {
+        if (!controller.signal.aborted) {
+          setTokenValidation({
+            valid: false,
+            error: "Failed to validate this contract as a token.",
+          });
+        }
+      } finally {
+        if (!controller.signal.aborted) setTokenValidating(false);
+      }
+    }, 500);
+
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, whitelist]);
 
   const addAcceptedAsset = () => setAcceptedAssets([...acceptedAssets, ""]);
   const removeAcceptedAsset = (index: number) =>
@@ -165,7 +225,16 @@ export default function CreateJob() {
   });
 
   const hasValidationErrors = !!freelancerError || !!arbiterError || !!tokenError;
-  const isSubmitDisabled = loading || !address || hasNoMilestones || hasPartialMilestones || hasValidationErrors || !agreed;
+  // A non-whitelisted token requires explicit confirmation (issue #668).
+  // A token that failed SEP-41 validation blocks submission entirely.
+  const hasTokenIssue =
+    !!token &&
+    /^C[A-Z2-7]{55}$/.test(token) &&
+    !isTokenWhitelisted &&
+    (tokenValidating ||
+      (tokenValidation && !tokenValidation.valid) ||
+      (tokenValidation?.valid && !nonWhitelistConfirmed));
+  const isSubmitDisabled = loading || !address || hasNoMilestones || hasPartialMilestones || hasValidationErrors || hasTokenIssue || !agreed;
 
   const validateFreelancer = (val: string) => {
     if (val && !/^G[A-Z2-7]{55}$/.test(val)) {
@@ -293,9 +362,24 @@ export default function CreateJob() {
       setError("Milestone amounts must contain only numeric characters.");
       return;
     }
-    if (!token || !whitelist.some((option) => option.address === token)) {
+    if (!token) {
       setError("Select an accepted token before creating a job.");
       return;
+    }
+    // Non-whitelisted tokens require confirmation and valid SEP-41 validation.
+    if (!whitelist.some((option) => option.address === token)) {
+      if (tokenValidating) {
+        setError("Token validation is still in progress. Please wait.");
+        return;
+      }
+      if (!tokenValidation?.valid) {
+        setError("The entered token is not a valid SEP-41 token contract.");
+        return;
+      }
+      if (!nonWhitelistConfirmed) {
+        setError("Confirm the non-whitelisted token before creating a job.");
+        return;
+      }
     }
     validateFreelancer(freelancer);
     validateArbiter(arbiter);
@@ -659,6 +743,68 @@ export default function CreateJob() {
                         </option>
                       ))}
                     </select>
+                  )}
+
+                  {/*
+                   * Token validation and non-whitelist warning (issue #668).
+                   * When the entered address isn't on the loaded whitelist, show
+                   * a prominent warning and require explicit confirmation. The
+                   * contract is validated as a SEP-41 token via symbol() and
+                   * decimals() simulation so the user can verify it.
+                   */}
+                  {tokenValidating && (
+                    <p
+                      className="mt-2 text-sm text-text-muted"
+                      data-testid="token-validating"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      Validating token contract…
+                    </p>
+                  )}
+                  {!tokenValidating && tokenValidation?.valid && !isTokenWhitelisted && (
+                    <div
+                      className="mt-2 rounded-lg border border-warning-soft/40 bg-warning/10 p-3"
+                      data-testid="token-non-whitelist-warning"
+                    >
+                      <p className="text-sm font-medium text-warning-soft">
+                        ⚠️ This token isn&rsquo;t on the accepted list
+                      </p>
+                      <p className="mt-1 text-xs text-text-secondary">
+                        Token: {tokenValidation.symbol} ({tokenValidation.decimals} decimals)
+                      </p>
+                      <p className="mt-1 text-xs text-text-muted">
+                        The contract auto-whitelists any token passed to it. Verify
+                        this is the token you intend before proceeding.
+                      </p>
+                      <label className="mt-2 flex items-start gap-2 text-sm text-text-secondary">
+                        <input
+                          type="checkbox"
+                          checked={nonWhitelistConfirmed}
+                          onChange={(e) => setNonWhitelistConfirmed(e.target.checked)}
+                          disabled={loading}
+                          data-testid="token-confirm-checkbox"
+                          className="mt-0.5 h-4 w-4 rounded border-border-subtle accent-accent"
+                        />
+                        <span>
+                          I confirm this is the correct token contract.
+                        </span>
+                      </label>
+                    </div>
+                  )}
+                  {!tokenValidating && tokenValidation && !tokenValidation.valid && !isTokenWhitelisted && (
+                    <div
+                      className="mt-2 rounded-lg border border-danger-soft/40 bg-danger/10 p-3"
+                      data-testid="token-validation-error"
+                      role="alert"
+                    >
+                      <p className="text-sm font-medium text-danger-soft">
+                        This address is not a valid token contract
+                      </p>
+                      <p className="mt-1 text-xs text-text-secondary">
+                        {tokenValidation.error}
+                      </p>
+                    </div>
                   )}
                 </div>
 
