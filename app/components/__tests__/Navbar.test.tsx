@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent, within, waitFor } from "@testing-library/react";
 import Navbar from "../Navbar";
 
 const connect = vi.fn();
@@ -26,6 +26,10 @@ vi.mock("@/app/context/WalletContext", async () => {
     useWallet: () => walletState,
   };
 });
+
+vi.mock("@/app/context/ToastContext", () => ({
+  useToast: () => ({ showToast: vi.fn() }),
+}));
 
 vi.mock("@/app/hooks/useIsAdmin", () => ({
   useIsAdmin: () => ({ isAdminUser: false }),
@@ -60,26 +64,35 @@ describe("Navbar owns the bell and the wallet controls", () => {
     expect(bell).toHaveAttribute("aria-expanded", "true");
   });
 
-  it("renders the wallet selector with every supported wallet", () => {
+  it("Connect Wallet opens the selector modal listing every supported wallet (#611)", () => {
     render(<Navbar />);
-    const select = screen.getByRole("combobox", { name: "Wallet provider" });
-    const options = within(select).getAllByRole("option").map((o) => o.textContent);
-    expect(options).toEqual(["Freighter", "Albedo", "xBull", "Hana"]);
+    expect(screen.queryByRole("combobox", { name: "Wallet provider" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Connect Wallet" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Select Wallet" });
+    const list = within(dialog).getByTestId("wallet-selector-list");
+    const ids = within(list)
+      .getAllByRole("button")
+      .map((b) => b.getAttribute("data-testid"));
+    expect(ids).toEqual([
+      "wallet-selector-option-freighter",
+      "wallet-selector-option-albedo",
+      "wallet-selector-option-xbull",
+      "wallet-selector-option-hana",
+    ]);
+    expect(connect).not.toHaveBeenCalled();
   });
 
-  it("changing the wallet selector calls into the wallet context", () => {
+  it("picking a wallet selects it and connects that wallet", async () => {
     render(<Navbar />);
-    fireEvent.change(screen.getByRole("combobox", { name: "Wallet provider" }), {
-      target: { value: "albedo" },
-    });
+    fireEvent.click(screen.getByRole("button", { name: "Connect Wallet" }));
+    fireEvent.click(screen.getByTestId("wallet-selector-option-albedo"));
+
+    await waitFor(() => expect(connect).toHaveBeenCalledWith("albedo"));
     expect(setSelectedWalletId).toHaveBeenCalledWith("albedo");
-  });
-
-  it("Connect Wallet is a real button and calls connect()", () => {
-    render(<Navbar />);
-    const button = screen.getByRole("button", { name: "Connect Wallet" });
-    fireEvent.click(button);
     expect(connect).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("dialog", { name: "Select Wallet" })).not.toBeInTheDocument();
   });
 
   it("shows Disconnect instead once an address is connected", () => {

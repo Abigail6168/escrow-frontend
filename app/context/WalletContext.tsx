@@ -68,7 +68,11 @@ interface WalletContextType {
     splits: WalletMultiSigSplit[],
     options?: WalletMultiSigAssemblyOptions
   ) => Promise<WalletMultiSigAssemblyResult>;
-  connect: () => Promise<void>;
+  /**
+   * Open the wallet flow. Pass `walletId` to connect a provider chosen in the
+   * same event, before the `selectedWalletId` state update has rendered.
+   */
+  connect: (walletId?: SupportedWalletId) => Promise<void>;
   disconnect: () => void;
   isConnecting: boolean;
   networkMismatchMessage: string | null;
@@ -271,13 +275,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     };
   }, [ensureKitInitialized, checkNetwork, selectedWalletId]);
 
-  const connect = useCallback(async () => {
+  const connect = useCallback(async (requestedWalletId?: SupportedWalletId) => {
+    // Guard against being wired straight to onClick, which passes an event.
+    const walletId =
+      typeof requestedWalletId === "string" ? requestedWalletId : selectedWalletId;
     setIsConnecting(true);
     walletTracker.track("connect", "connecting", "Opening wallet selector");
     try {
       await withWalletLoader(async () => {
         ensureKitInitialized();
-        StellarWalletsKit.setWallet(selectedWalletId);
+        StellarWalletsKit.setWallet(walletId);
 
         const result = (await StellarWalletsKit.authModal()) as { address?: string };
         if (result.address) {
@@ -285,7 +292,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           walletTracker.track("connect", "success", "Wallet connected");
           await checkNetwork();
           localStorage.setItem(STORAGE_KEY, "true");
-          if (selectedWalletId === "freighter") {
+          if (walletId === "freighter") {
             freighterActiveAddress.setActiveAddress({
               address: result.address,
               network: NETWORK_PASSPHRASE,

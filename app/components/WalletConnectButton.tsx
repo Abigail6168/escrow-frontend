@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useWallet, type SupportedWalletId } from "@/app/context/WalletContext";
+import { useState } from "react";
+import { useWallet } from "@/app/context/WalletContext";
 import WalletSelectorModal from "@/app/components/WalletSelectorModal";
 
 const focusRing =
@@ -9,22 +9,12 @@ const focusRing =
 
 /**
  * "Connect Wallet" button that opens WalletSelectorModal. Picking a wallet in
- * the modal sets the selected provider, then calls `connect()` once the
- * context has picked up the new provider id.
+ * the modal records it as the selected provider and connects it directly.
  */
 export default function WalletConnectButton() {
   const { address, connect, isConnecting, selectedWalletId, setSelectedWalletId } =
     useWallet();
   const [open, setOpen] = useState(false);
-  const [pending, setPending] = useState<SupportedWalletId | null>(null);
-
-  useEffect(() => {
-    if (pending && pending === selectedWalletId) {
-      setPending(null);
-      setOpen(false);
-      void connect();
-    }
-  }, [pending, selectedWalletId, connect]);
 
   return (
     <>
@@ -43,7 +33,9 @@ export default function WalletConnectButton() {
         isLoading={isConnecting}
         onConnect={(id) => {
           setSelectedWalletId(id);
-          setPending(id);
+          setOpen(false);
+          // Pass the id: the selectedWalletId state update hasn't rendered yet.
+          void connect(id);
         }}
       />
     </>
