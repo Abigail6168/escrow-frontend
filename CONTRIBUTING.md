@@ -42,3 +42,11 @@ If you find a bug or have a feature request, please open an issue on GitHub with
 ## Code of Conduct
 
 We expect all contributors to be respectful and inclusive in their interactions.
+
+## Changelog
+
+PRs labelled `user-facing` must add one line under `[Unreleased]` in `CHANGELOG.md`, using the Keep a Changelog categories (Added, Changed, Fixed, Removed). Internal changes (refactors, CI, tests, docs-only) do not need an entry.
+
+Each production deploy is then recorded under a dated heading using the titles of `user-facing` PRs.
+
+Example: `- Arbitrator evidence list on the dispute page (#557)`
