@@ -11,6 +11,12 @@ import {
 } from "react";
 import { Networks, StellarWalletsKit } from "@creit.tech/stellar-wallets-kit";
 import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils";
+import {
+  WalletConnectModule,
+  WalletConnectTargetChain,
+  type TWalletConnectModuleParams,
+} from "@creit.tech/stellar-wallets-kit/modules/wallet-connect";
+import { LobstrModule, LOBSTR_ID } from "@creit.tech/stellar-wallets-kit/modules/lobstr";
 import { NETWORK_PASSPHRASE } from "@/app/lib/contract";
 import { useToast } from "./ToastContext";
 import {
@@ -41,10 +47,12 @@ const APP_NETWORK_DISPLAY = "Testnet";
 
 function buildMismatchMessage(walletId: string, walletNetwork: string): string {
   const walletDisplay =
-    walletId === "freighter" ? "Freighter" :
-    walletId === "albedo"   ? "Albedo"   :
-    walletId === "xbull"    ? "xBull"    :
-    walletId === "hana"     ? "Hana"     : "your wallet";
+    walletId === "freighter"     ? "Freighter"      :
+    walletId === "albedo"        ? "Albedo"          :
+    walletId === "xbull"         ? "xBull"           :
+    walletId === "hana"          ? "Hana"            :
+    walletId === LOBSTR_ID       ? "LOBSTR"          :
+    walletId === "wallet_connect" ? "WalletConnect"  : "your wallet";
 
   return `Network mismatch: your ${walletDisplay} is on ${walletNetwork} but this app expects Stellar ${APP_NETWORK_DISPLAY}. Please switch networks.`;
 }
@@ -54,6 +62,8 @@ export const SUPPORTED_WALLETS = [
   { id: "albedo", label: "Albedo" },
   { id: "xbull", label: "xBull" },
   { id: "hana", label: "Hana" },
+  { id: LOBSTR_ID, label: "LOBSTR" },
+  { id: "wallet_connect", label: "WalletConnect" },
 ] as const;
 
 export type SupportedWalletId = (typeof SUPPORTED_WALLETS)[number]["id"];
@@ -166,10 +176,40 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     const allowedIds = new Set<string>(SUPPORTED_WALLETS.map((wallet) => wallet.id));
 
+    // Build the WalletConnect module when a project ID is available.
+    // NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID must be set at build time.
+    const walletConnectProjectId =
+      process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "";
+
+    const wcModules = walletConnectProjectId
+      ? (() => {
+          const wcParams: TWalletConnectModuleParams = {
+            projectId: walletConnectProjectId,
+            metadata: {
+              name: "Goldii Escrow",
+              description: "Soroban milestone escrow on Stellar",
+              url: typeof window !== "undefined" ? window.location.origin : "https://goldii.app",
+              icons: [
+                typeof window !== "undefined"
+                  ? `${window.location.origin}/favicon.ico`
+                  : "https://goldii.app/favicon.ico",
+              ],
+            },
+            allowedChains: [WalletConnectTargetChain.TESTNET],
+          };
+          return [new WalletConnectModule(wcParams)];
+        })()
+      : [];
+
+    // LobstrModule is included in defaultModules already; no extra config needed.
     StellarWalletsKit.init({
-      modules: defaultModules({
-        filterBy: (module: { productId: string }) => allowedIds.has(module.productId),
-      }),
+      modules: [
+        ...defaultModules({
+          filterBy: (module: { productId: string }) => allowedIds.has(module.productId),
+        }),
+        // Add WalletConnect separately (requires project ID configuration).
+        ...wcModules,
+      ],
       network: Networks.TESTNET,
       authModal: {
         showInstallLabel: true,
