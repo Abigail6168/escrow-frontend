@@ -1,4 +1,11 @@
 import "@testing-library/jest-dom/vitest";
+import { expect } from "vitest";
+import { toHaveNoViolations } from "vitest-axe/matchers";
+
+// vitest-axe 0.1.0 ships an empty extend-expect.js entry point, so register
+// the matcher manually here. The type side is covered by the .d.ts files
+// that ship alongside matchers.js.
+expect.extend({ toHaveNoViolations });
 
 // jsdom doesn't implement matchMedia. Provide a minimal stub so any code
 // that calls window.matchMedia("...").matches doesn't throw.
