@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useWallet } from "@/app/context/WalletContext";
 import Navbar from "@/app/components/Navbar";
 import ButtonSpinner from "@/app/components/ButtonSpinner";
+import CopyButton from "@/app/components/CopyButton";
 import TxStatusBanner from "@/app/components/TxStatusBanner";
 import { useRouter } from "next/navigation";
 import {
@@ -365,6 +366,12 @@ export default function CreateJob() {
             <p className="text-text-muted text-sm mb-6">
               Your escrow job is live on Stellar testnet.
             </p>
+            <div className="flex items-center justify-center gap-2 mb-4 max-w-md mx-auto">
+              <span className="font-mono text-xs text-text-muted truncate" title={txHash}>
+                {txHash}
+              </span>
+              <CopyButton value={txHash} label="Transaction hash" />
+            </div>
             <a
               href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
               target="_blank"

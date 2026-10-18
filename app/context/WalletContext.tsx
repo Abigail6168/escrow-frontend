@@ -12,6 +12,7 @@ import {
 import { Networks, StellarWalletsKit } from "@creit.tech/stellar-wallets-kit";
 import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils";
 import { NETWORK_PASSPHRASE } from "@/app/lib/contract";
+import { assertWalletNetwork } from "@/app/lib/network";
 import { useToast } from "./ToastContext";
 import {
   ledgerActiveAddresses,
@@ -36,18 +37,6 @@ import { WalletRejectedError, isWalletRejectedError } from "@/app/lib/errors";
 
 const LEGACY_STORAGE_KEY = "milesto_wallet_connected";
 const STORAGE_KEY = LEGACY_STORAGE_KEY;
-
-const APP_NETWORK_DISPLAY = "Testnet";
-
-function buildMismatchMessage(walletId: string, walletNetwork: string): string {
-  const walletDisplay =
-    walletId === "freighter" ? "Freighter" :
-    walletId === "albedo"   ? "Albedo"   :
-    walletId === "xbull"    ? "xBull"    :
-    walletId === "hana"     ? "Hana"     : "your wallet";
-
-  return `Network mismatch: your ${walletDisplay} is on ${walletNetwork} but this app expects Stellar ${APP_NETWORK_DISPLAY}. Please switch networks.`;
-}
 
 export const SUPPORTED_WALLETS = [
   { id: "freighter", label: "Freighter" },
@@ -152,10 +141,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         walletPassphrase = result.networkPassphrase;
       }
 
-      const mismatched = walletPassphrase !== NETWORK_PASSPHRASE;
-      setNetworkMismatchMessage(
-        mismatched ? buildMismatchMessage(selectedWalletId, walletPassphrase) : null
-      );
+      const walletLabel = SUPPORTED_WALLETS.find((w) => w.id === selectedWalletId)?.label;
+      setNetworkMismatchMessage(assertWalletNetwork(walletPassphrase, walletLabel));
     } catch (e) {
       logWalletWarning("NETWORK CHECK FAILED", "Failed to check network", {
         err: e,
@@ -328,6 +315,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const signTransaction = useCallback(async (xdr: string): Promise<string> => {
     if (!address) throw new Error("Wallet not connected");
+    if (networkMismatchMessage) throw new Error(networkMismatchMessage);
     setSignatureTimeoutError(null);
     setSignatureTimeoutXdr(null);
 
@@ -377,7 +365,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         throw e;
       }
     });
-  }, [address, ensureKitInitialized, selectedWalletId, showToast]);
+  }, [address, networkMismatchMessage, ensureKitInitialized, selectedWalletId, showToast]);
 
   const clearSignatureTimeout = useCallback(() => {
     setSignatureTimeoutError(null);

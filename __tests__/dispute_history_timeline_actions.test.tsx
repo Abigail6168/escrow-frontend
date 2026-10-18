@@ -135,7 +135,7 @@ describe("toast warnings (#446)", () => {
     fireEvent.click(screen.getByTestId("dispute-timeline-escalate-e1"));
     fireEvent.click(screen.getByTestId("dispute-timeline-confirm-ack"));
     fireEvent.click(screen.getByTestId("dispute-timeline-confirm-submit"));
-    expect(await screen.findByRole("alert")).toHaveTextContent("Dispute escalated successfully.");
+    expect(await screen.findByRole("status")).toHaveTextContent("Dispute escalated successfully.");
   });
 
   it("shows an error toast when signing fails", async () => {
@@ -217,6 +217,6 @@ describe("CSV export (#447)", () => {
     fireEvent.click(screen.getByTestId("dispute-timeline-export"));
     expect(createObjectURL).toHaveBeenCalledTimes(1);
     expect(clickSpy).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("alert")).toHaveTextContent("Dispute history exported.");
+    expect(screen.getByRole("status")).toHaveTextContent("Dispute history exported.");
   });
 });
