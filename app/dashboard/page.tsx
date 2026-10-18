@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useWallet } from "@/app/context/WalletContext";
 import Navbar from "@/app/components/Navbar";
 import MilestoneCard from "@/app/components/MilestoneCard";
@@ -159,6 +159,15 @@ export default function Dashboard() {
   const { getState, isPending, setPhase, setError: setActionError, setTxHash } =
     useActionStates();
 
+  /**
+   * Issue #670: track which job rows are showing "Updating…" after a
+   * successful action, while the backend indexer catches up.
+   */
+  const [updatingJobIds, setUpdatingJobIds] = useState<Set<string>>(new Set());
+
+  /** Active backoff-poll cancel functions, keyed by jobId. */
+  const updatingPollerRefs = useRef<Map<string, () => void>>(new Map());
+
   const totalPages = Math.max(1, Math.ceil((total || jobs.length || 1) / limit));
 
   const fetchJobs = useCallback(async () => {
@@ -257,6 +266,67 @@ export default function Dashboard() {
       }
     },
     [address, jobDetails, jobs]
+  );
+
+  /**
+   * Issue #670: mark a job row as "Updating…" then re-poll the job list with
+   * exponential backoff until either the fetch succeeds (indexer caught up)
+   * or 2 minutes have elapsed.
+   *
+   * Backoff sequence: 2 s → 4 s → 8 s → 15 s → 15 s → … (cap at 15 s).
+   */
+  const startUpdatingPoll = useCallback(
+    (jobId: string) => {
+      // Cancel any in-flight poll for this job.
+      updatingPollerRefs.current.get(jobId)?.();
+
+      setUpdatingJobIds((prev) => {
+        const next = new Set(prev);
+        next.add(jobId);
+        return next;
+      });
+
+      const MAX_POLL_DURATION_MS = 120_000;
+      const BACKOFF_STEPS_MS = [2_000, 4_000, 8_000, 15_000];
+      const startedAt = Date.now();
+      let stepIndex = 0;
+      let timerId: ReturnType<typeof setTimeout> | null = null;
+      let cancelled = false;
+
+      const stop = () => {
+        cancelled = true;
+        if (timerId !== null) clearTimeout(timerId);
+        updatingPollerRefs.current.delete(jobId);
+        setUpdatingJobIds((prev) => {
+          const next = new Set(prev);
+          next.delete(jobId);
+          return next;
+        });
+      };
+
+      const scheduleNext = () => {
+        if (cancelled) return;
+        if (Date.now() - startedAt >= MAX_POLL_DURATION_MS) {
+          stop();
+          return;
+        }
+        const delay = BACKOFF_STEPS_MS[Math.min(stepIndex, BACKOFF_STEPS_MS.length - 1)];
+        stepIndex += 1;
+        timerId = setTimeout(async () => {
+          if (cancelled) return;
+          try {
+            await fetchJobs();
+            stop();
+          } catch {
+            scheduleNext();
+          }
+        }, delay);
+      };
+
+      scheduleNext();
+      updatingPollerRefs.current.set(jobId, stop);
+    },
+    [fetchJobs]
   );
 
   useEffect(() => {
@@ -365,6 +435,12 @@ export default function Dashboard() {
       );
 
       if (txHash !== null) {
+        // Issue #670: immediately mark the row as "Updating…" so the user
+        // knows the action succeeded while the indexer catches up.
+        if (expandedJobId) {
+          startUpdatingPoll(expandedJobId);
+        }
+
         await fetchJobs();
         if (expandedJobId) {
           await fetchJobDetails(expandedJobId, true);
@@ -383,6 +459,7 @@ export default function Dashboard() {
       fetchJobs,
       expandedJobId,
       fetchJobDetails,
+      startUpdatingPoll,
     ]
   );
 
@@ -547,8 +624,9 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-3 sm:space-y-5">
                 <div className="border border-gray-800 rounded-lg sm:rounded-xl bg-gray-900 overflow-hidden overflow-x-auto" role="region" aria-label="Jobs list">
-                  {jobs.map((job, index) => {
+                  {jobs.map((job) => {
                     const isExpanded = expandedJobId === job.id;
+                    const isUpdating = updatingJobIds.has(job.id);
                     const roleBadges = [
                       address === job.client ? "Client" : null,
                       address === job.freelancer ? "Freelancer" : null,
@@ -577,6 +655,18 @@ export default function Dashboard() {
                               </p>
                             </div>
                             <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2">
+                              {/* Issue #670: show "Updating…" badge while indexer catches up */}
+                              {isUpdating && (
+                                <span
+                                  data-testid="updating-badge"
+                                  className="text-xs px-2 py-0.5 sm:py-1 rounded-full border border-yellow-600 bg-yellow-900/40 text-yellow-300 whitespace-nowrap animate-pulse"
+                                  role="status"
+                                  aria-live="polite"
+                                  aria-label="Updating job status"
+                                >
+                                  Updating…
+                                </span>
+                              )}
                               {roleBadges.map((badge) => (
                                 <span
                                   key={`${job.id}-${badge}`}
