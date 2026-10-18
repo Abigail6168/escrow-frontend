@@ -33,6 +33,7 @@ import {
 } from "@/app/lib/wallet_state_context";
 import { walletStateStore } from "@/app/lib/wallet_state_store";
 import { WalletRejectedError, isWalletRejectedError } from "@/app/lib/errors";
+import { submitContractTransaction, type ContractArg } from "@/app/lib/transactions";
 
 const LEGACY_STORAGE_KEY = "milesto_wallet_connected";
 const STORAGE_KEY = LEGACY_STORAGE_KEY;
@@ -62,6 +63,12 @@ interface KitSignResult {
   signedTxXdr?: string;
 }
 
+interface PendingContractAction {
+  method: string;
+  args: ContractArg[];
+  sourceAddress: string;
+}
+
 interface WalletContextType {
   address: string | null;
   assembleMultiSigTransaction: (
@@ -78,6 +85,12 @@ interface WalletContextType {
   signatureTimeoutError: WalletSignatureTimeoutError | null;
   signatureTimeoutXdr: string | null;
   clearSignatureTimeout: () => void;
+  /** Last contract action submitted, kept so a timed-out signature can be retried with a fresh XDR. */
+  lastPendingAction: PendingContractAction | null;
+  /** Stage an action so {@link retryLastAction} can rebuild and re-sign it after a timeout. */
+  registerPendingAction: (action: PendingContractAction) => void;
+  /** Rebuild the last pending transaction (fresh XDR) and request a signature again. */
+  retryLastAction: () => Promise<string | null>;
   /** Current simulation result used to derive gas/fee warning state. */
   simulationResult: LedgerSimulationResult | null;
   /** Set after a Soroban simulation completes; triggers fee warning evaluation. */
@@ -99,6 +112,9 @@ const WalletContext = createContext<WalletContextType>({
   signatureTimeoutError: null,
   signatureTimeoutXdr: null,
   clearSignatureTimeout: () => {},
+  lastPendingAction: null,
+  registerPendingAction: () => {},
+  retryLastAction: async () => null,
   simulationResult: null,
   setSimulationResult: () => {},
   gasWarning: null,
@@ -122,6 +138,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [signatureTimeoutXdr, setSignatureTimeoutXdr] = useState<string | null>(
     null
   );
+  /** Last contract action submitted, retained so a timed-out signature can be retried with a fresh XDR. */
+  const [lastPendingAction, setLastPendingAction] =
+    useState<PendingContractAction | null>(null);
   const [simulationResult, setSimulationResult] =
     useState<LedgerSimulationResult | null>(null);
   const initializedRef = useRef(false);
@@ -377,6 +396,40 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setSignatureTimeoutXdr(null);
   }, []);
 
+  /** Stage the last submitted contract action so it can be retried after a signature timeout. */
+  const registerPendingAction = useCallback(
+    (action: PendingContractAction) => {
+      setLastPendingAction(action);
+    },
+    []
+  );
+
+  /**
+   * Rebuild the last pending transaction (fresh XDR from the backend) and
+   * request a wallet signature again. Called by the global
+   * SignatureTimeoutAlert after a signing timeout.
+   */
+  const retryLastAction = useCallback(async (): Promise<string | null> => {
+    const action = lastPendingAction;
+    if (!action) return null;
+    // Clear the staged action so a stale retry cannot re-submit it twice.
+    setLastPendingAction(null);
+    try {
+      return await submitContractTransaction({
+        method: action.method,
+        args: action.args,
+        sourceAddress: action.sourceAddress,
+        signTransaction,
+      });
+    } catch (err) {
+      logWalletWarning("RETRY LAST ACTION FAILED", "Retrying the last contract action failed", {
+        err: err instanceof Error ? err : new Error(String(err)),
+        phase: "error",
+      });
+      return null;
+    }
+  }, [lastPendingAction, signTransaction]);
+
   const assembleMultiSigTransaction = useCallback(
     async (
       splits: WalletMultiSigSplit[],
@@ -414,6 +467,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signatureTimeoutError,
         signatureTimeoutXdr,
         clearSignatureTimeout,
+        lastPendingAction,
+        registerPendingAction,
+        retryLastAction,
         simulationResult,
         setSimulationResult,
         gasWarning,
