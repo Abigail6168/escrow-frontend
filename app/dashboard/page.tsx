@@ -16,7 +16,7 @@ import {
   runContractAction,
   submitContractTransaction,
 } from "@/app/lib/transactions";
-import { fetchAutoReleaseInfo } from "@/app/lib/autoRelease";
+import { fetchAllAutoReleaseDeadlines } from "@/app/lib/autoRelease";
 
 interface Milestone {
   index: number;
@@ -334,16 +334,13 @@ export default function Dashboard() {
         return;
       }
 
-      const entries = await Promise.all(
-        deliveredIndexes.map(async (index) => {
-          const info = await fetchAutoReleaseInfo(jobId, index, {
-            signal: controller.signal,
-          });
-          return [index, info.deadlineMs] as const;
-        })
-      );
+      // Issue #671: fetch ALL milestone deadlines in one request instead of
+      // one request per delivered milestone (N+1 problem).
+      const deadlines = await fetchAllAutoReleaseDeadlines(jobId, deliveredIndexes, {
+        signal: controller.signal,
+      });
       if (!controller.signal.aborted) {
-        setAutoReleaseDeadlines(Object.fromEntries(entries));
+        setAutoReleaseDeadlines(deadlines);
       }
     })();
 
