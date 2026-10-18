@@ -24,7 +24,7 @@ describe("Create page", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({ success: true, data: [{ address: "CTOKEN", symbol: "USDC" }] }),
+        json: async () => ({ success: true, data: { tokens: [{ address: "CTOKEN", symbol: "USDC" }] } }),
       }),
     );
     mockUseWallet.mockReturnValue({

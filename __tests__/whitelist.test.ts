@@ -11,8 +11,13 @@ function stubFetch(body: unknown, ok = true, status = 200) {
 describe("fetchWhitelistedTokens", () => {
   afterEach(() => vi.unstubAllGlobals());
 
+  it("reads tokens from the backend's { success, data: { tokens } } body", async () => {
+    stubFetch({ success: true, data: { tokens: ["CAAA"] } });
+    expect(await fetchWhitelistedTokens("CID")).toEqual([{ address: "CAAA" }]);
+  });
+
   it("normalizes string addresses and drops blanks", async () => {
-    stubFetch({ success: true, data: ["CAAA", "  CBBB  ", ""] });
+    stubFetch({ success: true, data: { tokens: ["CAAA", "  CBBB  ", ""] } });
     expect(await fetchWhitelistedTokens("CID")).toEqual([
       { address: "CAAA" },
       { address: "CBBB" },
@@ -21,10 +26,13 @@ describe("fetchWhitelistedTokens", () => {
 
   it("normalizes object items with symbol/name and address aliases", async () => {
     stubFetch({
-      data: [
-        { address: "CAAA", symbol: "USDC" },
-        { token: "CBBB", name: "Bee" },
-      ],
+      success: true,
+      data: {
+        tokens: [
+          { address: "CAAA", symbol: "USDC" },
+          { token: "CBBB", name: "Bee" },
+        ],
+      },
     });
     expect(await fetchWhitelistedTokens("CID")).toEqual([
       { address: "CAAA", symbol: "USDC" },
@@ -32,11 +40,11 @@ describe("fetchWhitelistedTokens", () => {
     ]);
   });
 
-  it("accepts a bare array and a { tokens } envelope", async () => {
+  it("returns an empty list for unexpected shapes", async () => {
     stubFetch(["CAAA"]);
-    expect(await fetchWhitelistedTokens("CID")).toEqual([{ address: "CAAA" }]);
-    stubFetch({ tokens: ["CBBB"] });
-    expect(await fetchWhitelistedTokens("CID")).toEqual([{ address: "CBBB" }]);
+    expect(await fetchWhitelistedTokens("CID")).toEqual([]);
+    stubFetch({ success: true, data: ["CAAA"] });
+    expect(await fetchWhitelistedTokens("CID")).toEqual([]);
   });
 
   it("throws on a non-ok response", async () => {
