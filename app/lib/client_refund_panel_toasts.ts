@@ -4,8 +4,7 @@
  * Alert copy for every refund action the panel can take, so the wording lives
  * here rather than inline in JSX and stays assertable without mounting.
  *
- * Mirrors the conventions established by `freelancer_claim_panel_toasts.ts`
- * and `platform_metrics_charts_toasts.ts`.
+ * Mirrors the conventions established by `freelancer_claim_panel_toasts.ts`.
  */
 
 import type { ToastType } from "@/app/context/ToastContext";

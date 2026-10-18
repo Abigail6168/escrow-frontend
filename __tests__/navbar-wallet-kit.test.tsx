@@ -14,6 +14,10 @@ vi.mock("@/app/context/WalletContext", () => ({
   useWallet: () => mockUseWallet(),
 }));
 
+vi.mock("@/app/context/ToastContext", () => ({
+  useToast: () => ({ showToast: vi.fn() }),
+}));
+
 vi.mock("@/app/hooks/useIsAdmin", () => ({
   useIsAdmin: () => ({ isAdminUser: false }),
 }));
@@ -23,7 +27,7 @@ describe("Navbar wallet selector", () => {
     vi.clearAllMocks();
   });
 
-  it("shows wallet provider selector when disconnected", () => {
+  it("opens the wallet selector modal when Connect Wallet is clicked", () => {
     mockUseWallet.mockReturnValue({
       address: null,
       connect: vi.fn(),
@@ -36,12 +40,12 @@ describe("Navbar wallet selector", () => {
 
     render(<Navbar />);
 
-    expect(screen.getByLabelText("Wallet provider")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Connect Wallet" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("Wallet provider")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Connect Wallet" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
-  it("updates selected wallet when changed", () => {
-    const setSelectedWalletId = vi.fn();
+  it("shows an install link when no wallet extension is detected", () => {
     mockUseWallet.mockReturnValue({
       address: null,
       connect: vi.fn(),
@@ -49,15 +53,13 @@ describe("Navbar wallet selector", () => {
       isConnecting: false,
       networkMismatchMessage: null,
       selectedWalletId: "freighter",
-      setSelectedWalletId,
+      setSelectedWalletId: vi.fn(),
     });
 
     render(<Navbar />);
+    fireEvent.click(screen.getByRole("button", { name: "Connect Wallet" }));
 
-    const select = screen.getByLabelText("Wallet provider") as HTMLSelectElement;
-    fireEvent.change(select, { target: { value: "albedo" } });
-
-    expect(setSelectedWalletId).toHaveBeenCalledWith("albedo");
+    expect(screen.getByRole("link", { name: /install/i })).toHaveAttribute("href");
   });
 
   it("displays network mismatch warning when provided", () => {
