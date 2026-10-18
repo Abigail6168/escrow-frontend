@@ -43,6 +43,13 @@ describe("arbitration_escrow_details export helpers (#487)", () => {
 
   it("triggers browser download for non-empty records", () => {
     const createElementSpy = vi.spyOn(document, "createElement");
+    const createObjectURLSpy = vi
+      .spyOn(URL, "createObjectURL")
+      .mockReturnValue("blob:arbitration-export");
+    // Stub click so jsdom never attempts a real navigation (#644).
+    const clickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => {});
     const appendChildSpy = vi
       .spyOn(document.body, "appendChild")
       .mockImplementation((node) => node);
@@ -50,11 +57,22 @@ describe("arbitration_escrow_details export helpers (#487)", () => {
       .spyOn(document.body, "removeChild")
       .mockImplementation((node) => node);
 
-    const success = handleArbitrationExport([MOCK_ARBITRATION_ESCROW_DETAILS]);
+    const filename = "arbitration-escrow-DIS-123-2026-09-28.csv";
+    const success = handleArbitrationExport(
+      [MOCK_ARBITRATION_ESCROW_DETAILS],
+      filename,
+    );
     expect(success).toBe(true);
     expect(createElementSpy).toHaveBeenCalledWith("a");
+    expect(createObjectURLSpy).toHaveBeenCalledOnce();
+    expect(clickSpy).toHaveBeenCalledOnce();
+    const clickedLink = clickSpy.mock.contexts[0] as HTMLAnchorElement;
+    expect(clickedLink?.href).toBe("blob:arbitration-export");
+    expect(clickedLink?.download).toBe(filename);
 
     createElementSpy.mockRestore();
+    createObjectURLSpy.mockRestore();
+    clickSpy.mockRestore();
     appendChildSpy.mockRestore();
     removeChildSpy.mockRestore();
   });
