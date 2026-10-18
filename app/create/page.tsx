@@ -18,6 +18,7 @@ import {
   tokenLabel,
   WhitelistToken,
 } from "@/app/lib/whitelist";
+import { agreementLines } from "@/app/lib/escrow_agreement";
 import { formatTxError } from "@/app/lib/errors";
 
 type WizardSection = "details" | "milestones" | "review";
@@ -81,6 +82,9 @@ export default function CreateJob() {
   const [whitelist, setWhitelist] = useState<WhitelistToken[]>([]);
   const [whitelistLoading, setWhitelistLoading] = useState(true);
   const [whitelistError, setWhitelistError] = useState<string | null>(null);
+  // Required confirmation that the client has read the escrow rules before
+  // the Create button is enabled (issue #669).
+  const [agreed, setAgreed] = useState(false);
 
   // Refs for tab-panel sections — used for programmatic focus on tab activation
   const detailsPanelRef = useRef<HTMLDivElement>(null);
@@ -161,7 +165,7 @@ export default function CreateJob() {
   });
 
   const hasValidationErrors = !!freelancerError || !!arbiterError || !!tokenError;
-  const isSubmitDisabled = loading || !address || hasNoMilestones || hasPartialMilestones || hasValidationErrors;
+  const isSubmitDisabled = loading || !address || hasNoMilestones || hasPartialMilestones || hasValidationErrors || !agreed;
 
   const validateFreelancer = (val: string) => {
     if (val && !/^G[A-Z2-7]{55}$/.test(val)) {
@@ -1045,6 +1049,49 @@ export default function CreateJob() {
                   </dd>
                 </div>
               </dl>
+
+              {/*
+               * "What you're agreeing to" panel (issue #669). A plain-language
+               * summary of the escrow rules generated from the form values and
+               * the contract's fixed rules. The wording lives in
+               * app/lib/escrow_agreement.ts so it can be updated alongside the
+               * contract. The required checkbox below gates the Create button.
+               */}
+              <div
+                className="mt-5 rounded-xl border border-border-subtle bg-surface-field p-4"
+                data-testid="agreement-panel"
+              >
+                <h3 className="text-sm font-semibold text-text-primary">
+                  What you&rsquo;re agreeing to
+                </h3>
+                <ul className="mt-3 space-y-2 text-xs leading-5 text-text-secondary">
+                  {agreementLines({ autoReleaseDays, arbiter }).map((line) => (
+                    <li key={line.label} className="flex gap-2">
+                      <span
+                        className="font-semibold text-text-primary shrink-0"
+                      >
+                        {line.label}:
+                      </span>
+                      <span>{line.text}</span>
+                    </li>
+                  ))}
+                </ul>
+                <label className="mt-4 flex items-start gap-2 text-sm text-text-secondary">
+                  <input
+                    type="checkbox"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                    disabled={loading}
+                    aria-required="true"
+                    data-testid="agreement-checkbox"
+                    className="mt-0.5 h-4 w-4 rounded border-border-subtle accent-accent"
+                  />
+                  <span>
+                    I have read and understand the escrow rules above before
+                    creating this job.
+                  </span>
+                </label>
+              </div>
             </section>
 
             <TxStatusBanner
@@ -1059,6 +1106,16 @@ export default function CreateJob() {
                 aria-live="polite"
               >
                 Connect your wallet to create a job
+              </p>
+            )}
+
+            {address && !agreed && !hasNoMilestones && !hasPartialMilestones && !hasValidationErrors && (
+              <p
+                className="text-center text-sm text-text-muted"
+                role="status"
+                aria-live="polite"
+              >
+                Confirm the agreement in the review step to create a job.
               </p>
             )}
 

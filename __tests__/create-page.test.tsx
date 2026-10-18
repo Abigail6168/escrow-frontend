@@ -127,6 +127,9 @@ describe("Create page", () => {
       target: { value: "100" },
     });
 
+    // The agreement checkbox (issue #669) must be ticked before Create is enabled.
+    fireEvent.click(screen.getByTestId("agreement-checkbox"));
+
     expect(screen.getByRole("button", { name: "Create Job" })).not.toBeDisabled();
   });
 });
