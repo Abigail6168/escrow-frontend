@@ -4,18 +4,17 @@ import { useIsAdmin } from "@/app/hooks/useIsAdmin";
 import { SUPPORTED_WALLETS } from "@/app/context/WalletContext";
 import Link from "next/link";
 import NotificationBell from "./NotificationBell";
+import WalletConnectButton from "./WalletConnectButton";
 
 import WalletBadge, { formatAddress } from "@/app/components/WalletBadge";
 
 export default function Navbar() {
   const {
     address,
-    connect,
     disconnect,
     isConnecting,
     networkMismatchMessage,
     selectedWalletId,
-    setSelectedWalletId,
   } = useWallet();
   const { isAdminUser } = useIsAdmin(address);
 
@@ -104,32 +103,7 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <label htmlFor="wallet-provider" className="sr-only">
-                Wallet provider
-              </label>
-              <select
-                id="wallet-provider"
-                value={selectedWalletId}
-                onChange={(event) =>
-                  setSelectedWalletId(event.target.value as (typeof SUPPORTED_WALLETS)[number]["id"])
-                }
-                aria-label="Wallet provider"
-                disabled={isConnecting}
-                className="bg-surface-field border border-border-subtle text-sm text-text-secondary rounded-lg px-3 py-2"
-              >
-                {SUPPORTED_WALLETS.map((wallet) => (
-                  <option key={wallet.id} value={wallet.id}>
-                    {wallet.label}
-                  </option>
-                ))}
-              </select>
-              <button
-                onClick={connect}
-                disabled={isConnecting}
-                className={`bg-accent hover:bg-accent-hover disabled:opacity-50 text-text-primary text-sm font-medium px-4 py-2 rounded-lg transition ${focusRing}`}
-              >
-                {isConnecting ? "Connecting..." : "Connect Wallet"}
-              </button>
+              <WalletConnectButton />
             </>
           )}
         </div>
