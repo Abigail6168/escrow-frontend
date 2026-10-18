@@ -161,6 +161,30 @@ export default function Dashboard() {
 
   const totalPages = Math.max(1, Math.ceil((total || jobs.length || 1) / limit));
 
+  /**
+   * Client-side search filter (#684). Filters the loaded jobs by substring
+   * across contract ID, counterparty addresses, and token symbol. The
+   * backend ignored the old contractId param, so we do this here instead.
+   */
+  const filteredJobs = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return jobs;
+    return jobs.filter((job) => {
+      const haystack = [
+        job.id,
+        job.client,
+        job.freelancer,
+        job.arbiter,
+        job.tokenSymbol ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [jobs, searchQuery]);
+
+  const isFiltering = searchQuery.trim().length > 0;
+
   const fetchJobs = useCallback(async () => {
     if (!address) {
       setFetchLoading(false);
@@ -181,9 +205,9 @@ export default function Dashboard() {
         params.set("role", roleFilter);
       }
 
-      if (searchQuery.trim().length > 0) {
-        params.set("contractId", searchQuery.trim());
-      }
+      // Search is now handled client-side (#684): the backend ignored the
+      // contractId param and only exact 56-char contract IDs could match.
+      // We filter the loaded jobs by substring instead.
 
       const res = await fetch(
         `${BACKEND_URL}/api/jobs/by-wallet/${encodeURIComponent(address)}?${params.toString()}`
@@ -226,7 +250,7 @@ export default function Dashboard() {
     } finally {
       setFetchLoading(false);
     }
-  }, [address, page, limit, roleFilter, searchQuery]);
+  }, [address, page, limit, roleFilter]);
 
   const fetchJobDetails = useCallback(
     async (jobId: string, force = false) => {
@@ -560,10 +584,28 @@ export default function Dashboard() {
                 icon="briefcase"
                 badges={["Client", "Freelancer", "Arbiter"]}
               />
+            ) : filteredJobs.length === 0 ? (
+              <EmptyStateCard
+                testId="dashboard-filter-empty-state"
+                ariaLabel="No matching jobs"
+                title="No matching jobs"
+                description="No jobs on this page match your search. Try a different contract ID, address, or token symbol."
+                icon="briefcase"
+              />
             ) : (
               <div className="space-y-3 sm:space-y-5">
+                {isFiltering && (
+                  <p
+                    data-testid="dashboard-filter-hint"
+                    className="text-xs text-gray-400"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    Filtering this page ({filteredJobs.length} of {jobs.length})
+                  </p>
+                )}
                 <div className="border border-gray-800 rounded-lg sm:rounded-xl bg-gray-900 overflow-hidden overflow-x-auto" role="region" aria-label="Jobs list">
-                  {jobs.map((job, index) => {
+                  {filteredJobs.map((job, index) => {
                     const isExpanded = expandedJobId === job.id;
                     const roleBadges = [
                       address === job.client ? "Client" : null,
