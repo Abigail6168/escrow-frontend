@@ -96,7 +96,7 @@ describe("SignatureTimeoutAlert", () => {
   });
 
   it("shows the Retry button without onRetry and calls retryLastAction from context", async () => {
-    walletContextMock.retryLastAction.mockResolvedValueOnce("fresh-tx-hash");
+    walletContextMock.retryLastAction.mockResolvedValueOnce("fresh-tx-hash" as never);
 
     render(
       <>

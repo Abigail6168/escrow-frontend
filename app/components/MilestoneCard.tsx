@@ -638,11 +638,13 @@ export default function MilestoneCard({
           remainingBalanceStroops={
             pendingRelease.kind === "approve"
               ? "0"
-              : unreleasedBalance(milestone) !== null &&
-                pendingRelease.amount != null
-                ? (BigInt(unreleasedBalance(milestone)) -
-                    BigInt(pendingRelease.amount))
-                    .toString()
+              : pendingRelease.amount != null
+                ? (() => {
+                    const remaining = unreleasedBalance(milestone);
+                    return remaining !== null && pendingRelease.amount != null
+                      ? (remaining - BigInt(pendingRelease.amount)).toString()
+                      : null;
+                  })()
                 : null
           }
           isConfirming={false}

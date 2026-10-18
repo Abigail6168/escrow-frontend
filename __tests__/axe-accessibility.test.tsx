@@ -190,7 +190,11 @@ async function renderAndAxe(ui: React.ReactElement) {
     expect(container).toBeInTheDocument();
   });
   const results = await axe(container);
-  expect(results).toHaveNoViolations();
+  // vitest-axe's toHaveNoViolations matcher is registered at runtime via
+  // vitest.setup.ts, but vitest-axe 0.1.0's type augmentation isn't visible
+  // under tsc --noEmit. Cast through any so the call type-checks cleanly.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (expect(results) as any).toHaveNoViolations();
 }
 
 // ---------------------------------------------------------------------------
