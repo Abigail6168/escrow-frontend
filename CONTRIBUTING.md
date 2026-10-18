@@ -9,6 +9,43 @@ Thank you for your interest in contributing! This document outlines the process 
 3. Install dependencies: `npm install`
 4. Run the development server: `npm run dev`
 
+## Local setup
+
+Use Node.js 24 (`24` in `.nvmrc`; `package.json` `engines.node` is `24.x`) and npm.
+
+Install from the lockfile:
+
+```bash
+npm ci
+```
+
+Copy the env template and fill in values:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Variables in `.env.local.example`:
+
+- `NEXT_PUBLIC_CONTRACT_ID` — Soroban contract ID. README lists the testnet ID `CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH`.
+- `NEXT_PUBLIC_BACKEND_URL` — backend origin. The example value is `http://localhost:3001`.
+- `NEXT_PUBLIC_SOROBAN_RPC_URL` — Soroban RPC. The example value is `https://soroban-testnet.stellar.org`.
+- `NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE` — network passphrase. The example value is `Test SDF Network ; September 2015`.
+
+Start the Next.js app:
+
+```bash
+npm run dev
+```
+
+To hit a local backend, set `NEXT_PUBLIC_BACKEND_URL` to `http://localhost:3001` (the example value).
+
+TODO(maintainers): document the backend repository URL and the command to start it locally.
+
+TODO(maintainers): document whether leaving `NEXT_PUBLIC_BACKEND_URL` empty uses same-origin, and whether the Docker build rejects a plain `http://` remote URL while allowing `http://localhost`.
+
+For on-chain testnet work, install Freighter and switch it to Stellar testnet (the example passphrase is `Test SDF Network ; September 2015`). Fund the test wallet with Stellar testnet Friendbot, the standard Stellar testnet funding service.
+
 ## Making Changes
 
 1. Create a new branch for your feature/fix: `git checkout -b my-feature`
@@ -23,6 +60,61 @@ Follow the project's existing code style and use ESLint to check:
 ```bash
 npm run lint
 ```
+
+## Project structure
+
+Routes live under `app/` (Next.js App Router). Pages from README:
+
+- `/` — `app/page.tsx` (landing)
+- `/create` — `app/create/`
+- `/dashboard` — `app/dashboard/`
+- `/admin` — `app/admin/`
+
+Supporting directories:
+
+- `app/components/` — React UI used by pages and layouts
+- `app/lib/` — helpers (contract, wallet, backend client)
+- `app/hooks/` — React hooks
+- `app/context/` — React context (`WalletContext`, `ToastContext`)
+- `app/components/__tests__/` and `app/lib/__tests__/` — co-located tests
+- `__tests__/` — root test suite (most files live here; see `vitest.config.mts`)
+- `public/` — static assets
+- `docs/` — extra notes (not app routes)
+
+### Live vs unreferenced code
+
+Many modules under `app/` are not imported from any page or layout, so changing them does not change what users see. Confirm a module is actually rendered (imported from a route, layout, or a component those routes mount) before extending it. Related: GitHub issue #520.
+
+TODO(maintainers): add or link the reachability script used to list unreferenced modules.
+
+## Testing
+
+Most tests are in the root `__tests__/` directory. A smaller set is co-located next to source, for example `app/components/__tests__/` and `app/lib/__tests__/`. Vitest is configured in `vitest.config.mts` (`environment: "jsdom"`, `setupFiles: ["./vitest.setup.ts"]`).
+
+Run the full suite (`vitest run` via the `test` script). This takes roughly 6.5 minutes:
+
+```bash
+npm test
+```
+
+Run a single file (forwards the path to `vitest run`; this path exists in the repo):
+
+```bash
+npm test -- __tests__/whitelist.test.ts
+```
+
+When you add fixtures, match real backend response shapes rather than inventing payload fields.
+
+## Pull request checklist
+
+- [ ] `npm run lint` completes with zero warnings
+- [ ] `npm run type-check` passes
+- [ ] `npm test` passes
+- [ ] UI changes include screenshots in the PR
+- [ ] The PR links the related issue
+- [ ] User-facing changes include a line in `CHANGELOG.md`
+
+TODO(maintainers): confirm `CHANGELOG.md` is the changelog file contributors should edit (it is not in the current tree).
 
 ## Submitting Changes
 
