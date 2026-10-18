@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { useWallet, WalletProvider } from "@/app/context/WalletContext";
-import { HIGH_FEE_THRESHOLD_STROOPS } from "@/app/lib/ledger_usb_bridge";
+import { HIGH_FEE_THRESHOLD_STROOPS } from "@/app/lib/wallet_session";
 
 // -------------------------------------------------------------------------------------
 
@@ -31,22 +31,9 @@ vi.mock("@/app/lib/contract", () => ({
   NETWORK_PASSPHRASE: "Test SDF Network ; September 2015",
 }));
 
-vi.mock("@/app/lib/ledger_usb_bridge", async () => {
-  // Import real implementations so checkSimulationFeeWarning logic is preserved
-  const {
-    checkSimulationFeeWarning,
-    HIGH_FEE_THRESHOLD_STROOPS,
-  } = await vi.importActual<typeof import("@/app/lib/ledger_usb_bridge")>(
-    "@/app/lib/ledger_usb_bridge"
-  );
-  return {
-    checkSimulationFeeWarning,
-    HIGH_FEE_THRESHOLD_STROOPS,
-    ledgerActiveAddresses: { clear: vi.fn() },
-  };
-});
-
-vi.mock("@/app/lib/freighter_connector", () => ({
+// Real checkSimulationFeeWarning is preserved; only Freighter state is mocked.
+vi.mock("@/app/lib/wallet_session", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/app/lib/wallet_session")>()),
   freighterActiveAddress: { setActiveAddress: vi.fn(), clear: vi.fn() },
   verifyAndRehydrateFreighterAddress: vi.fn().mockResolvedValue(null),
 }));

@@ -9,8 +9,6 @@ import {
   parseMultiSigEnvelope,
   type WalletMultiSigSigner,
 } from "@/app/lib/wallet_state_context";
-import { useAlbedoMultiSigAssembly } from "@/app/hooks/useAlbedoMultiSigAssembly";
-import { useLedgerMultiSigAssembly } from "@/app/hooks/useLedgerMultiSigAssembly";
 import { withWalletLoader } from "@/app/lib/wallet_state_context";
 import {
   inspectSignatureFee,
@@ -58,14 +56,11 @@ export default function SignatureTimeoutAlert({
 }: SignatureTimeoutAlertProps) {
   const {
     networkMismatchMessage,
-    selectedWalletId,
     assembleMultiSigTransaction,
     signatureTimeoutError,
     signatureTimeoutXdr,
     clearSignatureTimeout,
   } = useWallet();
-  const albedoAssembly = useAlbedoMultiSigAssembly(NETWORK_PASSPHRASE);
-  const ledgerAssembly = useLedgerMultiSigAssembly(NETWORK_PASSPHRASE);
   const [isRetrying, setIsRetrying] = useState(false);
 
   const activeError = error ?? signatureTimeoutError;
@@ -129,9 +124,9 @@ export default function SignatureTimeoutAlert({
   async function assemble() {
     if (!activeTransactionXdr || signers.length === 0) return;
     try {
-      const assembly =
-        selectedWalletId === "albedo" ? albedoAssembly : ledgerAssembly;
-      assembly.parseStructure(activeTransactionXdr);
+      parseMultiSigEnvelope(activeTransactionXdr, {
+        parseEnvelopeXdr: createStellarEnvelopeParser(NETWORK_PASSPHRASE),
+      });
       const splits = signers.map((signer) => ({
         baseXdr: activeTransactionXdr,
         signer,

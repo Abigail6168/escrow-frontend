@@ -14,12 +14,12 @@ import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils";
 import { NETWORK_PASSPHRASE } from "@/app/lib/contract";
 import { useToast } from "./ToastContext";
 import {
-  ledgerActiveAddresses,
   checkSimulationFeeWarning,
-  type LedgerSimulationResult,
-  type LedgerGasWarningState,
-} from "@/app/lib/ledger_usb_bridge";
-import { freighterActiveAddress, verifyAndRehydrateFreighterAddress } from "@/app/lib/freighter_connector";
+  freighterActiveAddress,
+  verifyAndRehydrateFreighterAddress,
+  type WalletSimulationResult,
+  type WalletGasWarningState,
+} from "@/app/lib/wallet_session";
 import {
   logWalletWarning,
   validateMultiSigAssembly,
@@ -79,11 +79,11 @@ interface WalletContextType {
   signatureTimeoutXdr: string | null;
   clearSignatureTimeout: () => void;
   /** Current simulation result used to derive gas/fee warning state. */
-  simulationResult: LedgerSimulationResult | null;
+  simulationResult: WalletSimulationResult | null;
   /** Set after a Soroban simulation completes; triggers fee warning evaluation. */
-  setSimulationResult: (result: LedgerSimulationResult | null) => void;
+  setSimulationResult: (result: WalletSimulationResult | null) => void;
   /** Derived gas/fee warning state from the latest simulation result. */
-  gasWarning: LedgerGasWarningState | null;
+  gasWarning: WalletGasWarningState | null;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -123,11 +123,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     null
   );
   const [simulationResult, setSimulationResult] =
-    useState<LedgerSimulationResult | null>(null);
+    useState<WalletSimulationResult | null>(null);
   const initializedRef = useRef(false);
   const { showToast } = useToast();
 
-  const gasWarning: LedgerGasWarningState | null = simulationResult
+  const gasWarning: WalletGasWarningState | null = simulationResult
     ? checkSimulationFeeWarning(simulationResult)
     : null;
 
@@ -312,7 +312,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     });
     walletStateStore.clear();
     localStorage.removeItem(LEGACY_STORAGE_KEY);
-    ledgerActiveAddresses.clear();
     freighterActiveAddress.clear();
     clearAllWalletSessionStorage();
     setNetworkMismatchMessage(null);

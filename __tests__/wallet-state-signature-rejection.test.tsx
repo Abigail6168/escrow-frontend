@@ -37,16 +37,13 @@ vi.mock("@/app/context/ToastContext", () => ({
   useToast: () => ({ showToast }),
 }));
 
-vi.mock("@/app/lib/freighter_connector", () => ({
+vi.mock("@/app/lib/wallet_session", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/app/lib/wallet_session")>()),
   freighterActiveAddress: {
     clear: vi.fn(),
     setActiveAddress: vi.fn(),
   },
   verifyAndRehydrateFreighterAddress: vi.fn(),
-}));
-
-vi.mock("@/app/lib/ledger_usb_bridge", () => ({
-  ledgerActiveAddresses: { clear: vi.fn() },
 }));
 
 function WalletWrapper({ children }: { children: ReactNode }) {

@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
+      - name: Audit runtime dependencies
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Lint
         run: npm run lint
 
@@ -32,3 +35,13 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Bundle size budget
+        run: node scripts/bundle-size.mjs
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Smoke test static export
+        timeout-minutes: 3
+        run: npm run test:e2e
