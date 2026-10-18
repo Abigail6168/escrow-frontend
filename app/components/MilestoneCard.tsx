@@ -8,12 +8,19 @@ import ButtonSpinner from "@/app/components/ButtonSpinner";
 import DisputeRaiseModal from "@/app/components/DisputeRaiseModal";
 import ArbiterActionPanel from "@/app/components/ArbiterActionPanel";
 import { formatBaseUnits } from "@/app/lib/amounts";
+import { getClaimEligibility, CLAIM_UNKNOWN_DEADLINE_NOTE } from "@/app/lib/claimEligibility";
 
 interface Milestone {
   index: number;
   amount: string;
   status: string;
   releasedAmount?: string;
+  /** On-chain `delivered_at` (epoch seconds or ms). */
+  deliveredAt?: number | null;
+  /** On-chain `auto_release_seconds`. */
+  autoReleaseSeconds?: number | null;
+  /** Total deadline extension in seconds. */
+  extensionSeconds?: number | null;
 }
 
 /**
@@ -182,6 +189,16 @@ export default function MilestoneCard({
   const isDeadlineElapsed =
     liveElapsed ||
     (typeof autoReleaseDeadline === "number" && autoReleaseDeadline <= mountedAt);
+
+  // Claim eligibility comes from on-chain job data; the backend deadline only
+  // refines it, and an unknown deadline still shows the button.
+  const claimEligibility = getClaimEligibility({
+    deliveredAt: milestone?.deliveredAt,
+    autoReleaseSeconds: milestone?.autoReleaseSeconds,
+    extensionSeconds: milestone?.extensionSeconds,
+    backendDeadlineMs: autoReleaseDeadline,
+    now: mountedAt,
+  });
 
   const warningThresholdMs = resolveDeadlineWarningThresholdMs(
     autoReleaseWindowMs,
@@ -445,7 +462,7 @@ export default function MilestoneCard({
             </button>
           )}
 
-          {isFreelancer && milestone.status === "Delivered" && isDeadlineElapsed && (
+          {isFreelancer && milestone.status === "Delivered" && (isDeadlineElapsed || claimEligibility.show) && (
             <button
               onClick={() => onClaimAutoRelease?.(milestone.index)}
               disabled={!onClaimAutoRelease || isClaimAutoReleasePending}
@@ -456,6 +473,15 @@ export default function MilestoneCard({
               {isClaimAutoReleasePending ? "Claiming..." : "Claim Auto-Release"}
             </button>
           )}
+          {isFreelancer &&
+            milestone.status === "Delivered" &&
+            !isDeadlineElapsed &&
+            claimEligibility.show &&
+            claimEligibility.deadlineUnknown && (
+              <span className="text-xs text-text-muted">
+                {CLAIM_UNKNOWN_DEADLINE_NOTE}
+              </span>
+            )}
 
           {(isClient || isFreelancer) &&
             ["Pending", "Delivered"].includes(milestone.status) && (

@@ -8,11 +8,10 @@ export interface WhitelistToken {
   decimals?: number;
 }
 
-interface RawWhitelistResponse {
-  success?: boolean;
-  data?: unknown;
-  tokens?: unknown;
-  error?: string;
+/** Exact body of `GET /api/jobs/:contractId/whitelist` (backend `sendSuccess`). */
+interface WhitelistResponse {
+  success: true;
+  data: { tokens: unknown[] };
 }
 
 /** Normalize a raw whitelist item (string address or object) into a WhitelistToken. */
@@ -51,8 +50,8 @@ function normalizeToken(item: unknown): WhitelistToken | null {
  *
  * Endpoint: GET `${BACKEND_URL}/api/jobs/:contractId/whitelist`
  *
- * Accepts a bare array, `{ data: [...] }`, or `{ tokens: [...] }` whose items are
- * either address strings or `{ address|token|id, symbol?, name? }` objects, and
+ * Reads `{ success: true, data: { tokens: [...] } }`, whose items are either
+ * address strings or `{ address|token|id, symbol?, name? }` objects, and
  * normalizes them to `WhitelistToken[]`. Throws on network/HTTP failure so the
  * caller can distinguish "failed to load" from "empty whitelist".
  */
@@ -68,14 +67,8 @@ export async function fetchWhitelistedTokens(
     throw new Error(`Whitelist request failed with status ${res.status}`);
   }
 
-  const body = (await res.json()) as RawWhitelistResponse | unknown[];
-  const list = Array.isArray(body)
-    ? body
-    : Array.isArray((body as RawWhitelistResponse).data)
-      ? ((body as RawWhitelistResponse).data as unknown[])
-      : Array.isArray((body as RawWhitelistResponse).tokens)
-        ? ((body as RawWhitelistResponse).tokens as unknown[])
-        : [];
+  const body = (await res.json()) as Partial<WhitelistResponse>;
+  const list = Array.isArray(body?.data?.tokens) ? body.data.tokens : [];
 
   return list
     .map(normalizeToken)
