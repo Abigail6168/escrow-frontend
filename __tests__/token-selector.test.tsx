@@ -34,10 +34,12 @@ describe("Create Job token selector (#4)", () => {
   it("populates the dropdown from the whitelist with symbol/name labels", async () => {
     stubFetch({
       success: true,
-      data: [
-        { address: "CUSDC", symbol: "USDC" },
-        { address: "CLUMENADDRESSxxxx", name: "Lumens" },
-      ],
+      data: {
+        tokens: [
+          { address: "CUSDC", symbol: "USDC" },
+          { address: "CLUMENADDRESSxxxx", name: "Lumens" },
+        ],
+      },
     });
     render(<CreateJob />);
 
@@ -52,13 +54,13 @@ describe("Create Job token selector (#4)", () => {
   });
 
   it("falls back to a truncated address when no symbol/name is provided", async () => {
-    stubFetch({ data: ["CABCDEFGHIJKLMNOP"] });
+    stubFetch({ success: true, data: { tokens: ["CABCDEFGHIJKLMNOP"] } });
     render(<CreateJob />);
     expect(await screen.findByRole("option", { name: "CABC…MNOP" })).toBeInTheDocument();
   });
 
   it("shows a message (not a broken dropdown) when the whitelist is empty", async () => {
-    stubFetch({ success: true, data: [] });
+    stubFetch({ success: true, data: { tokens: [] } });
     render(<CreateJob />);
     expect(await screen.findByTestId("token-whitelist-empty")).toBeInTheDocument();
     expect(screen.getByLabelText("Token Contract Address")).toBeInTheDocument();
