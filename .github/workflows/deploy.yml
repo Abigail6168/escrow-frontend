@@ -4,12 +4,15 @@
 # passed as build args — they're inlined into the bundle, so the image is
 # environment-specific and a contract change requires a rebuild.
 #
-# Keep the existing ci.yml as-is. This runs alongside it, not instead.
+# Triggered only after the CI workflow completes successfully on main, so a
+# failing test or build never ships to production.
 
 name: Deploy frontend to AWS
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
     inputs:
@@ -32,14 +35,28 @@ concurrency:
 
 jobs:
   build:
+    # For workflow_run triggers, deploy only a successful CI run for a push to
+    # main in this repository. `branches: [main]` alone also matches a pull
+    # request from a fork whose branch is named main, which must never deploy.
+    # workflow_dispatch bypasses this gate (manual redeploy).
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.meta.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Pin to the exact commit that CI passed, not whatever HEAD is now.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - id: meta
-        run: echo "tag=${GITHUB_SHA::12}-${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: echo "tag=${DEPLOY_SHA::12}-${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -84,11 +101,11 @@ jobs:
 
       - name: Record deploy
         run: |
-          echo "Deploying image ${{ needs.build.outputs.image_tag }} at commit ${{ github.sha }}"
+          echo "Deploying image ${{ needs.build.outputs.image_tag }} at commit ${{ github.event.workflow_run.head_sha || github.sha }}"
           {
             echo "### Production deploy"
             echo "- Image tag: ${{ needs.build.outputs.image_tag }}"
-            echo "- Commit: ${{ github.sha }}"
+            echo "- Commit: ${{ github.event.workflow_run.head_sha || github.sha }}"
             echo "- Record in CHANGELOG.md under a dated heading, using PR titles labelled user-facing."
           } >> "$GITHUB_STEP_SUMMARY"
 

@@ -7,6 +7,8 @@
  * payload carrying a secret key, seed or auth token is rejected on parse.
  */
 
+import { getSafeStorage } from "@/app/lib/safe_storage";
+
 export const TX_SIGNER_STATE_VERSION = 1 as const;
 export const TX_SIGNER_STORAGE_KEY = "transaction_signer_active_session";
 
@@ -147,15 +149,7 @@ function resolveStorageAdapter(
   storage?: StorageAdapter | null
 ): StorageAdapter | null {
   if (storage !== undefined) return storage;
-  if (typeof window === "undefined") return null;
-  try {
-    const testKey = "__transaction_signer_storage_test__";
-    window.localStorage.setItem(testKey, "1");
-    window.localStorage.removeItem(testKey);
-    return window.localStorage;
-  } catch {
-    return null;
-  }
+  return getSafeStorage();
 }
 
 const EMPTY_STATE: TransactionSignerRestoredState = {

@@ -1,5 +1,7 @@
 "use client";
 
+import { getSafeStorage } from "@/app/lib/safe_storage";
+
 const STORAGE_KEY = "wallet_state_store_active_state";
 const SCHEMA_VERSION = 1;
 
@@ -54,15 +56,7 @@ function isValidSerializedPayload(value: unknown): value is WalletActiveStateSer
 }
 
 function getStorageAdapter(): Storage | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const testKey = "__wallet_state_store_storage_test__";
-    window.localStorage.setItem(testKey, "1");
-    window.localStorage.removeItem(testKey);
-    return window.localStorage;
-  } catch {
-    return null;
-  }
+  return getSafeStorage();
 }
 
 const LOG_PREFIX = "[wallet_state_store]";

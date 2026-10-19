@@ -8,6 +8,8 @@
  * and `app/lib/wallet_state_store.ts`.
  */
 
+import { getSafeStorage } from "@/app/lib/safe_storage";
+
 const LOG_PREFIX = "[wallet_selector_modal]";
 
 // =============================================================
@@ -125,15 +127,7 @@ function isValidSerializedPayload(
 }
 
 function getStorageAdapter(): Storage | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const testKey = "__wallet_selector_modal_storage_test__";
-    window.localStorage.setItem(testKey, "1");
-    window.localStorage.removeItem(testKey);
-    return window.localStorage;
-  } catch {
-    return null;
-  }
+  return getSafeStorage();
 }
 
 function sanitizeCachedKey(value: unknown): WalletCachedKey | null {
