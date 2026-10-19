@@ -43,9 +43,24 @@ export function isWalletAvailabilityError(err: unknown): boolean {
   );
 }
 
+/**
+ * True when `err` is the single wallet-signature timeout error type
+ * (#628). Both the legacy `TxSignatureTimeoutError` and the current
+ * `WalletSignatureTimeoutError` are recognised so callers can branch on
+ * either name without depending on which one fired.
+ */
+export function isSignatureTimeoutError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  return err.name === "WalletSignatureTimeoutError" || err.name === "TxSignatureTimeoutError";
+}
+
 export function formatTxError(err: unknown): string {
   if (isWalletRejectedError(err)) {
     return "You declined the transaction in your wallet.";
+  }
+
+  if (isSignatureTimeoutError(err)) {
+    return "Signature request timed out. Check your wallet and try again.";
   }
 
   if (err instanceof Error) {

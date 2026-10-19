@@ -219,18 +219,16 @@ describe("contract_pause_switch module", () => {
       expect(readouts.contractId).toBe(MOCK_CONTRACT_PAUSE_STATE.contractId);
     });
 
-    it("returns the mock state when the backend is unreachable", async () => {
+    it("returns null when the backend is unreachable (#629)", async () => {
       vi.stubGlobal(
         "fetch",
         vi.fn(() => Promise.reject(new Error("network down"))),
       );
 
-      await expect(fetchContractPauseState()).resolves.toEqual(
-        MOCK_CONTRACT_PAUSE_STATE,
-      );
+      await expect(fetchContractPauseState()).resolves.toBeNull();
     });
 
-    it("returns the mock state when the backend payload is incomplete", async () => {
+    it("returns null when the backend payload is incomplete (#629)", async () => {
       vi.stubGlobal(
         "fetch",
         vi.fn(() =>
@@ -241,20 +239,16 @@ describe("contract_pause_switch module", () => {
         ),
       );
 
-      await expect(fetchContractPauseState()).resolves.toEqual(
-        MOCK_CONTRACT_PAUSE_STATE,
-      );
+      await expect(fetchContractPauseState()).resolves.toBeNull();
     });
 
-    it("returns the mock state on a non-ok response", async () => {
+    it("returns null on a non-ok response (#629)", async () => {
       vi.stubGlobal(
         "fetch",
         vi.fn(() => Promise.resolve({ ok: false, status: 503 })),
       );
 
-      await expect(fetchContractPauseState()).resolves.toEqual(
-        MOCK_CONTRACT_PAUSE_STATE,
-      );
+      await expect(fetchContractPauseState()).resolves.toBeNull();
     });
 
     it("returns a complete backend payload through a success envelope", async () => {
@@ -276,7 +270,7 @@ describe("contract_pause_switch module", () => {
       await expect(fetchContractPauseState()).resolves.toEqual(backendState);
     });
 
-    it("renders every readout from the mock state with no backend", async () => {
+    it("renders an error state when the backend is unreachable (#629)", async () => {
       vi.stubGlobal(
         "fetch",
         vi.fn(() => Promise.reject(new Error("network down"))),
@@ -285,23 +279,25 @@ describe("contract_pause_switch module", () => {
       render(<ContractPauseSwitch />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(MOCK_CONTRACT_PAUSE_STATE.reason),
-        ).toBeInTheDocument();
+        expect(screen.getByTestId("contract-pause-error")).toBeInTheDocument();
       });
-
       expect(
-        screen.getByText(MOCK_CONTRACT_PAUSE_STATE.contractId),
+        screen.getByText(/Couldn't read pause status/i),
       ).toBeInTheDocument();
-      expect(screen.getAllByText("Frozen").length).toBeGreaterThan(0);
-      expect(screen.getByTestId("contract-pause-cell-reason")).toBeInTheDocument();
-      expect(
-        screen.getByTestId("contract-pause-cell-contract"),
-      ).toBeInTheDocument();
-      expect(screen.getByTestId("contract-pause-cell-updated")).toBeInTheDocument();
+      expect(screen.getByTestId("contract-pause-toggle")).toBeDisabled();
+      vi.unstubAllGlobals();
     });
 
     it("shows placeholders while the freeze state resolves", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(() =>
+          Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ success: true, data: MOCK_CONTRACT_PAUSE_STATE }),
+          }),
+        ),
+      );
       render(<ContractPauseSwitch isLoading />);
 
       const loading = screen.getByTestId("contract-pause-loading");
@@ -314,6 +310,7 @@ describe("contract_pause_switch module", () => {
           screen.getByTestId("contract-pause-toggle"),
         ).toHaveAttribute("aria-checked", "true");
       });
+      vi.unstubAllGlobals();
     });
 
     it("renders the toggle in the frozen state and reports the next state", () => {
@@ -435,7 +432,7 @@ describe("contract_pause_switch module", () => {
       // The URL must include the backend host and the is_paused query method.
       expect(calledUrl).toContain("/api/jobs/query");
       expect(calledUrl).toContain("method=is_paused");
-      expect(result.paused).toBe(false);
+      expect(result?.paused).toBe(false);
     });
 
     it("uses the apiUrl override when provided", async () => {
@@ -453,7 +450,7 @@ describe("contract_pause_switch module", () => {
       expect((fetchMock.mock.calls as unknown[][])[0][0]).toBe(customUrl);
     });
 
-    it("falls back to mock when the backend returns a valid envelope with incomplete data", async () => {
+    it("returns null (no mock fallback) for a valid envelope with incomplete data (#629)", async () => {
       vi.stubGlobal(
         "fetch",
         vi.fn(() =>
@@ -466,7 +463,7 @@ describe("contract_pause_switch module", () => {
       );
 
       const result = await fetchContractPauseState();
-      expect(result).toEqual(MOCK_CONTRACT_PAUSE_STATE);
+      expect(result).toBeNull();
     });
   });
 
@@ -656,6 +653,83 @@ describe("contract_pause_switch module", () => {
       expect(contractPauseSuccessToast(true).message).not.toBe(
         contractPauseSuccessToast(false).message,
       );
+    });
+  });
+
+  // =========================================================================
+  // #629 — no mock fallback in production: error state + disabled toggle
+  // =========================================================================
+
+  describe("#629 — backend failure renders an error state and disables the toggle", () => {
+    beforeEach(() => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockRejectedValue(new Error("network down")),
+      );
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("renders an explicit error and disables the toggle when the read fails", async () => {
+      render(<ContractPauseSwitch />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("contract-pause-error")).toBeInTheDocument();
+      });
+      expect(
+        screen.getByText(/Couldn't read pause status/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/toggle is disabled/i)).toBeInTheDocument();
+
+      const toggle = screen.getByTestId("contract-pause-toggle");
+      expect(toggle).toBeDisabled();
+      expect(toggle).toHaveClass("cursor-not-allowed");
+      expect(toggle).toHaveClass("opacity-50");
+    });
+
+    it("does not fabricate a contract ID, state, or transition log on failure", async () => {
+      render(<ContractPauseSwitch />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("contract-pause-error")).toBeInTheDocument();
+      });
+      // The mock contract ID must never leak into the UI on a failed read.
+      expect(
+        screen.queryByText(/CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH/),
+      ).not.toBeInTheDocument();
+    });
+
+    it("re-enables after a successful re-read", async () => {
+      let callCount = 0;
+      const fetchMock = vi.fn().mockImplementation(() => {
+        callCount += 1;
+        if (callCount === 1) {
+          return Promise.reject(new Error("network down"));
+        }
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            success: true,
+            data: { ...MOCK_CONTRACT_PAUSE_STATE, paused: false },
+          }),
+        });
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const { unmount } = render(<ContractPauseSwitch />);
+      await waitFor(() => {
+        expect(screen.getByTestId("contract-pause-error")).toBeInTheDocument();
+      });
+
+      // Re-mount to trigger a fresh read.
+      unmount();
+      render(<ContractPauseSwitch />);
+      await waitFor(() => {
+        expect(screen.queryByTestId("contract-pause-error")).not.toBeInTheDocument();
+      });
+      expect(screen.getByTestId("contract-pause-toggle")).not.toBeDisabled();
     });
   });
 });

@@ -3,6 +3,7 @@ import { isMilestoneCapReached, milestoneLimitHint } from "../lib/milestone_limi
 import { validateMilestoneAmount } from "../lib/milestone_amount_validation";
 import { getDefaultArbiter } from "../lib/default_arbiter";
 import { useEffect, useRef, useState } from "react";
+import { useToast } from "@/app/context/ToastContext";
 import { useWallet } from "@/app/context/WalletContext";
 import Navbar from "@/app/components/Navbar";
 import ButtonSpinner from "@/app/components/ButtonSpinner";
@@ -73,6 +74,7 @@ function EmptyCollectionState({
 
 export default function CreateJob() {
   const { address, signTransaction } = useWallet();
+  const { showToast } = useToast();
   const router = useRouter();
   const [activeSection, setActiveSection] = useState<WizardSection>("details");
   const [freelancer, setFreelancer] = useState("");
@@ -493,8 +495,7 @@ export default function CreateJob() {
       setPhase("success");
       clearCreateJobDraft(address);
       setTxHash(txHash);
-      alert("Job created successfully!");
-      router.push("/dashboard");
+      showToast("Job created successfully!", "success");
     } catch (err: unknown) {
       setPhase("error");
       setError(formatTxError(err));

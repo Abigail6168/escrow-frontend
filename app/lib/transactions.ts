@@ -12,11 +12,7 @@ export type ContractArg = { type: string; value: unknown };
 
 export type TxPhase = "idle" | "building" | "signing" | "submitting" | "success" | "error";
 
-// =============================================================================
-// Transaction signature time limit bounds (#214)
-// =============================================================================
-
-/** Default bound for contract transaction signature requests. */
+/** Default bound used by {@link signTxWithTimeout}. */
 export const DEFAULT_SIGNING_TIMEOUT_MS = 60_000;
 
 /**
@@ -31,7 +27,9 @@ export interface TxSignRequest {
 
 /**
  * Thrown by {@link signTxWithTimeout} when no signature is received within
- * the configured time limit.
+ * the configured time limit. Kept for backwards compatibility with callers
+ * that import it directly; the single source of truth for the timeout is
+ * `WalletSignatureTimeoutError` in `app/lib/wallet_state_context.ts`.
  */
 export class TxSignatureTimeoutError extends Error {
   constructor(timeoutMs: number) {
@@ -54,6 +52,9 @@ export function clearTxSensitiveMemory(request: TxSignRequest): TxSignRequest {
  * On timeout the operation is aborted and any sensitive payload memory is
  * cleared. Matches the setTimeout + Promise.race pattern used by all other
  * connector helpers in this codebase.
+ *
+ * Not used on the contract signing path: `submitContractTransaction` relies on
+ * the single timeout in `WalletContext.signTransaction` (#628).
  */
 export async function signTxWithTimeout<T>(
   request: TxSignRequest,
@@ -117,15 +118,12 @@ export async function submitContractTransaction({
   sourceAddress,
   signTransaction,
   onPhase,
-  signingTimeoutMs = DEFAULT_SIGNING_TIMEOUT_MS,
 }: {
   method: string;
   args: ContractArg[];
   sourceAddress: string;
   signTransaction: (xdr: string) => Promise<string>;
   onPhase?: (phase: TxPhase) => void;
-  /** Maximum milliseconds to wait for a wallet signature before aborting. */
-  signingTimeoutMs?: number;
 }): Promise<string> {
   onPhase?.("building");
 
@@ -152,12 +150,13 @@ export async function submitContractTransaction({
 
   onPhase?.("signing");
 
+  // The wallet context owns the signature timeout (#628): it derives the
+  // bound from the transaction's maxTime, clears sensitive memory, and sets
+  // `signatureTimeoutError` for the SignatureTimeoutAlert. We hand the XDR
+  // straight to it and let it raise WalletSignatureTimeoutError on timeout.
   const signRequest: TxSignRequest = { xdr };
-  const signedXdr = await signTxWithTimeout(
-    signRequest,
-    signTransaction,
-    signingTimeoutMs
-  );
+  const signedXdr = await signTransaction(signRequest.xdr);
+  clearTxSensitiveMemory(signRequest);
 
   if (!signedXdr) {
     throw new WalletRejectedError();

@@ -629,6 +629,13 @@ export function clearWalletSensitiveMemory(
  * Races an active wallet context signature operation against a timeout
  * clock. On timeout the operation is aborted and any sensitive payload
  * memory is cleared.
+ *
+ * The timeout is derived from the transaction's own `maxTime` when one is
+ * supplied (#628). A transaction whose envelope advertises no maxTime falls
+ * back to `DEFAULT_WALLET_SIGNATURE_TIMEOUT_MS`; an unparseable XDR falls
+ * back to the same default rather than hanging indefinitely. This keeps a
+ * single timeout implementation — the one in WalletContext — and lets
+ * `submitContractTransaction` rely on it.
  */
 export async function signWalletWithTimeout<T>(
   request: WalletSignRequest,
@@ -657,6 +664,31 @@ export async function signWalletWithTimeout<T>(
     throw err;
   } finally {
     if (timer !== undefined) clearTimeout(timer);
+  }
+}
+
+/**
+ * Seconds left before the transaction's `timeBounds.maxTime` (#628), read from
+ * a base64 envelope XDR. Returns `null` when the envelope can't be parsed, has
+ * no upper bound (maxTime 0), or has already expired, so callers fall back to
+ * the default bound instead of guessing.
+ */
+export function readTransactionMaxTimeSecs(
+  xdr: string,
+  nowMs: number = Date.now()
+): number | null {
+  if (typeof xdr !== "string" || xdr.length === 0) return null;
+
+  try {
+    // maxTime is network-independent, so any passphrase parses the envelope.
+    const parsed = TransactionBuilder.fromXDR(xdr, "Test SDF Network ; September 2015");
+    const tx = "innerTransaction" in parsed ? parsed.innerTransaction : parsed;
+    const maxTime = Number(tx.timeBounds?.maxTime ?? 0);
+    if (!Number.isFinite(maxTime) || maxTime <= 0) return null;
+    const remaining = Math.floor(maxTime - nowMs / 1000);
+    return remaining > 0 ? remaining : null;
+  } catch {
+    return null;
   }
 }
 

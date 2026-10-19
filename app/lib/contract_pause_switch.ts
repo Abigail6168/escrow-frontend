@@ -297,9 +297,11 @@ export interface ContractPauseState {
 /**
  * Mock freeze state used as the fallback for backend queries.
  *
- * Frozen rather than active: it is the state an operator needs to be able to
- * read at a glance, and it is the one worth asserting in tests, since a
- * mislabelled toggle is the failure this panel exists to prevent.
+ * #629: this symbol is no longer reachable from any page module. It lives in
+ * this file purely so the test suite can import it from one place; production
+ * code must not touch it. `fetchContractPauseState` now returns `null` on
+ * failure and the component renders an explicit error state instead of
+ * fabricating a live status.
  */
 export const MOCK_CONTRACT_PAUSE_STATE: ContractPauseState = {
   contractId: "CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH",
@@ -321,6 +323,8 @@ export interface ContractPauseTransition {
 /**
  * Mock transition log backing the freeze history readout, so the panel renders
  * a real history instead of an empty shell when the backend is unreachable.
+ *
+ * #629: test-only; not imported by any page module.
  */
 export const MOCK_CONTRACT_PAUSE_TRANSITIONS: ContractPauseTransition[] = [
   {
@@ -398,9 +402,15 @@ export function getContractPauseReadouts(state: ContractPauseState): {
  * Queries the emergency freeze state for a contract.
  *
  * Pulls from the backend when an endpoint is reachable and the payload carries
- * every field the panel reads; otherwise falls back to
- * `MOCK_CONTRACT_PAUSE_STATE` so the toggle still renders in a test
- * environment with no network.
+ * every field the panel reads; otherwise returns `null` so the caller can
+ * render an explicit error state.
+ *
+ * #629: the previous implementation fell back to `MOCK_CONTRACT_PAUSE_STATE`
+ * on any failure, which meant an admin in production would see a fabricated
+ * "live" or "frozen" status, a fabricated transition log, and a fabricated
+ * contract ID whenever the backend was unreachable. That is removed: the
+ * mock is now a test fixture only, and the component renders an error state
+ * and disables the toggle when the read fails.
  *
  * Defaults to `BACKEND_URL` + the configured `CONTRACT_ID` so the panel in
  * production hits the same backend all other queries use.
@@ -408,8 +418,8 @@ export function getContractPauseReadouts(state: ContractPauseState): {
 export async function fetchContractPauseState(options?: {
   apiUrl?: string;
   signal?: AbortSignal;
-}): Promise<ContractPauseState> {
-  const contractId = CONTRACT_ID || MOCK_CONTRACT_PAUSE_STATE.contractId;
+}): Promise<ContractPauseState | null> {
+  const contractId = CONTRACT_ID || "";
   const url =
     options?.apiUrl ??
     `${BACKEND_URL}/api/jobs/query?contractId=${encodeURIComponent(contractId)}&method=is_paused`;
@@ -432,14 +442,21 @@ export async function fetchContractPauseState(options?: {
         return payload;
       }
       console.warn(
-        `${LOG_PREFIX} pause state response missing fields, using mock state`,
+        `${LOG_PREFIX} pause state response missing fields, returning null`
+      );
+    } else {
+      console.warn(
+        `${LOG_PREFIX} pause state request failed with status ${res.status}, returning null`
       );
     }
-  } catch {
-    // Network or server error - fall through to the mock state.
+  } catch (err) {
+    console.warn(
+      `${LOG_PREFIX} pause state request threw, returning null`,
+      err
+    );
   }
 
-  return { ...MOCK_CONTRACT_PAUSE_STATE };
+  return null;
 }
 
 // =============================================================
