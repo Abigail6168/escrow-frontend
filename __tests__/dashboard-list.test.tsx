@@ -195,8 +195,8 @@ describe("Dashboard — jobs list (dashboard_list) rendering", () => {
 
       await waitFor(() => {
         const alert = screen.getByTestId("dashboard-error-alert");
-        expect(alert).toHaveAttribute("role", "alert");
-        expect(alert).toHaveAttribute("aria-live", "assertive");
+        expect(alert).toHaveAttribute("role", "region");
+        expect(alert).toHaveAttribute("aria-label", "Error loading jobs");
       });
     });
   });
