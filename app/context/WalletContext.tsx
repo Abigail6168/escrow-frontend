@@ -35,6 +35,7 @@ import {
   type WalletMultiSigAssemblyResult,
   type WalletMultiSigSplit,
   WalletSignatureTimeoutError,
+  readTransactionMaxTimeSecs,
 } from "@/app/lib/wallet_state_context";
 import { walletStateStore } from "@/app/lib/wallet_state_store";
 import { WalletRejectedError, isWalletRejectedError } from "@/app/lib/errors";
@@ -408,13 +409,25 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         ensureKitInitialized();
         StellarWalletsKit.setWallet(selectedWalletId);
 
+        // Single timeout source (#628): derive the bound from the
+        // transaction's own maxTime when it advertises one, falling back to
+        // the default bound. The wallet context owns the timeout, the
+        // sensitive-memory cleanup, and the `signatureTimeoutError` alert
+        // state — `submitContractTransaction` no longer wraps the call.
+        const maxTimeSecs = readTransactionMaxTimeSecs(xdr);
+        const timeoutMs =
+          maxTimeSecs !== null
+            ? Math.min(maxTimeSecs * 1000, DEFAULT_WALLET_SIGNATURE_TIMEOUT_MS)
+            : DEFAULT_WALLET_SIGNATURE_TIMEOUT_MS;
+
         const result = await signWalletWithTimeout(
           { xdr },
           async (transactionXdr) =>
             (await StellarWalletsKit.signTransaction(transactionXdr, {
               address,
               networkPassphrase: NETWORK_PASSPHRASE,
-            })) as KitSignResult
+            })) as KitSignResult,
+          timeoutMs
         );
 
         return result.signedTxXdr ?? "";

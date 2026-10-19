@@ -54,15 +54,19 @@ export default function ContractPauseSwitch({
   const [state, setState] = useState<ContractPauseState | null>(
     initialState ?? null,
   );
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(!initialState);
   const [, startTransition] = useTransition();
 
-  // Resolve the freeze state from the backend, falling back to the mock
-  // snapshot when it is unreachable (Issue #479).
+  // Resolve the freeze state from the backend. #629: no mock fallback —
+  // a failed read sets `error` and the panel renders an explicit error
+  // state with the toggle disabled, so an admin never acts on fabricated
+  // data.
   useEffect(() => {
     if (initialState) {
       startTransition(() => {
         setState(initialState);
+        setError(null);
         setLoading(false);
       });
       return;
@@ -76,13 +80,19 @@ export default function ContractPauseSwitch({
       .then((data) => {
         if (!isMounted) return;
         startTransition(() => {
-          setState(data);
+          if (data) {
+            setState(data);
+            setError(null);
+          } else {
+            setState(null);
+            setError("Couldn't read pause status.");
+          }
           setLoading(false);
         });
       })
       .catch(() => {
-        // `fetchContractPauseState` already falls back to the mock snapshot, so
-        // a rejection here means the abort signal fired on unmount.
+        // `fetchContractPauseState` already returns null on failure, so a
+        // rejection here means the abort signal fired on unmount.
         if (isMounted) setLoading(false);
       });
 
@@ -102,7 +112,7 @@ export default function ContractPauseSwitch({
   const badge = getContractPauseBadge(isPaused, isPending);
 
   const handleToggle = () => {
-    if (disabled || isPending) return;
+    if (disabled || isPending || error) return;
     onToggle?.(!isPaused);
   };
 
@@ -112,7 +122,7 @@ export default function ContractPauseSwitch({
     isPaused
       ? "border-danger bg-danger text-white hover:bg-danger-soft"
       : "border-border-subtle bg-surface-field text-text-primary hover:bg-border-strong",
-    disabled || isPending ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+    disabled || isPending || error ? "cursor-not-allowed opacity-50" : "cursor-pointer",
   ].join(" ");
 
   return (
@@ -161,6 +171,18 @@ export default function ContractPauseSwitch({
               aria-hidden="true"
             />
           </>
+        ) : error ? (
+          <div
+            className={`${CONTRACT_PAUSE_GRID_CLASSES.statusCell} sm:col-span-2 lg:col-span-3`}
+            data-testid="contract-pause-error"
+          >
+            <span className={CONTRACT_PAUSE_GRID_CLASSES.statusLabel}>
+              Pause Status
+            </span>
+            <span className="text-danger text-sm">
+              {error} The toggle is disabled until the read succeeds.
+            </span>
+          </div>
         ) : (
           <>
             <div
@@ -233,8 +255,8 @@ export default function ContractPauseSwitch({
           </p>
           <p className={CONTRACT_PAUSE_GRID_CLASSES.toggleCaptionBody}>
             {isPaused
-              ? "Deposits and releases are paused until an admin lifts the freeze."
-              : "Turning this on halts all escrow movement immediately."}
+              ? "The admin freeze flag is set; the toggle below lifts it."
+              : "Turning this on sets the admin freeze flag on-chain."}
           </p>
         </div>
 
@@ -244,7 +266,7 @@ export default function ContractPauseSwitch({
           aria-checked={isPaused}
           aria-label="Emergency freeze"
           onClick={handleToggle}
-          disabled={disabled || isPending}
+          disabled={disabled || isPending || !!error}
           className={toggleClasses}
           data-testid="contract-pause-toggle"
         >

@@ -629,6 +629,13 @@ export function clearWalletSensitiveMemory(
  * Races an active wallet context signature operation against a timeout
  * clock. On timeout the operation is aborted and any sensitive payload
  * memory is cleared.
+ *
+ * The timeout is derived from the transaction's own `maxTime` when one is
+ * supplied (#628). A transaction whose envelope advertises no maxTime falls
+ * back to `DEFAULT_WALLET_SIGNATURE_TIMEOUT_MS`; an unparseable XDR falls
+ * back to the same default rather than hanging indefinitely. This keeps a
+ * single timeout implementation — the one in WalletContext — and lets
+ * `submitContractTransaction` rely on it.
  */
 export async function signWalletWithTimeout<T>(
   request: WalletSignRequest,
@@ -657,6 +664,36 @@ export async function signWalletWithTimeout<T>(
     throw err;
   } finally {
     if (timer !== undefined) clearTimeout(timer);
+  }
+}
+
+/**
+ * Best-effort extraction of `maxTime` (seconds) from a base64-encoded
+ * transaction envelope XDR. Returns `null` when the value cannot be read,
+ * so callers can fall back to the default bound instead of guessing.
+ *
+ * The Stellar SDK's `TransactionBuilder` is used when available; if the
+ * import is missing at runtime we bail out to `null` rather than throw,
+ * keeping the signing path robust.
+ */
+export function readTransactionMaxTimeSecs(xdr: string): number | null {
+  if (typeof xdr !== "string" || xdr.length === 0) return null;
+
+  try {
+    // Lazy import — the SDK is a dependency, but we don't want a hard
+    // coupling at module load time for the test harness.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { TransactionBuilder } = require("@stellar/stellar-sdk") as {
+      TransactionBuilder: { fromXdr: (xdr: string, networkPassphrase: string) => { timeout: () => number } };
+    };
+
+    // `fromXdr` requires a network passphrase; the timeout field is
+    // network-independent, so an arbitrary passphrase is fine here.
+    const tx = TransactionBuilder.fromXdr(xdr, "Test SDF Future Network 2025");
+    const timeout = tx.timeout();
+    return Number.isFinite(timeout) && timeout > 0 ? timeout : null;
+  } catch {
+    return null;
   }
 }
 

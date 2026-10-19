@@ -4,6 +4,7 @@ import CreateJob from "@/app/create/page";
 
 const mockPush = vi.fn();
 const mockUseWallet = vi.fn();
+const mockShowToast = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -15,6 +16,10 @@ vi.mock("@/app/components/Navbar", () => ({
 
 vi.mock("@/app/context/WalletContext", () => ({
   useWallet: () => mockUseWallet(),
+}));
+
+vi.mock("@/app/context/ToastContext", () => ({
+  useToast: () => ({ showToast: mockShowToast }),
 }));
 
 describe("Create page", () => {
@@ -131,5 +136,37 @@ describe("Create page", () => {
     fireEvent.click(screen.getByTestId("agreement-checkbox"));
 
     expect(screen.getByRole("button", { name: "Create Job" })).not.toBeDisabled();
+  });
+
+  it("renders the success screen after a confirmed create and surfaces a toast instead of alert()", () => {
+    const signTransaction = vi.fn().mockResolvedValue("ABC123TXHASH");
+    mockUseWallet.mockReturnValue({
+      address: "GCLIENTADDRESS",
+      signTransaction,
+    });
+
+    render(<CreateJob />);
+
+    fireEvent.change(screen.getByLabelText("Freelancer Address"), {
+      target: { value: "G" + "F".repeat(55) },
+    });
+    fireEvent.change(screen.getByLabelText("Arbiter Address"), {
+      target: { value: "G" + "B".repeat(55) },
+    });
+    fireEvent.change(screen.getByLabelText("Milestone 1 amount in stroops"), {
+      target: { value: "100" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Create Job" }));
+
+    expect(screen.getByText("Job Created!")).toBeInTheDocument();
+    expect(screen.getByText("View transaction on Stellar Expert →")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /View transaction on Stellar Expert/ })).toHaveAttribute(
+      "href",
+      "https://stellar.expert/explorer/testnet/tx/ABC123TXHASH"
+    );
+    expect(screen.getByRole("button", { name: "Go to Dashboard" })).toBeInTheDocument();
+    expect(mockShowToast).toHaveBeenCalledWith("Job created successfully!", "success");
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });
