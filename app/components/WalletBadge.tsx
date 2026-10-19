@@ -362,7 +362,6 @@ export default function WalletBadge({
       data-empty-state={isEmptyState ? "true" : undefined}
       role="status"
       aria-label={ariaLabel}
-      aria-invalid={errorText ? "true" : undefined}
       onClick={onClick}
       className={`inline-flex items-center gap-2 rounded-full border border-gray-800 bg-gray-900/90 px-3 py-1 text-sm font-mono text-gray-200 shadow-sm transition-all duration-150 hover:border-gray-700 ${
         onClick ? "cursor-pointer hover:bg-gray-800/80" : ""

@@ -271,7 +271,7 @@ describe("LoadingSkeleton — accessibility and structural invariants", () => {
   });
 
   it("the single aria-hidden container wraps all skeleton content", () => {
-    const { container } = render(<LoadingSkeleton />);
+    render(<LoadingSkeleton />);
     const statusEl = screen.getByRole("status");
     const hiddenCard = statusEl.querySelector('[aria-hidden="true"]');
     expect(hiddenCard).toBeInTheDocument();

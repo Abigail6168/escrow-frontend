@@ -1,8 +1,6 @@
 # escrow-frontend/Dockerfile
 #
-# Requires output: "export" in next.config.ts (see DECISIONS.md).
-# If the export attempt fails, use Dockerfile.node instead — same build
-# stage, Node runtime rather than nginx.
+# Requires output: "export" in next.config.ts.
 
 # ---- build ----
 # Node 24 to match the frontend's existing CI (backend is on 20; the

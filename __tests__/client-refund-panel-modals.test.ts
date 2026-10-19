@@ -31,9 +31,9 @@ describe("refund double-confirm modal", () => {
   });
 
   it("cancel resets from any step", () => {
-    let s = openRefundConfirm();
+    const s = openRefundConfirm();
     expect(cancelRefundConfirm().step).toBe("closed");
-    s = confirmRefundStep(s).state; // now "final"
+    confirmRefundStep(s); // now "final"
     expect(cancelRefundConfirm().step).toBe("closed");
   });
 

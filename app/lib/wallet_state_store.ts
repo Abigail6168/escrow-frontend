@@ -59,8 +59,6 @@ function getStorageAdapter(): Storage | null {
   return getSafeStorage();
 }
 
-const LOG_PREFIX = "[wallet_state_store]";
-
 export class WalletStateStore {
   private activeState: WalletActiveState | null = null;
   private storage: Storage | null;

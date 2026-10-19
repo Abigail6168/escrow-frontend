@@ -133,7 +133,7 @@ When you add fixtures, match real backend response shapes rather than inventing 
 
 ## Pull request checklist
 
-- [ ] `npm run lint` passes without adding new warnings
+- [ ] `npm run lint` completes with zero warnings
 - [ ] `npm run type-check` passes
 - [ ] `npm test` passes
 - [ ] `npm run check-test-locations` passes
