@@ -9,7 +9,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, within, waitFor } from "@testing-library/react";
-import Navbar from "../Navbar";
+import Navbar from "@/app/components/Navbar";
 
 const connect = vi.fn();
 const disconnect = vi.fn();
