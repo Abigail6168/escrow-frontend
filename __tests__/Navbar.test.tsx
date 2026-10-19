@@ -80,6 +80,7 @@ describe("Navbar owns the bell and the wallet controls", () => {
       "wallet-selector-option-albedo",
       "wallet-selector-option-xbull",
       "wallet-selector-option-hana",
+      "wallet-selector-option-lobstr",
     ]);
     expect(connect).not.toHaveBeenCalled();
   });
