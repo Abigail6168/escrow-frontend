@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
+import { useState } from "react";\nimport { useDialogFocus } from "@/app/hooks/useDialogFocus";
 import {
   getConfirmCopy,
   type WhitelistAction,
@@ -92,3 +92,5 @@ function ConfirmBody({
     </div>
   );
 }
+
+
