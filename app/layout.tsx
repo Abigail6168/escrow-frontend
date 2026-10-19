@@ -10,7 +10,6 @@ import "./globals.css";
 import { WalletProvider } from "./context/WalletContext";
 import { ToastProvider } from "./context/ToastContext";
 import Toast from "./components/Toast";
-import LedgerLoaderOverlay from "./components/LedgerLoaderOverlay";
 import WalletLoaderOverlay from "./components/WalletLoaderOverlay";
 import GasEstimationWarningBanner from "./components/GasEstimationWarningBanner";
 import SignatureTimeoutAlert from "./components/SignatureTimeoutAlert";
@@ -87,7 +86,6 @@ export default function RootLayout({
             <SignatureTimeoutAlert />
             {children}
             <Toast />
-            <LedgerLoaderOverlay />
             <WalletLoaderOverlay />
           </WalletProvider>
         </ToastProvider>

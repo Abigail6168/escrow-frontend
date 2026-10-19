@@ -36,8 +36,8 @@ export default function Navbar() {
       )}
       {/*
        * `relative z-10` establishes a stacking context so the nav sits above
-       * non-overlay page content on mobile. Full-screen overlays (LedgerLoaderOverlay,
-       * WalletLoaderOverlay) intentionally use z-50 and will still cover the nav
+       * non-overlay page content on mobile. The full-screen WalletLoaderOverlay
+       * intentionally uses z-50 and will still cover the nav
        * correctly during wallet operations.
        */}
       <nav
