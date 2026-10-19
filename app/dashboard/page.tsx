@@ -100,7 +100,7 @@ const roleFilterLabels: Array<{ id: RoleFilter; label: string }> = [
 ];
 
 export default function Dashboard() {
-  const { address, signTransaction, connect, isConnecting } = useWallet();
+  const { address, signTransaction, connect, isConnecting, registerPendingAction } = useWallet();
   const { showToast } = useToast();
   const [fetchLoading, setFetchLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -360,6 +360,10 @@ export default function Dashboard() {
     async (actionKey: string, method: string, args: { type: string; value: unknown }[]) => {
       if (!address) return null;
 
+      // Stage the action so the global signature-timeout alert can rebuild
+      // and re-sign it with a fresh XDR (#676).
+      registerPendingAction({ method, args, sourceAddress: address });
+
       const txHash = await runContractAction(
         actionKey,
         (onPhase) =>
@@ -385,6 +389,7 @@ export default function Dashboard() {
     [
       address,
       signTransaction,
+      registerPendingAction,
       isPending,
       setPhase,
       setActionError,
@@ -419,7 +424,12 @@ export default function Dashboard() {
   };
 
   const handleApprove = async (i: number) => {
-    showToast(`Approve milestone ${i + 1} (wired to contract soon)`, "info");
+    if (!address) return;
+
+    await executeTx(`approve-${i}`, "approve_milestone", [
+      { type: "address", value: address },
+      { type: "u32", value: i.toString() },
+    ]);
   };
 
   const handleDispute = (i: number) => {
@@ -696,6 +706,7 @@ export default function Dashboard() {
                                         isArbiter={isArbiter}
                                         amountDecimals={expandedJob.tokenDecimals ?? 7}
                                         amountSymbol={expandedJob.tokenSymbol ?? "XLM"}
+                                        freelancerAddress={expandedJob.freelancer}
                                         resolveDisputeState={getState(`resolve-${m.index}`)}
                                         isResolveDisputePending={isPending(`resolve-${m.index}`)}
                                         onResolveDispute={handleResolveDispute}
