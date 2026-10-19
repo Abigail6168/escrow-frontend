@@ -14,9 +14,23 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   test: {
-    environment: "jsdom",
+    // Default to the lightweight Node environment so pure-TS helper tests
+    // (app/lib/* mapping, sanitize, badges, export, toasts, etc.) skip jsdom
+    // startup entirely. Component / rendering tests opt in below.
+    environment: "node",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
+    // Apply jsdom only to files that actually render React components or
+    // interact with the DOM / browser APIs.
+    environmentMatchGlobs: [
+      // All .tsx test files use React Testing Library and need jsdom.
+      ["**/*.test.tsx", "jsdom"],
+      // Component-level __tests__ subdirectories.
+      ["app/components/__tests__/**", "jsdom"],
+      // Any test file that explicitly opts in via the inline docblock comment
+      // (e.g. // @vitest-environment jsdom) is handled automatically by Vitest
+      // — no glob entry needed for those.
+    ],
     server: {
       deps: {
         // `@stellar/freighter-api` ships CommonJS (main: build/index.min.js,

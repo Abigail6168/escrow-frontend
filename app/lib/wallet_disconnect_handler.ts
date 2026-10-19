@@ -11,6 +11,8 @@
  * and `app/lib/wallet_state_context.ts`.
  */
 
+import { getSafeStorage } from "@/app/lib/safe_storage";
+
 const LOG_PREFIX = "[wallet_disconnect_handler]";
 
 export const DEFAULT_WALLET_DISCONNECT_TIMEOUT_MS = 60_000;
@@ -246,15 +248,7 @@ function isValidSerializedPayload(
 }
 
 function getStorageAdapter(): Storage | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const testKey = "__wallet_disconnect_storage_test__";
-    window.localStorage.setItem(testKey, "1");
-    window.localStorage.removeItem(testKey);
-    return window.localStorage;
-  } catch {
-    return null;
-  }
+  return getSafeStorage();
 }
 
 export class WalletActiveKeysStore {

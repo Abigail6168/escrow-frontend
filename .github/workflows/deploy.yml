@@ -4,12 +4,15 @@
 # passed as build args — they're inlined into the bundle, so the image is
 # environment-specific and a contract change requires a rebuild.
 #
-# Keep the existing ci.yml as-is. This runs alongside it, not instead.
+# Triggered only after the CI workflow completes successfully on main, so a
+# failing test or build never ships to production.
 
 name: Deploy frontend to AWS
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
     inputs:
@@ -32,11 +35,19 @@ concurrency:
 
 jobs:
   build:
+    # For workflow_run triggers, skip if CI did not succeed.
+    # workflow_dispatch bypasses this gate (manual redeploy).
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.meta.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Pin to the exact commit that CI passed, not whatever HEAD is now.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - id: meta
         run: echo "tag=${GITHUB_SHA::12}-${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
