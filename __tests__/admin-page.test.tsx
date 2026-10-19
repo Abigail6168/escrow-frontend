@@ -210,9 +210,9 @@ describe("AdminPage", () => {
         vi.fn().mockImplementation(async (url: string) => ({
           ok: true,
           json: async () =>
-            url.endsWith("/api/jobs/query")
-              ? { success: true, data: { funded } }
-              : { success: true, data: ["CTOKEN1"] },
+            url.includes("/whitelist")
+              ? { success: true, data: ["CTOKEN1"] }
+              : { success: true, data: { funded } },
         }))
       );
     }

@@ -5,7 +5,7 @@ import {
   getConfirmCopy,
   type WhitelistAction,
 } from "@/app/lib/admin_whitelist_panel";
-import { CONTRACT_ID, NETWORK_PASSPHRASE } from "@/app/lib/contract";
+import { CONTRACT_ID, NETWORK_PASSPHRASE } from "@/app/lib/config";
 import { networkLabel, truncateContractId } from "@/app/lib/network";
 
 export interface WhitelistConfirmModalProps {

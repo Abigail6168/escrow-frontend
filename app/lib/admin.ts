@@ -83,28 +83,24 @@ export async function isAdmin(
 }
 
 /**
- * Query whether the configured escrow's job has been funded.
- *
- * The contract only allows whitelist changes before funding (it returns
- * `AlreadyFunded` afterwards), so the admin page uses this to disable the
- * whitelist actions. Returns null when the state cannot be determined.
+ * Whether the escrow is funded, read from the backend's job route
+ * (`GET /api/jobs/:contractId`, whose `data` is the decoded `get_job` result).
+ * Returns null when it can't be determined, so callers can show "unknown"
+ * instead of guessing (#659).
  */
 export async function fetchEscrowFunded(
   contractId: string,
   options?: { signal?: AbortSignal }
 ): Promise<boolean | null> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/jobs/query`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contractId, method: "get_job", args: [] }),
+    const res = await fetch(`${BACKEND_URL}/api/jobs/${encodeURIComponent(contractId)}`, {
       signal: options?.signal,
     });
     if (!res.ok) return null;
 
-    const data = await res.json();
-    const job = data?.success ? data.data : (data?.result ?? data);
-    return typeof job?.funded === "boolean" ? job.funded : null;
+    const body = await res.json();
+    const funded = body?.success ? body.data?.funded : undefined;
+    return typeof funded === "boolean" ? funded : null;
   } catch {
     return null;
   }

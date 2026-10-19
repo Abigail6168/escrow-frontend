@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CONTRACT_ID, NETWORK_PASSPHRASE } from "@/app/lib/contract";
+import { CONTRACT_ID, NETWORK_PASSPHRASE } from "@/app/lib/config";
 import {
   networkKind,
   networkLabel,
