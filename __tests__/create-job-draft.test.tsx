@@ -105,6 +105,7 @@ describe("Create job draft persistence", () => {
     await waitFor(() => expect(window.sessionStorage.getItem(DRAFT_KEY)).not.toBeNull());
 
     await act(async () => {
+      fireEvent.click(screen.getByTestId("agreement-checkbox"));
       fireEvent.click(screen.getByRole("button", { name: "Create Job" }));
     });
 
