@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 // Native Vite tsconfig-path resolution. The 40+ test files in __tests__/
@@ -31,6 +31,8 @@ export default defineConfig({
         test: { name: "node", include: ["__tests__/**/*.test.ts"], environment: "node" },
       },
     ],
+    // Playwright smoke tests live in e2e/ and run against the built site.
+    exclude: [...configDefaults.exclude, "e2e/**"],
     server: {
       deps: {
         // `@stellar/freighter-api` ships CommonJS (main: build/index.min.js,

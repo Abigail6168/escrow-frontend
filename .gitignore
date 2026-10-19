@@ -67,3 +67,12 @@ skills-lock.json
 
 # OS
 Thumbs.db
+
+# Logs
+*.log
+issues.md
+e2e/.nginx.generated.conf
+
+# playwright
+/test-results/
+/playwright-report/
