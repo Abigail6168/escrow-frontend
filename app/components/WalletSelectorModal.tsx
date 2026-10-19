@@ -3,17 +3,15 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   checkFreighterAvailability,
+  checkSimulationFeeWarning,
   FREIGHTER_INSTALL_URL,
   isFreighterUserRejected,
-} from "@/app/lib/freighter_connector";
+  type WalletSimulationResult,
+} from "@/app/lib/wallet_session";
 import {
   isWalletRejectedError,
 } from "@/app/lib/errors";
 import { useToast } from "@/app/context/ToastContext";
-import {
-  checkSimulationFeeWarning,
-  type LedgerSimulationResult,
-} from "@/app/lib/ledger_usb_bridge";
 import {
   SUPPORTED_WALLETS,
   type SupportedWalletId,
@@ -79,7 +77,7 @@ export interface WalletSelectorModalProps {
    * failure or an unusually high fee, the modal surfaces a warning banner so
    * the cost is visible before the wallet prompt opens.
    */
-  simulationResult?: LedgerSimulationResult | null;
+  simulationResult?: WalletSimulationResult | null;
   className?: string;
 }
 

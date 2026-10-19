@@ -11,21 +11,16 @@ import {
 } from "react";
 import { Networks, StellarWalletsKit } from "@creit.tech/stellar-wallets-kit";
 import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils";
-import {
-  WalletConnectModule,
-  WalletConnectTargetChain,
-  type TWalletConnectModuleParams,
-} from "@creit.tech/stellar-wallets-kit/modules/wallet-connect";
 import { NETWORK_PASSPHRASE } from "@/app/lib/config";
 import { assertWalletNetwork } from "@/app/lib/network";
 import { useToast } from "./ToastContext";
 import {
-  ledgerActiveAddresses,
   checkSimulationFeeWarning,
-  type LedgerSimulationResult,
-  type LedgerGasWarningState,
-} from "@/app/lib/ledger_usb_bridge";
-import { freighterActiveAddress, verifyAndRehydrateFreighterAddress } from "@/app/lib/freighter_connector";
+  freighterActiveAddress,
+  verifyAndRehydrateFreighterAddress,
+  type WalletSimulationResult,
+  type WalletGasWarningState,
+} from "@/app/lib/wallet_session";
 import {
   logWalletWarning,
   validateMultiSigAssembly,
@@ -94,11 +89,11 @@ interface WalletContextType {
   /** Rebuild the last pending transaction (fresh XDR) and request a signature again. */
   retryLastAction: () => Promise<string | null>;
   /** Current simulation result used to derive gas/fee warning state. */
-  simulationResult: LedgerSimulationResult | null;
+  simulationResult: WalletSimulationResult | null;
   /** Set after a Soroban simulation completes; triggers fee warning evaluation. */
-  setSimulationResult: (result: LedgerSimulationResult | null) => void;
+  setSimulationResult: (result: WalletSimulationResult | null) => void;
   /** Derived gas/fee warning state from the latest simulation result. */
-  gasWarning: LedgerGasWarningState | null;
+  gasWarning: WalletGasWarningState | null;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -158,11 +153,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [lastPendingAction, setLastPendingAction] =
     useState<PendingContractAction | null>(null);
   const [simulationResult, setSimulationResult] =
-    useState<LedgerSimulationResult | null>(null);
-  const initializedRef = useRef(false);
+    useState<WalletSimulationResult | null>(null);
+  const kitInitRef = useRef<Promise<void> | null>(null);
   const { showToast } = useToast();
 
-  const gasWarning: LedgerGasWarningState | null = simulationResult
+  const gasWarning: WalletGasWarningState | null = simulationResult
     ? checkSimulationFeeWarning(simulationResult)
     : null;
 
@@ -194,53 +189,52 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }, [selectedWalletId]);
 
-  const ensureKitInitialized = useCallback(() => {
-    if (initializedRef.current) return;
+  const ensureKitInitialized = useCallback((): Promise<void> => {
+    if (kitInitRef.current) return kitInitRef.current;
 
-    const allowedIds = new Set<string>(SUPPORTED_WALLETS.map((wallet) => wallet.id));
+    kitInitRef.current = (async () => {
+      const allowedIds = new Set<string>(SUPPORTED_WALLETS.map((wallet) => wallet.id));
 
-    // Build the WalletConnect module when a project ID is available.
-    // NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID must be set at build time.
-    const walletConnectProjectId =
-      process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "";
-
-    const wcModules = walletConnectProjectId
-      ? (() => {
-          const wcParams: TWalletConnectModuleParams = {
+      // WalletConnect pulls in a large SDK, so it is only downloaded when a
+      // project ID was set at build time (NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID).
+      const walletConnectProjectId =
+        process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "";
+      const wcModules = [];
+      if (walletConnectProjectId) {
+        const { WalletConnectModule, WalletConnectTargetChain } = await import(
+          "@creit.tech/stellar-wallets-kit/modules/wallet-connect"
+        );
+        wcModules.push(
+          new WalletConnectModule({
             projectId: walletConnectProjectId,
             metadata: {
               name: "Goldii Escrow",
               description: "Soroban milestone escrow on Stellar",
-              url: typeof window !== "undefined" ? window.location.origin : "https://goldii.app",
-              icons: [
-                typeof window !== "undefined"
-                  ? `${window.location.origin}/favicon.ico`
-                  : "https://goldii.app/favicon.ico",
-              ],
+              url: window.location.origin,
+              icons: [`${window.location.origin}/favicon.ico`],
             },
             allowedChains: [WalletConnectTargetChain.TESTNET],
-          };
-          return [new WalletConnectModule(wcParams)];
-        })()
-      : [];
+          })
+        );
+      }
 
-    // LobstrModule is included in defaultModules already; no extra config needed.
-    StellarWalletsKit.init({
-      modules: [
-        ...defaultModules({
-          filterBy: (module: { productId: string }) => allowedIds.has(module.productId),
-        }),
-        // Add WalletConnect separately (requires project ID configuration).
-        ...wcModules,
-      ],
-      network: Networks.TESTNET,
-      authModal: {
-        showInstallLabel: true,
-        hideUnsupportedWallets: false,
-      },
-    });
+      // LobstrModule is included in defaultModules already; no extra config needed.
+      StellarWalletsKit.init({
+        modules: [
+          ...defaultModules({
+            filterBy: (module: { productId: string }) => allowedIds.has(module.productId),
+          }),
+          ...wcModules,
+        ],
+        network: Networks.TESTNET,
+        authModal: {
+          showInstallLabel: true,
+          hideUnsupportedWallets: false,
+        },
+      });
+    })();
 
-    initializedRef.current = true;
+    return kitInitRef.current;
   }, []);
 
   const initialRehydrationDone = useRef(false);
@@ -256,11 +250,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     const walletId = persisted?.selectedWalletId ?? selectedWalletId;
 
-    ensureKitInitialized();
-
     let active = true;
 
     const rehydrate = async () => {
+      await ensureKitInitialized();
       if (walletId === "freighter") {
         try {
           const verifiedAddress = await verifyAndRehydrateFreighterAddress();
@@ -342,7 +335,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     walletTracker.track("connect", "connecting", "Opening wallet selector");
     try {
       await withWalletLoader(async () => {
-        ensureKitInitialized();
+        await ensureKitInitialized();
         StellarWalletsKit.setWallet(walletId);
 
         const result = (await StellarWalletsKit.authModal()) as { address?: string };
@@ -378,7 +371,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     });
     walletStateStore.clear();
     localStorage.removeItem(LEGACY_STORAGE_KEY);
-    ledgerActiveAddresses.clear();
     freighterActiveAddress.clear();
     clearAllWalletSessionStorage();
     setNetworkMismatchMessage(null);
@@ -393,7 +385,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     return withWalletLoader(async () => {
       try {
-        ensureKitInitialized();
+        await ensureKitInitialized();
         StellarWalletsKit.setWallet(selectedWalletId);
 
         // Single timeout source (#628): derive the bound from the
