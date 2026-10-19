@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useState } from "react";
 import { useDisputeViewport } from "@/app/hooks/useDisputeViewport";
@@ -179,7 +179,7 @@ export default function DisputeRaiseModal({
               aria-label="Close modal"
               className="min-h-[44px] min-w-[44px] text-secondary hover:text-primary transition-colors"
             >
-              ✕
+              âœ•
             </button>
           </div>
 
@@ -201,7 +201,7 @@ export default function DisputeRaiseModal({
               <div className={DISPUTE_MODAL_CLASSES.summaryCell}>
                 <dt className="text-muted">Job</dt>
                 <dd data-testid="dispute-raise-modal-job" className="break-all">
-                  {jobId ?? "—"}
+                  {jobId ?? "â€”"}
                 </dd>
               </div>
               <div className={DISPUTE_MODAL_CLASSES.summaryCell}>
@@ -215,7 +215,7 @@ export default function DisputeRaiseModal({
               <div className={DISPUTE_MODAL_CLASSES.summaryCell}>
                 <dt className="text-muted">Amount</dt>
                 <dd data-testid="dispute-raise-modal-amount">
-                  {amount ?? "—"}
+                  {amount ?? "â€”"}
                 </dd>
               </div>
               <div className={DISPUTE_MODAL_CLASSES.summaryCell}>
@@ -224,7 +224,7 @@ export default function DisputeRaiseModal({
                   data-testid="dispute-raise-modal-counterparty"
                   className="break-all"
                 >
-                  {counterparty ?? "—"}
+                  {counterparty ?? "â€”"}
                 </dd>
               </div>
             </dl>
@@ -320,3 +320,4 @@ export default function DisputeRaiseModal({
     </div>
   );
 }
+
