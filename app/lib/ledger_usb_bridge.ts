@@ -4,6 +4,7 @@
  * rejection handling, and network mismatch checks.
  */
 
+import { getSafeStorage } from "@/app/lib/safe_storage";
 import {
   FeeBumpTransaction,
   Transaction,
@@ -729,15 +730,7 @@ function isValidSerializedPayload(
 }
 
 function getStorageAdapter(): Storage | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const testKey = "__ledger_usb_bridge_storage_test__";
-    window.localStorage.setItem(testKey, "1");
-    window.localStorage.removeItem(testKey);
-    return window.localStorage;
-  } catch {
-    return null;
-  }
+  return getSafeStorage();
 }
 
 export class LedgerActiveAddressStore {

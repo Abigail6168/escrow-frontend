@@ -9,6 +9,7 @@
 
 import { setLoadingFlag } from "./loading_store";
 import type { ToastType } from "@/app/context/ToastContext";
+import { getSafeStorage } from "@/app/lib/safe_storage";
 import {
   FeeBumpTransaction,
   type Transaction,
@@ -657,15 +658,7 @@ function resolveStorageAdapter(
   storage?: StorageAdapter | null
 ): StorageAdapter | null {
   if (storage !== undefined) return storage;
-  if (typeof window === "undefined") return null;
-  try {
-    const testKey = "__albedo_connector_storage_test__";
-    window.localStorage.setItem(testKey, "1");
-    window.localStorage.removeItem(testKey);
-    return window.localStorage;
-  } catch {
-    return null;
-  }
+  return getSafeStorage();
 }
 
 export function saveAlbedoState(

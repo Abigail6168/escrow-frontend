@@ -17,6 +17,20 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
+    // Pure-TS helper tests (*.test.ts) run in the lightweight node environment
+    // so they skip jsdom startup (#604); component tests (*.test.tsx) keep
+    // jsdom. A .ts test that needs the DOM opts in with a
+    // `// @vitest-environment jsdom` docblock.
+    projects: [
+      {
+        extends: true,
+        test: { name: "dom", include: ["__tests__/**/*.test.tsx"], environment: "jsdom" },
+      },
+      {
+        extends: true,
+        test: { name: "node", include: ["__tests__/**/*.test.ts"], environment: "node" },
+      },
+    ],
     server: {
       deps: {
         // `@stellar/freighter-api` ships CommonJS (main: build/index.min.js,
