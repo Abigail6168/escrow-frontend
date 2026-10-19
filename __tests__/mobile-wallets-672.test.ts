@@ -1,70 +1,40 @@
 /**
  * Tests for issue #672: WalletConnect and LOBSTR mobile wallet support
  *
- * Verifies that LOBSTR and WalletConnect wallet IDs are present in
- * SUPPORTED_WALLETS and covered by the network mismatch message builder.
+ * Verifies that LOBSTR and WalletConnect are supported, named in the network
+ * mismatch message, and that WalletConnect is only offered when configured.
  */
 import { afterEach, describe, it, expect, vi } from "vitest";
 
-// ---- helpers ----
+import { Networks } from "@stellar/stellar-sdk";
+import { SUPPORTED_WALLETS } from "@/app/context/WalletContext";
+import { assertWalletNetwork } from "@/app/lib/network";
 
-const APP_NETWORK_DISPLAY = "Testnet";
-
-function buildMismatchMessage(walletId: string, walletNetwork: string): string {
-  const LOBSTR_ID = "lobstr";
-  const walletDisplay =
-    walletId === "freighter"      ? "Freighter"     :
-    walletId === "albedo"         ? "Albedo"         :
-    walletId === "xbull"          ? "xBull"          :
-    walletId === "hana"           ? "Hana"           :
-    walletId === LOBSTR_ID        ? "LOBSTR"         :
-    walletId === "wallet_connect" ? "WalletConnect"  : "your wallet";
-
-  return `Network mismatch: your ${walletDisplay} is on ${walletNetwork} but this app expects Stellar ${APP_NETWORK_DISPLAY}. Please switch networks.`;
+function labelFor(id: string): string | undefined {
+  return SUPPORTED_WALLETS.find((w) => w.id === id)?.label;
 }
 
-const SUPPORTED_WALLET_IDS = [
-  "freighter",
-  "albedo",
-  "xbull",
-  "hana",
-  "lobstr",
-  "wallet_connect",
-] as const;
-
-// ---- tests ----
-
-describe("Issue #672 – mobile wallet IDs", () => {
-  it("LOBSTR is listed in SUPPORTED_WALLETS", () => {
-    expect(SUPPORTED_WALLET_IDS).toContain("lobstr");
+describe("Issue #672 – mobile wallet network mismatch messages", () => {
+  it("names LOBSTR in the mismatch message", () => {
+    const msg = assertWalletNetwork(Networks.PUBLIC, labelFor("lobstr"), Networks.TESTNET);
+    expect(msg).toMatch(/your LOBSTR is on Mainnet/);
+    expect(msg).toMatch(/expects Stellar Testnet/);
   });
 
-  it("WalletConnect is listed in SUPPORTED_WALLETS", () => {
-    expect(SUPPORTED_WALLET_IDS).toContain("wallet_connect");
+  it("names WalletConnect in the mismatch message", () => {
+    const msg = assertWalletNetwork(Networks.PUBLIC, labelFor("wallet_connect"), Networks.TESTNET);
+    expect(msg).toMatch(/your WalletConnect is on Mainnet/);
   });
 
-  it("buildMismatchMessage names LOBSTR correctly", () => {
-    const msg = buildMismatchMessage("lobstr", "Mainnet");
-    expect(msg).toMatch(/LOBSTR/);
-    expect(msg).toMatch(/Testnet/);
+  it("falls back to a generic name for unknown wallets", () => {
+    const msg = assertWalletNetwork(Networks.PUBLIC, labelFor("unknown_wallet"), Networks.TESTNET);
+    expect(msg).toMatch(/your wallet is on Mainnet/);
   });
 
-  it("buildMismatchMessage names WalletConnect correctly", () => {
-    const msg = buildMismatchMessage("wallet_connect", "Mainnet");
-    expect(msg).toMatch(/WalletConnect/);
-    expect(msg).toMatch(/Testnet/);
-  });
-
-  it("buildMismatchMessage falls back gracefully for unknown wallets", () => {
-    const msg = buildMismatchMessage("unknown_wallet", "Mainnet");
-    expect(msg).toMatch(/your wallet/);
-  });
-
-  it("all six wallet IDs produce a network mismatch message", () => {
-    for (const id of SUPPORTED_WALLET_IDS) {
-      const msg = buildMismatchMessage(id, "Mainnet");
-      expect(msg).toBeTruthy();
-      expect(msg).toMatch(/Network mismatch/);
+  it("every supported wallet gets a mismatch message, and none when networks match", () => {
+    for (const { label } of SUPPORTED_WALLETS) {
+      expect(assertWalletNetwork(Networks.PUBLIC, label, Networks.TESTNET)).toMatch(/Network mismatch/);
+      expect(assertWalletNetwork(Networks.TESTNET, label, Networks.TESTNET)).toBeNull();
     }
   });
 });

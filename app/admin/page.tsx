@@ -6,6 +6,7 @@ import Navbar from "@/app/components/Navbar";
 import AdminAccessGate from "@/app/components/AdminAccessGate";
 import AdminWhitelistSkeleton from "@/app/components/AdminWhitelistSkeleton";
 import ButtonSpinner from "@/app/components/ButtonSpinner";
+import CopyButton from "@/app/components/CopyButton";
 import TxStatusBanner from "@/app/components/TxStatusBanner";
 import { useActionStates } from "@/app/hooks/useActionStates";
 import { useIsAdmin } from "@/app/hooks/useIsAdmin";
@@ -379,8 +380,11 @@ export default function AdminPage() {
                                 {symbol || name}
                               </span>
                             )}
-                            <span className="font-mono text-sm truncate">
-                              {token}
+                            <span className="flex items-center gap-2 min-w-0">
+                              <span className="font-mono text-sm truncate">
+                                {token}
+                              </span>
+                              <CopyButton value={token} label="Token address" />
                             </span>
                           </span>
                           <Badge
