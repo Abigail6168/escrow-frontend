@@ -31,6 +31,7 @@ import {
   withWalletLoader,
   WalletTransactionTracker,
   signWalletWithTimeout,
+  DEFAULT_WALLET_SIGNATURE_TIMEOUT_MS,
   type WalletMultiSigAssemblyOptions,
   type WalletMultiSigAssemblyResult,
   type WalletMultiSigSplit,

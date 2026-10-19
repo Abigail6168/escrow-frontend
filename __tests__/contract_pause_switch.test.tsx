@@ -285,7 +285,19 @@ describe("contract_pause_switch module", () => {
         screen.getByText(/Couldn't read pause status/i),
       ).toBeInTheDocument();
       expect(screen.getByTestId("contract-pause-toggle")).toBeDisabled();
+      vi.unstubAllGlobals();
+    });
+
     it("shows placeholders while the freeze state resolves", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(() =>
+          Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ success: true, data: MOCK_CONTRACT_PAUSE_STATE }),
+          }),
+        ),
+      );
       render(<ContractPauseSwitch isLoading />);
 
       const loading = screen.getByTestId("contract-pause-loading");
@@ -298,6 +310,7 @@ describe("contract_pause_switch module", () => {
           screen.getByTestId("contract-pause-toggle"),
         ).toHaveAttribute("aria-checked", "true");
       });
+      vi.unstubAllGlobals();
     });
 
     it("renders the toggle in the frozen state and reports the next state", () => {
@@ -419,7 +432,7 @@ describe("contract_pause_switch module", () => {
       // The URL must include the backend host and the is_paused query method.
       expect(calledUrl).toContain("/api/jobs/query");
       expect(calledUrl).toContain("method=is_paused");
-      expect(result.paused).toBe(false);
+      expect(result?.paused).toBe(false);
     });
 
     it("uses the apiUrl override when provided", async () => {
@@ -437,7 +450,7 @@ describe("contract_pause_switch module", () => {
       expect((fetchMock.mock.calls as unknown[][])[0][0]).toBe(customUrl);
     });
 
-    it("falls back to mock when the backend returns a valid envelope with incomplete data", async () => {
+    it("returns null (no mock fallback) for a valid envelope with incomplete data (#629)", async () => {
       vi.stubGlobal(
         "fetch",
         vi.fn(() =>
@@ -450,7 +463,7 @@ describe("contract_pause_switch module", () => {
       );
 
       const result = await fetchContractPauseState();
-      expect(result).toEqual(MOCK_CONTRACT_PAUSE_STATE);
+      expect(result).toBeNull();
     });
   });
 
@@ -705,13 +718,14 @@ describe("contract_pause_switch module", () => {
       });
       vi.stubGlobal("fetch", fetchMock);
 
-      const { rerender } = render(<ContractPauseSwitch />);
+      const { unmount } = render(<ContractPauseSwitch />);
       await waitFor(() => {
         expect(screen.getByTestId("contract-pause-error")).toBeInTheDocument();
       });
 
       // Re-mount to trigger a fresh read.
-      rerender(<ContractPauseSwitch />);
+      unmount();
+      render(<ContractPauseSwitch />);
       await waitFor(() => {
         expect(screen.queryByTestId("contract-pause-error")).not.toBeInTheDocument();
       });

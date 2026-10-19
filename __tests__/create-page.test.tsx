@@ -5,6 +5,7 @@ import CreateJob from "@/app/create/page";
 const mockPush = vi.fn();
 const mockUseWallet = vi.fn();
 const mockShowToast = vi.fn();
+const mockSubmitContractTransaction = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -20,6 +21,11 @@ vi.mock("@/app/context/WalletContext", () => ({
 
 vi.mock("@/app/context/ToastContext", () => ({
   useToast: () => ({ showToast: mockShowToast }),
+}));
+
+vi.mock("@/app/lib/transactions", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/app/lib/transactions")>()),
+  submitContractTransaction: (...args: unknown[]) => mockSubmitContractTransaction(...args),
 }));
 
 describe("Create page", () => {
@@ -138,12 +144,9 @@ describe("Create page", () => {
     expect(screen.getByRole("button", { name: "Create Job" })).not.toBeDisabled();
   });
 
-  it("renders the success screen after a confirmed create and surfaces a toast instead of alert()", () => {
-    const signTransaction = vi.fn().mockResolvedValue("ABC123TXHASH");
-    mockUseWallet.mockReturnValue({
-      address: "GCLIENTADDRESS",
-      signTransaction,
-    });
+  it("renders the success screen after a confirmed create and surfaces a toast instead of alert()", async () => {
+    mockSubmitContractTransaction.mockResolvedValue("ABC123TXHASH");
+    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
 
     render(<CreateJob />);
 
@@ -153,20 +156,26 @@ describe("Create page", () => {
     fireEvent.change(screen.getByLabelText("Arbiter Address"), {
       target: { value: "G" + "B".repeat(55) },
     });
+    await screen.findByRole("option", { name: "USDC" });
+    fireEvent.change(
+      screen.getByLabelText("Token Contract Address", { selector: "select" }),
+      { target: { value: "CTOKEN" } },
+    );
     fireEvent.change(screen.getByLabelText("Milestone 1 amount in stroops"), {
       target: { value: "100" },
     });
-
+    fireEvent.click(screen.getByTestId("agreement-checkbox"));
     fireEvent.click(screen.getByRole("button", { name: "Create Job" }));
 
-    expect(screen.getByText("Job Created!")).toBeInTheDocument();
-    expect(screen.getByText("View transaction on Stellar Expert →")).toBeInTheDocument();
+    expect(await screen.findByText("Job Created!")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /View transaction on Stellar Expert/ })).toHaveAttribute(
       "href",
       "https://stellar.expert/explorer/testnet/tx/ABC123TXHASH"
     );
     expect(screen.getByRole("button", { name: "Go to Dashboard" })).toBeInTheDocument();
     expect(mockShowToast).toHaveBeenCalledWith("Job created successfully!", "success");
+    expect(alertSpy).not.toHaveBeenCalled();
     expect(mockPush).not.toHaveBeenCalled();
+    alertSpy.mockRestore();
   });
 });

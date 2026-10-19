@@ -668,30 +668,25 @@ export async function signWalletWithTimeout<T>(
 }
 
 /**
- * Best-effort extraction of `maxTime` (seconds) from a base64-encoded
- * transaction envelope XDR. Returns `null` when the value cannot be read,
- * so callers can fall back to the default bound instead of guessing.
- *
- * The Stellar SDK's `TransactionBuilder` is used when available; if the
- * import is missing at runtime we bail out to `null` rather than throw,
- * keeping the signing path robust.
+ * Seconds left before the transaction's `timeBounds.maxTime` (#628), read from
+ * a base64 envelope XDR. Returns `null` when the envelope can't be parsed, has
+ * no upper bound (maxTime 0), or has already expired, so callers fall back to
+ * the default bound instead of guessing.
  */
-export function readTransactionMaxTimeSecs(xdr: string): number | null {
+export function readTransactionMaxTimeSecs(
+  xdr: string,
+  nowMs: number = Date.now()
+): number | null {
   if (typeof xdr !== "string" || xdr.length === 0) return null;
 
   try {
-    // Lazy import — the SDK is a dependency, but we don't want a hard
-    // coupling at module load time for the test harness.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { TransactionBuilder } = require("@stellar/stellar-sdk") as {
-      TransactionBuilder: { fromXdr: (xdr: string, networkPassphrase: string) => { timeout: () => number } };
-    };
-
-    // `fromXdr` requires a network passphrase; the timeout field is
-    // network-independent, so an arbitrary passphrase is fine here.
-    const tx = TransactionBuilder.fromXdr(xdr, "Test SDF Future Network 2025");
-    const timeout = tx.timeout();
-    return Number.isFinite(timeout) && timeout > 0 ? timeout : null;
+    // maxTime is network-independent, so any passphrase parses the envelope.
+    const parsed = TransactionBuilder.fromXDR(xdr, "Test SDF Network ; September 2015");
+    const tx = "innerTransaction" in parsed ? parsed.innerTransaction : parsed;
+    const maxTime = Number(tx.timeBounds?.maxTime ?? 0);
+    if (!Number.isFinite(maxTime) || maxTime <= 0) return null;
+    const remaining = Math.floor(maxTime - nowMs / 1000);
+    return remaining > 0 ? remaining : null;
   } catch {
     return null;
   }

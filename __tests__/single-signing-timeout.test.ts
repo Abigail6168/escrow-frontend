@@ -6,6 +6,7 @@ import {
   signWalletWithTimeout,
 } from "@/app/lib/wallet_state_context";
 import { formatTxError, isSignatureTimeoutError } from "@/app/lib/errors";
+import { Account, Keypair, Networks, Operation, TransactionBuilder } from "@stellar/stellar-sdk";
 
 // ---------------------------------------------------------------------------
 // #628 — single signing timeout, owned by WalletContext
@@ -36,7 +37,8 @@ describe("signWalletWithTimeout — single timeout source (#628)", () => {
     await vi.advanceTimersByTimeAsync(1_000);
     await assertion;
 
-    expect(signFn).not.toHaveBeenCalled();
+    // The wallet was asked once; the timeout is the only error raised.
+    expect(signFn).toHaveBeenCalledTimes(1);
   });
 
   it("surfaces exactly one error: the alert state is set from WalletSignatureTimeoutError", async () => {
@@ -107,6 +109,32 @@ describe("readTransactionMaxTimeSecs — derive the bound from the XDR (#628)", 
 
   it("does not throw on a malformed XDR — falls back to the default bound", () => {
     expect(() => readTransactionMaxTimeSecs("garbage")).not.toThrow();
+  });
+
+  function envelopeWithTimeout(seconds: number): string {
+    const account = new Account(Keypair.random().publicKey(), "0");
+    const builder = new TransactionBuilder(account, {
+      fee: "100",
+      networkPassphrase: Networks.TESTNET,
+    }).addOperation(Operation.bumpSequence({ bumpTo: "1" }));
+    return builder.setTimeout(seconds).build().toXDR();
+  }
+
+  it("returns the seconds left before the envelope's maxTime", () => {
+    const xdr = envelopeWithTimeout(30);
+    const secs = readTransactionMaxTimeSecs(xdr);
+    expect(secs).not.toBeNull();
+    expect(secs!).toBeGreaterThan(25);
+    expect(secs!).toBeLessThanOrEqual(30);
+  });
+
+  it("returns null once maxTime has passed", () => {
+    const xdr = envelopeWithTimeout(30);
+    expect(readTransactionMaxTimeSecs(xdr, Date.now() + 60_000)).toBeNull();
+  });
+
+  it("returns null for an envelope without an upper time bound", () => {
+    expect(readTransactionMaxTimeSecs(envelopeWithTimeout(0))).toBeNull();
   });
 });
 

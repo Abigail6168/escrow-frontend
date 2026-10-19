@@ -12,6 +12,9 @@ export type ContractArg = { type: string; value: unknown };
 
 export type TxPhase = "idle" | "building" | "signing" | "submitting" | "success" | "error";
 
+/** Default bound used by {@link signTxWithTimeout}. */
+export const DEFAULT_SIGNING_TIMEOUT_MS = 60_000;
+
 /**
  * Holds the XDR string sent to the wallet and an optional sensitive buffer
  * that is zeroed and dropped on timeout or completion.
@@ -45,23 +48,42 @@ export function clearTxSensitiveMemory(request: TxSignRequest): TxSignRequest {
 }
 
 /**
- * Backwards-compatible alias for {@link signTxWithTimeout}.
+ * Races a contract transaction signature operation against a timeout clock.
+ * On timeout the operation is aborted and any sensitive payload memory is
+ * cleared. Matches the setTimeout + Promise.race pattern used by all other
+ * connector helpers in this codebase.
  *
- * Deprecated (#628): the single timeout implementation now lives in
- * `WalletContext.signTransaction` via `signWalletWithTimeout`. Callers
- * should pass `signTransaction` directly to {@link submitContractTransaction}
- * and let the wallet context own the timeout, the cleanup, and the
- * `signatureTimeoutError` alert state.
- *
- * This wrapper is retained only so existing unit tests of the helper
- * continue to compile. New code must not call it.
+ * Not used on the contract signing path: `submitContractTransaction` relies on
+ * the single timeout in `WalletContext.signTransaction` (#628).
  */
 export async function signTxWithTimeout<T>(
   request: TxSignRequest,
   signFn: (xdr: string) => Promise<T>,
-  _timeoutMs: number = 60_000
+  timeoutMs: number = DEFAULT_SIGNING_TIMEOUT_MS
 ): Promise<T> {
-  return signFn(request.xdr);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let timedOut = false;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      timedOut = true;
+      clearTxSensitiveMemory(request);
+      reject(new TxSignatureTimeoutError(timeoutMs));
+    }, timeoutMs);
+  });
+
+  try {
+    const result = await Promise.race([signFn(request.xdr), timeoutPromise]);
+    clearTxSensitiveMemory(request);
+    return result;
+  } catch (err) {
+    if (timedOut || err instanceof TxSignatureTimeoutError) {
+      clearTxSensitiveMemory(request);
+    }
+    throw err;
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+  }
 }
 
 export function getPhaseLabel(phase: TxPhase): string {
