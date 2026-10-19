@@ -33,10 +33,6 @@ export const NETWORK_PASSPHRASE =
 /** Deployed escrow contract address. Empty when the build omits the variable. */
 export const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
 
-/** Backend origin every `/api/...` request is issued against. */
-export const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
-
 /** Default per-request timeout applied by the shared fetch helpers. */
 export const API_REQUEST_TIMEOUT_MS = 15_000;
 
@@ -53,3 +49,62 @@ export async function createRpcServer(): Promise<Server> {
   const { Server } = await import("@stellar/stellar-sdk/rpc");
   return new Server(RPC_URL);
 }
+
+// =============================================================================
+// Backend URL validation (#692) — fail the build when a non-HTTPS, non-local
+// URL is supplied so insecure configs are caught at deploy time.
+// =============================================================================
+
+/**
+ * Returns `{ ok: true }` for values that are safe to use as
+ * `NEXT_PUBLIC_BACKEND_URL`, i.e.:
+ *  - empty / undefined  → same-origin `/api` routing
+ *  - `https://…`        → any TLS origin
+ *  - `http://localhost…`, `http://127.0.0.1…`, `http://[::1]…` → local dev
+ */
+export function validateBackendUrl(url?: string): { ok: boolean; reason?: string } {
+  if (url === undefined || url === "") {
+    return { ok: true };
+  }
+
+  if (url.startsWith("https://")) {
+    return { ok: true };
+  }
+
+  const isLoopback =
+    /^http:\/\/localhost(?::\d+)?(?:\/.*)?$/.test(url) ||
+    /^http:\/\/127\.0\.0\.1(?::\d+)?(?:\/.*)?$/.test(url) ||
+    /^http:\/\/\[::1\](?::\d+)?(?:\/.*)?$/.test(url);
+
+  if (isLoopback) {
+    return { ok: true };
+  }
+
+  return {
+    ok: false,
+    reason: `NEXT_PUBLIC_BACKEND_URL must start with https:// (got "${url}"). Use https://, a localhost URL for local dev, or leave it empty to use same-origin /api.`,
+  };
+}
+
+function resolveBackendUrl(url: string | undefined): string {
+  if (url !== undefined && url !== "") {
+    return url;
+  }
+  return process.env.NODE_ENV === "production" ? "" : "http://localhost:3001";
+}
+
+const rawBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+const backendUrlCheck = validateBackendUrl(rawBackendUrl);
+
+if (!backendUrlCheck.ok) {
+  const message =
+    backendUrlCheck.reason ??
+    "NEXT_PUBLIC_BACKEND_URL must start with https://, a localhost URL, or be empty.";
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(message);
+  }
+  console.warn(message);
+}
+
+/** Backend origin every `/api/...` request is issued against. */
+export const BACKEND_URL = resolveBackendUrl(rawBackendUrl);
