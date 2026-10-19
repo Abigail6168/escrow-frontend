@@ -16,6 +16,11 @@ interface EmptyStateCardProps {
   statusTitle?: boolean;
   /** Optional call-to-action content rendered at the bottom of the card. */
   children?: ReactNode;
+  /**
+   * Optional action element rendered below the badges (e.g. a Retry button).
+   * Callers own the button's styling, disabled state, and test id.
+   */
+  action?: ReactNode;
 }
 
 function BriefcaseIcon() {
@@ -52,6 +57,7 @@ export default function EmptyStateCard({
   className = "",
   statusTitle = false,
   children,
+  action,
 }: EmptyStateCardProps) {
   return (
     <div
@@ -94,6 +100,7 @@ export default function EmptyStateCard({
       )}
 
       {children}
+      {action && <div className="flex justify-center">{action}</div>}
     </div>
   );
 }

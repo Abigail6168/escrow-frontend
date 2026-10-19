@@ -122,6 +122,30 @@ export default function Dashboard() {
 
   const totalPages = Math.max(1, Math.ceil((total || jobs.length || 1) / limit));
 
+  /**
+   * Client-side search filter (#684). Filters the loaded jobs by substring
+   * across contract ID, counterparty addresses, and token symbol. The
+   * backend ignored the old contractId param, so we do this here instead.
+   */
+  const filteredJobs = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return jobs;
+    return jobs.filter((job) => {
+      const haystack = [
+        job.id,
+        job.client,
+        job.freelancer,
+        job.arbiter,
+        job.tokenSymbol ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [jobs, searchQuery]);
+
+  const isFiltering = searchQuery.trim().length > 0;
+
   const fetchJobs = useCallback(async () => {
     if (!address) {
       setFetchLoading(false);
@@ -131,7 +155,6 @@ export default function Dashboard() {
     }
 
     setFetchLoading(true);
-    setError(null);
 
     try {
       const params = new URLSearchParams({
@@ -143,9 +166,9 @@ export default function Dashboard() {
         params.set("role", roleFilter);
       }
 
-      if (searchQuery.trim().length > 0) {
-        params.set("contractId", searchQuery.trim());
-      }
+      // Search is now handled client-side (#684): the backend ignored the
+      // contractId param and only exact 56-char contract IDs could match.
+      // We filter the loaded jobs by substring instead.
 
       const res = await fetch(
         `${BACKEND_URL}/api/jobs/by-wallet/${encodeURIComponent(address)}?${params.toString()}`
@@ -168,6 +191,9 @@ export default function Dashboard() {
         return;
       }
 
+      // Clear error only on a successful fetch so the Retry button stays
+      // visible (and disabled) while the request is in flight (#682).
+      setError(null);
       const parsed = parsePageResponse(data);
       setJobs(parsed.jobs);
       setPage(parsed.page || page);
@@ -188,7 +214,7 @@ export default function Dashboard() {
     } finally {
       setFetchLoading(false);
     }
-  }, [address, page, limit, roleFilter, searchQuery]);
+  }, [address, page, limit, roleFilter]);
 
   const fetchJobDetails = useCallback(
     async (jobId: string, force = false) => {
@@ -527,18 +553,29 @@ export default function Dashboard() {
               })}
             </div>
 
-            {fetchLoading ? (
+            {fetchLoading && !error ? (
               <LoadingSkeleton />
             ) : error ? (
-              <div
-                className="text-center text-red-400 bg-red-950/20 border border-red-800 rounded-lg p-4 animate-shake"
-                role="alert"
-                aria-live="assertive"
-                data-testid="dashboard-error-alert"
-              >
-                <p className="font-semibold mb-1">Error loading jobs</p>
-                <p className="text-sm">{error}</p>
-              </div>
+              <EmptyStateCard
+                testId="dashboard-error-alert"
+                ariaLabel="Error loading jobs"
+                title="Error loading jobs"
+                description={error}
+                icon="briefcase"
+                className="border-red-800 bg-red-950/20 animate-shake"
+                action={
+                  <button
+                    type="button"
+                    onClick={() => void fetchJobs()}
+                    disabled={fetchLoading}
+                    data-testid="dashboard-retry-button"
+                    aria-label="Retry loading jobs"
+                    className="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {fetchLoading ? "Retrying…" : "Retry"}
+                  </button>
+                }
+              />
             ) : jobs.length === 0 ? (
               <EmptyStateCard
                 testId="dashboard-empty-state"
@@ -548,10 +585,28 @@ export default function Dashboard() {
                 icon="briefcase"
                 badges={["Client", "Freelancer", "Arbiter"]}
               />
+            ) : filteredJobs.length === 0 ? (
+              <EmptyStateCard
+                testId="dashboard-filter-empty-state"
+                ariaLabel="No matching jobs"
+                title="No matching jobs"
+                description="No jobs on this page match your search. Try a different contract ID, address, or token symbol."
+                icon="briefcase"
+              />
             ) : (
               <div className="space-y-3 sm:space-y-5">
+                {isFiltering && (
+                  <p
+                    data-testid="dashboard-filter-hint"
+                    className="text-xs text-gray-400"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    Filtering this page ({filteredJobs.length} of {jobs.length})
+                  </p>
+                )}
                 <div className="border border-gray-800 rounded-lg sm:rounded-xl bg-gray-900 overflow-hidden overflow-x-auto" role="region" aria-label="Jobs list">
-                  {jobs.map((job, index) => {
+                  {filteredJobs.map((job, index) => {
                     const isExpanded = expandedJobId === job.id;
                     const roleBadges = [
                       address === job.client ? "Client" : null,
