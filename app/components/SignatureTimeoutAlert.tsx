@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useWallet } from "@/app/context/WalletContext";
-import { NETWORK_PASSPHRASE } from "@/app/lib/contract";
+import { NETWORK_PASSPHRASE } from "@/app/lib/config";
 import {
   createStellarEnvelopeParser,
   logWalletWarning,
