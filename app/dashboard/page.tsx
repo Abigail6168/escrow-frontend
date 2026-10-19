@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useWallet } from "@/app/context/WalletContext";
 import Navbar from "@/app/components/Navbar";
 import MilestoneCard from "@/app/components/MilestoneCard";
+import CopyButton from "@/app/components/CopyButton";
 import LoadingSkeleton from "@/app/components/LoadingSkeleton";
 import EmptyStateCard from "@/app/components/EmptyStateCard";
 import JobActivityTimeline from "@/app/components/JobActivityTimeline";
@@ -766,15 +767,24 @@ export default function Dashboard() {
                               <>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 text-xs sm:text-sm">
                                   <div className="bg-gray-800 rounded-lg p-2 sm:p-3 min-w-0">
-                                    <p className="text-gray-400 text-xs mb-1 font-semibold">Client</p>
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                      <p className="text-gray-400 text-xs font-semibold">Client</p>
+                                      <CopyButton value={expandedJob.client} label="Client address" />
+                                    </div>
                                     <p className="font-mono text-xs break-all" aria-label={`Client address: ${expandedJob.client}`}>{expandedJob.client}</p>
                                   </div>
                                   <div className="bg-gray-800 rounded-lg p-2 sm:p-3 min-w-0">
-                                    <p className="text-gray-400 text-xs mb-1 font-semibold">Freelancer</p>
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                      <p className="text-gray-400 text-xs font-semibold">Freelancer</p>
+                                      <CopyButton value={expandedJob.freelancer} label="Freelancer address" />
+                                    </div>
                                     <p className="font-mono text-xs break-all" aria-label={`Freelancer address: ${expandedJob.freelancer}`}>{expandedJob.freelancer}</p>
                                   </div>
                                   <div className="bg-gray-800 rounded-lg p-2 sm:p-3 min-w-0">
-                                    <p className="text-gray-400 text-xs mb-1 font-semibold">Arbiter</p>
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                      <p className="text-gray-400 text-xs font-semibold">Arbiter</p>
+                                      <CopyButton value={expandedJob.arbiter} label="Arbiter address" />
+                                    </div>
                                     <p className="font-mono text-xs break-all" aria-label={`Arbiter address: ${expandedJob.arbiter}`}>{expandedJob.arbiter}</p>
                                   </div>
                                 </div>

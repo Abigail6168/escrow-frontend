@@ -6,6 +6,7 @@
  * NETWORK_PASSPHRASE and NEXT_PUBLIC_CONTRACT_ID are rebuilt against mainnet.
  */
 import { Networks } from "@stellar/stellar-sdk";
+import { NETWORK_PASSPHRASE } from "@/app/lib/config";
 
 export type NetworkKind = "testnet" | "public" | "futurenet" | "unknown";
 
@@ -48,6 +49,35 @@ export function networkProseName(passphrase: string): string {
     default:
       return "a custom network";
   }
+}
+
+/** Network name for messages, as in "Mainnet" or "a custom network". */
+function networkDisplayName(passphrase: string): string {
+  const name = networkProseName(passphrase);
+  return name.startsWith("a ") ? name : name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+/** The single user-facing wallet network mismatch message. */
+export function buildNetworkMismatchMessage(
+  walletPassphrase: string,
+  walletName = "wallet",
+  appPassphrase: string = NETWORK_PASSPHRASE,
+): string {
+  return `Network mismatch: your ${walletName} is on ${networkDisplayName(walletPassphrase)} but this app expects Stellar ${networkDisplayName(appPassphrase)}. Please switch networks.`;
+}
+
+/**
+ * Checks the wallet's passphrase against the app's NETWORK_PASSPHRASE.
+ * Returns null when they match, otherwise the mismatch message.
+ */
+export function assertWalletNetwork(
+  walletPassphrase: string,
+  walletName?: string,
+  appPassphrase: string = NETWORK_PASSPHRASE,
+): string | null {
+  return walletPassphrase === appPassphrase
+    ? null
+    : buildNetworkMismatchMessage(walletPassphrase, walletName, appPassphrase);
 }
 
 /**
