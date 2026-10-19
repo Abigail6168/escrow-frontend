@@ -19,19 +19,18 @@
  * `createRpcServer` below.
  */
 
-import { Networks } from "@stellar/stellar-sdk";
 import type { Server } from "@stellar/stellar-sdk/rpc";
+import { CONTRACT_ID, NETWORK_PASSPHRASE } from "./network_config";
 
 /** Soroban JSON-RPC endpoint used for any *client-side* RPC call. */
 export const RPC_URL =
   process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || "https://soroban-testnet.stellar.org";
 
-/** Network passphrase the wallet connections and contract calls are built for. */
-export const NETWORK_PASSPHRASE =
-  process.env.NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE || Networks.TESTNET;
-
-/** Deployed escrow contract address. Empty when the build omits the variable. */
-export const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
+/**
+ * Network passphrase and contract ID come from `network_config`, which has no
+ * SDK dependency so the landing page can read them cheaply (#645).
+ */
+export { CONTRACT_ID, NETWORK_PASSPHRASE };
 
 /** Default per-request timeout applied by the shared fetch helpers. */
 export const API_REQUEST_TIMEOUT_MS = 15_000;

@@ -77,6 +77,14 @@ export const JobSchema = z.object({
   token: z.string().optional(),
   tokenSymbol: z.string().optional(),
   tokenDecimals: z.number().finite().optional(),
+  // By-wallet summary fields shown on the dashboard rows (#638). The backend
+  // may send null for unknown values, which is treated as absent.
+  role: z.string().nullish().transform((v) => v ?? undefined),
+  milestoneCount: z.number().finite().nullish().transform((v) => v ?? undefined),
+  releasedCount: z.number().finite().nullish().transform((v) => v ?? undefined),
+  latestEventType: z.string().nullish().transform((v) => v ?? undefined),
+  latestEventAt: z.union([z.string(), z.number()]).nullish().transform((v) => v ?? undefined),
+  latestLedger: z.number().finite().nullish().transform((v) => v ?? undefined),
 });
 
 export type Job = z.infer<typeof JobSchema>;

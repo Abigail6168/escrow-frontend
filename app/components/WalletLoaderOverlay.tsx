@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { subscribeToWalletLoading } from "@/app/lib/wallet_state_context";
-import { albedoLoading } from "@/app/lib/albedo_connector";
+import { subscribeToLoadingFlags } from "@/app/lib/loading_store";
 import ButtonSpinner from "./ButtonSpinner";
 
 /**
@@ -11,8 +11,8 @@ import ButtonSpinner from "./ButtonSpinner";
  * (connect, sign, submit, popup) and displaying a spinner overlay while any
  * of them are in flight.
  *
- * Subscribes to both the wallet_state_context loader and the AlbedoLoadingManager
- * so Albedo popup operations trigger the same overlay as other wallet operations.
+ * Subscribes to both the wallet_state_context loader and the shared
+ * loading_store (written by the Albedo connector) so Albedo popup operations trigger the same overlay as other wallet operations.
  */
 export default function WalletLoaderOverlay() {
   const [walletLoading, setWalletLoading] = useState(false);
@@ -23,8 +23,8 @@ export default function WalletLoaderOverlay() {
       setWalletLoading(loading);
     });
 
-    const unsubAlbedo = albedoLoading.subscribe((state) => {
-      setAlbedoLoadingState(state.isLoading);
+    const unsubAlbedo = subscribeToLoadingFlags((loading) => {
+      setAlbedoLoadingState(loading);
     });
 
     return () => {

@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Keypair } from "@stellar/stellar-sdk";
-import CreateJob from "@/app/create/page";
+import CreateJob from "@/app/(app)/create/page";
 
 const mockSubmit = vi.fn();
 const ADDRESS = Keypair.random().publicKey();
