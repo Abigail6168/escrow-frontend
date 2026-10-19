@@ -21,6 +21,14 @@ import {
   WhitelistToken,
 } from "@/app/lib/whitelist";
 import { formatTxError } from "@/app/lib/errors";
+import {
+  clearCreateJobDraft,
+  CREATE_JOB_DRAFT_DEBOUNCE_MS,
+  CreateJobDraft,
+  EMPTY_CREATE_JOB_DRAFT,
+  loadCreateJobDraft,
+  saveCreateJobDraft,
+} from "@/app/lib/create_job_draft";
 
 type WizardSection = "details" | "milestones" | "review";
 
@@ -89,6 +97,66 @@ export default function CreateJob() {
   const [whitelist, setWhitelist] = useState<WhitelistToken[]>([]);
   const [whitelistLoading, setWhitelistLoading] = useState(true);
   const [whitelistError, setWhitelistError] = useState<string | null>(null);
+
+  const [draftRestored, setDraftRestored] = useState(false);
+  // Address whose draft has been restored; saving waits for it so the empty
+  // initial state never overwrites a stored draft.
+  const [draftAddress, setDraftAddress] = useState<string | null>(null);
+
+  const applyDraft = (draft: CreateJobDraft) => {
+    setFreelancer(draft.freelancer);
+    setArbiter(draft.arbiter);
+    setToken(draft.token);
+    setAutoReleaseDays(draft.autoReleaseDays);
+    setAcceptedAssets(draft.acceptedAssets);
+    setRequirements(draft.requirements);
+    setMilestones(draft.milestones);
+  };
+
+  useEffect(() => {
+    if (!address) return;
+    const draft = loadCreateJobDraft(address);
+    if (draft) {
+      // Restoring from sessionStorage is a one-off sync with external state.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      applyDraft(draft);
+      setDraftRestored(true);
+    }
+    setDraftAddress(address);
+  }, [address]);
+
+  useEffect(() => {
+    if (!address || draftAddress !== address || txHash) return;
+    const timer = setTimeout(() => {
+      saveCreateJobDraft(address, {
+        freelancer,
+        arbiter,
+        token,
+        autoReleaseDays,
+        acceptedAssets,
+        requirements,
+        milestones,
+      });
+    }, CREATE_JOB_DRAFT_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [
+    address,
+    draftAddress,
+    txHash,
+    freelancer,
+    arbiter,
+    token,
+    autoReleaseDays,
+    acceptedAssets,
+    requirements,
+    milestones,
+  ]);
+
+  const discardDraft = () => {
+    if (address) clearCreateJobDraft(address);
+    applyDraft(EMPTY_CREATE_JOB_DRAFT);
+    setDraftRestored(false);
+  };
 
   // Refs for tab-panel sections — used for programmatic focus on tab activation
   const detailsPanelRef = useRef<HTMLDivElement>(null);
@@ -348,6 +416,7 @@ export default function CreateJob() {
       });
 
       setPhase("success");
+      clearCreateJobDraft(address);
       setTxHash(txHash);
       alert("Job created successfully!");
       router.push("/dashboard");
@@ -412,6 +481,23 @@ export default function CreateJob() {
             Configure counterparties, funding structure, and delivery
             expectations before publishing the escrow job.
           </p>
+
+          {draftRestored && (
+            <div
+              className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-border-subtle bg-surface-card px-4 py-3 text-sm text-text-secondary"
+              role="status"
+              data-testid="create-job-draft-banner"
+            >
+              <span>Restored your draft</span>
+              <button
+                type="button"
+                onClick={discardDraft}
+                className={`${buttonClassName} text-accent-soft hover:text-accent-soft-hover`}
+              >
+                Discard
+              </button>
+            </div>
+          )}
 
           {/*
            * Wizard navigation implemented as a proper ARIA tablist.
