@@ -54,11 +54,7 @@ export default function AdminContractHeader({
         {networkLabel(networkPassphrase)}
       </span>
       <span className="text-gray-400">Contract</span>
-      <span
-        data-testid="admin-contract-id"
-        title={contractId}
-        className="font-mono text-gray-200"
-      >
+      <span data-testid="admin-contract-id" title={contractId} className="font-mono text-gray-200">
         {contractId ? truncateContractId(contractId) : "Not configured"}
       </span>
       {contractId && (

@@ -44,23 +44,15 @@ describe("refund double-confirm modal", () => {
   });
 
   it("copy mentions amount and token", () => {
-    expect(
-      getRefundConfirmCopy("review", "25.00", "USDC").body,
-    ).toContain("25.00 USDC");
-    expect(
-      getRefundConfirmCopy("final", "25.00", "USDC").body,
-    ).toContain("25.00 USDC");
-    expect(
-      getRefundConfirmCopy("final", "25.00", "USDC").confirmLabel,
-    ).toBe("Sign and request refund");
-    expect(
-      getRefundConfirmCopy("closed", "25.00", "USDC").title,
-    ).toBe("");
+    expect(getRefundConfirmCopy("review", "25.00", "USDC").body).toContain("25.00 USDC");
+    expect(getRefundConfirmCopy("final", "25.00", "USDC").body).toContain("25.00 USDC");
+    expect(getRefundConfirmCopy("final", "25.00", "USDC").confirmLabel).toBe(
+      "Sign and request refund"
+    );
+    expect(getRefundConfirmCopy("closed", "25.00", "USDC").title).toBe("");
   });
 
   it("review copy has Continue as confirm label", () => {
-    expect(
-      getRefundConfirmCopy("review", "10", "XLM").confirmLabel,
-    ).toBe("Continue");
+    expect(getRefundConfirmCopy("review", "10", "XLM").confirmLabel).toBe("Continue");
   });
 });

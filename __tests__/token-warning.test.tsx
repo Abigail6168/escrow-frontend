@@ -28,10 +28,7 @@ const NON_TOKEN_CONTRACT = "C" + "B".repeat(55);
 const WHITELISTED_TOKEN = "C" + "C".repeat(55);
 
 function stubFetch(body: unknown, ok = true) {
-  vi.stubGlobal(
-    "fetch",
-    vi.fn().mockResolvedValue({ ok, json: async () => body }),
-  );
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok, json: async () => body }));
 }
 
 describe("Create Job token warning (#668)", () => {
@@ -155,9 +152,7 @@ describe("Create Job token warning (#668)", () => {
     await waitFor(() => {
       expect(screen.getByTestId("token-validation-error")).toBeInTheDocument();
     });
-    expect(
-      screen.getByText(/not a valid token contract/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/not a valid token contract/i)).toBeInTheDocument();
 
     // No whitelist warning should be shown — only the error.
     expect(screen.queryByTestId("token-non-whitelist-warning")).not.toBeInTheDocument();

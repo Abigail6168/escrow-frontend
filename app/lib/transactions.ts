@@ -160,10 +160,7 @@ export function extractSubmitTxHash(body: unknown): string {
  * messages from `details` (or the `fields` map) so the UI shows the actual
  * reason the request was rejected instead of a generic "ValidationError".
  */
-export function extractBackendErrorMessage(
-  body: unknown,
-  fallback: string
-): string {
+export function extractBackendErrorMessage(body: unknown, fallback: string): string {
   if (typeof body === "string") {
     return firstString(body) ?? fallback;
   }
@@ -186,9 +183,7 @@ function collectValidationDetails(body: Record<string, unknown>): string[] {
 
   if (Array.isArray(body.details)) {
     for (const entry of body.details) {
-      const detail = firstString(
-        isRecord(entry) ? entry.message : entry
-      );
+      const detail = firstString(isRecord(entry) ? entry.message : entry);
       if (detail && !details.includes(detail)) {
         details.push(detail);
       }
@@ -253,9 +248,7 @@ export async function submitContractTransaction({
   const xdr = isRecord(buildTxBody) ? firstString(buildTxBody.xdr) : null;
 
   if (!xdr) {
-    throw new Error(
-      "We could not prepare your transaction. Please try again."
-    );
+    throw new Error("We could not prepare your transaction. Please try again.");
   }
 
   onPhase?.("signing");

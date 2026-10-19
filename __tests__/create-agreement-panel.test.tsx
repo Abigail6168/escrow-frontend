@@ -24,8 +24,11 @@ describe("Create Job agreement panel (#669)", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({ success: true, data: { tokens: [{ address: "CTOKEN", symbol: "USDC" }] } }),
-      }),
+        json: async () => ({
+          success: true,
+          data: { tokens: [{ address: "CTOKEN", symbol: "USDC" }] },
+        }),
+      })
     );
     mockUseWallet.mockReturnValue({
       address: "GCLIENTADDRESS",

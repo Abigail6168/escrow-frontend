@@ -38,16 +38,15 @@ function toEpochMs(value: number | string): number | null {
 export async function fetchAllAutoReleaseDeadlines(
   jobId: string,
   milestoneIndexes: number[],
-  options?: { signal?: AbortSignal; now?: () => number },
+  options?: { signal?: AbortSignal; now?: () => number }
 ): Promise<Record<number, number | null>> {
   if (milestoneIndexes.length === 0) return {};
 
   // Try the batch endpoint first (one request for all milestones).
   try {
-    const res = await fetch(
-      `${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}/deadlines`,
-      { signal: options?.signal },
-    );
+    const res = await fetch(`${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}/deadlines`, {
+      signal: options?.signal,
+    });
 
     if (res.ok) {
       interface BatchResponse {
@@ -81,7 +80,7 @@ export async function fetchAllAutoReleaseDeadlines(
     milestoneIndexes.map(async (index) => {
       const info = await fetchAutoReleaseInfo(jobId, index, options);
       return [index, info.deadlineMs] as const;
-    }),
+    })
   );
   return Object.fromEntries(entries);
 }
@@ -98,14 +97,14 @@ export async function fetchAllAutoReleaseDeadlines(
 export async function fetchAutoReleaseInfo(
   jobId: string,
   milestoneIndex: number,
-  options?: { signal?: AbortSignal; now?: () => number },
+  options?: { signal?: AbortSignal; now?: () => number }
 ): Promise<AutoReleaseInfo> {
   const now = options?.now ?? Date.now;
   const endpoint = `/api/jobs/${jobId}/milestones/${milestoneIndex}/auto-release`;
   try {
     const res = await fetch(
       `${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}/milestones/${milestoneIndex}/auto-release`,
-      { signal: options?.signal },
+      { signal: options?.signal }
     );
     if (!res.ok) {
       return { deadlineMs: null, eligible: false };

@@ -55,11 +55,7 @@ vi.mock("@/app/components/Navbar", () => ({
 // MilestoneCard and LoadingSkeleton have their own wallet/contract deps that
 // are not needed for a11y scanning of the page layout.
 vi.mock("@/app/components/MilestoneCard", () => ({
-  default: ({
-    milestone,
-  }: {
-    milestone: { index: number; amount: string; status: string };
-  }) => (
+  default: ({ milestone }: { milestone: { index: number; amount: string; status: string } }) => (
     <article data-testid="milestone-card">
       <h3>Milestone {milestone.index + 1}</h3>
       <p>Status: {milestone.status}</p>
@@ -235,7 +231,10 @@ describe.sequential("axe accessibility — create page (/create)", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({ success: true, data: { tokens: [{ address: "CTOKEN", symbol: "USDC", decimals: 6 }] } }),
+        json: async () => ({
+          success: true,
+          data: { tokens: [{ address: "CTOKEN", symbol: "USDC", decimals: 6 }] },
+        }),
       })
     );
   });

@@ -65,9 +65,7 @@ function mockHappyPath(
   submitBody: unknown = submitSuccess
 ): void {
   mockFetchOnce((url) =>
-    url.endsWith("/api/jobs/build-tx")
-      ? jsonResponse(buildTxBody)
-      : jsonResponse(submitBody)
+    url.endsWith("/api/jobs/build-tx") ? jsonResponse(buildTxBody) : jsonResponse(submitBody)
   );
 }
 
@@ -180,7 +178,7 @@ describe("submitContractTransaction against real backend response shapes (#686)"
           signTransaction: async () => "SIGNED_XDR_BASE64",
         })
       ).rejects.toThrow(
-        "Invalid request parameters: contractId must be a valid Stellar contract address (C...)",
+        "Invalid request parameters: contractId must be a valid Stellar contract address (C...)"
       );
     });
 

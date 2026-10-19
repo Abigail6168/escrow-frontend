@@ -66,7 +66,7 @@ describe("JobActivityTimeline", () => {
   it("shows an error when the history request fails", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({ success: false }) }),
+      vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({ success: false }) })
     );
 
     render(<JobActivityTimeline contractId="CJOB" />);

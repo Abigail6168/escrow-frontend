@@ -12,8 +12,8 @@ variable → error). The value below is a stale snapshot kept for reference
 only; point your browser at the deployed site and copy the ID from the
 admin page, or read it from the repo variable.
 
-| Network | Contract ID |
-|---|---|
+| Network | Contract ID                                                        |
+| ------- | ------------------------------------------------------------------ |
 | Testnet | `NEXT_PUBLIC_CONTRACT_ID` (set at build time; see deploy workflow) |
 
 ## Tech Stack
@@ -74,12 +74,12 @@ runtime override.
 All `NEXT_PUBLIC_*` variables are read at build time and inlined into the
 bundle.
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `NEXT_PUBLIC_CONTRACT_ID` | *(required)* | Soroban contract ID the frontend talks to. In CI this comes from the `CONTRACT_ID` repo variable; the deploy workflow allows a manual override via the `contract_id` input. |
-| `NEXT_PUBLIC_BACKEND_URL` | `http://localhost:3001` | Base URL of the escrow backend API (used by `app/lib/transactions.ts`). |
-| `NEXT_PUBLIC_SOROBAN_RPC_URL` | `https://soroban-testnet.stellar.org` | Soroban RPC endpoint used by `app/lib/contract.ts`. |
-| `NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE` | `Networks.TESTNET` (`Test SDF Future Network 2025`) | Network passphrase used by `app/lib/contract.ts`; set to `Networks.MAINNET` (`Public Global Stellar Network 2022`) for mainnet. |
+| Variable                                 | Default                                             | Purpose                                                                                                                                                                     |
+| ---------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_CONTRACT_ID`                | _(required)_                                        | Soroban contract ID the frontend talks to. In CI this comes from the `CONTRACT_ID` repo variable; the deploy workflow allows a manual override via the `contract_id` input. |
+| `NEXT_PUBLIC_BACKEND_URL`                | `http://localhost:3001`                             | Base URL of the escrow backend API (used by `app/lib/transactions.ts`).                                                                                                     |
+| `NEXT_PUBLIC_SOROBAN_RPC_URL`            | `https://soroban-testnet.stellar.org`               | Soroban RPC endpoint used by `app/lib/contract.ts`.                                                                                                                         |
+| `NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE` | `Networks.TESTNET` (`Test SDF Future Network 2025`) | Network passphrase used by `app/lib/contract.ts`; set to `Networks.MAINNET` (`Public Global Stellar Network 2022`) for mainnet.                                             |
 
 ## Backend URL (NEXT_PUBLIC_BACKEND_URL)
 
@@ -117,7 +117,6 @@ docker build -t escrow-frontend \
   --build-arg NEXT_PUBLIC_CONTRACT_ID=CDD5WKK3WT3QVKXMXTJNDIXE4T73FK6GGXDSD6UTJAH6YYZU52SQ4MUH \
   .
 ```
-
 
 ## Related Repos
 

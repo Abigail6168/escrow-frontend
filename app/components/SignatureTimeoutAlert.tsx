@@ -63,9 +63,7 @@ export default function SignatureTimeoutAlert({
   const activeError = error ?? signatureTimeoutError;
   const activeTransactionXdr = transactionXdr ?? signatureTimeoutXdr ?? undefined;
   const hasTimeout =
-    isOpen ||
-    (activeError instanceof Error &&
-      activeError.name === "WalletSignatureTimeoutError");
+    isOpen || (activeError instanceof Error && activeError.name === "WalletSignatureTimeoutError");
 
   useEffect(() => {
     if (!hasTimeout && !networkMismatchMessage) return;
@@ -127,7 +125,10 @@ export default function SignatureTimeoutAlert({
       className={`border border-warning-soft/40 bg-warning-soft/10 px-4 py-3 text-sm text-text-primary ${className}`}
     >
       {networkMismatchMessage && (
-        <p data-testid="signature-timeout-network-warning" className="mb-2 font-medium text-warning-soft">
+        <p
+          data-testid="signature-timeout-network-warning"
+          className="mb-2 font-medium text-warning-soft"
+        >
           {networkMismatchMessage}
         </p>
       )}
@@ -148,7 +149,12 @@ export default function SignatureTimeoutAlert({
             </p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
-            <button type="button" onClick={retry} disabled={isRetrying} data-testid="signature-timeout-retry">
+            <button
+              type="button"
+              onClick={retry}
+              disabled={isRetrying}
+              data-testid="signature-timeout-retry"
+            >
               {isRetrying ? <ButtonSpinner className="h-4 w-4" /> : "Retry signature"}
             </button>
             {onDismiss && (

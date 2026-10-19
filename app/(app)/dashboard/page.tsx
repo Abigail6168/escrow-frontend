@@ -14,11 +14,7 @@ import { ArbiterPanelPlaceholder } from "@/app/components/ArbiterActionPanel";
 import { getArbiterJobEmptyState } from "@/app/lib/arbiter_action_panel";
 import { useActionStates } from "@/app/hooks/useActionStates";
 import { useToast } from "@/app/context/ToastContext";
-import {
-  BACKEND_URL,
-  runContractAction,
-  submitContractTransaction,
-} from "@/app/lib/transactions";
+import { BACKEND_URL, runContractAction, submitContractTransaction } from "@/app/lib/transactions";
 import { fetchAllAutoReleaseDeadlines } from "@/app/lib/autoRelease";
 import {
   ApiShapeError,
@@ -109,9 +105,7 @@ function parsePageResponse(payload: ReturnType<typeof JobListResponseSchema.pars
     if (typeof embedded.totalItems === "number") total = embedded.totalItems;
   }
 
-  const jobs = rows
-    .map(normalizeJob)
-    .filter((job): job is Job => job !== null);
+  const jobs = rows.map(normalizeJob).filter((job): job is Job => job !== null);
 
   return {
     jobs,
@@ -147,8 +141,7 @@ export default function Dashboard() {
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
   const [disputeMilestoneIndex, setDisputeMilestoneIndex] = useState<number | null>(null);
 
-  const { getState, isPending, setPhase, setError: setActionError, setTxHash } =
-    useActionStates();
+  const { getState, isPending, setPhase, setError: setActionError, setTxHash } = useActionStates();
 
   /**
    * Issue #670: track which job rows are showing "Updating…" after a
@@ -170,13 +163,7 @@ export default function Dashboard() {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return jobs;
     return jobs.filter((job) => {
-      const haystack = [
-        job.id,
-        job.client,
-        job.freelancer,
-        job.arbiter,
-        job.tokenSymbol ?? "",
-      ]
+      const haystack = [job.id, job.client, job.freelancer, job.arbiter, job.tokenSymbol ?? ""]
         .join(" ")
         .toLowerCase();
       return haystack.includes(q);
@@ -266,11 +253,7 @@ export default function Dashboard() {
         const res = await fetch(`${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}`);
         reportApiResponse(res, "/api/jobs/:contractId");
         const rawPayload: unknown = await res.json();
-        const payload = validateResponse(
-          JobDetailResponseSchema,
-          rawPayload,
-          `/api/jobs/${jobId}`,
-        );
+        const payload = validateResponse(JobDetailResponseSchema, rawPayload, `/api/jobs/${jobId}`);
         const candidate = normalizeJob(payload.data);
 
         if (candidate) {
@@ -406,10 +389,8 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [address, expandedJobId, fetchJobs, fetchJobDetails]);
 
-  const expandedJob = expandedJobId ? jobDetails[expandedJobId] ?? null : null;
-  const milestoneList = Array.isArray(expandedJob?.milestones)
-    ? expandedJob.milestones
-    : [];
+  const expandedJob = expandedJobId ? (jobDetails[expandedJobId] ?? null) : null;
+  const milestoneList = Array.isArray(expandedJob?.milestones) ? expandedJob.milestones : [];
 
   const isClient = !!(expandedJob && address === expandedJob.client);
   const isFreelancer = !!(expandedJob && address === expandedJob.freelancer);
@@ -419,17 +400,14 @@ export default function Dashboard() {
   const showArbiterNoDisputes =
     isArbiter && getArbiterJobEmptyState(milestoneList) === "no-disputes";
 
-  const [autoReleaseDeadlines, setAutoReleaseDeadlines] = useState<
-    Record<number, number | null>
-  >({});
+  const [autoReleaseDeadlines, setAutoReleaseDeadlines] = useState<Record<number, number | null>>(
+    {}
+  );
 
   useEffect(() => {
     const controller = new AbortController();
     const jobId = expandedJob?.id;
-    const deliveredIndexes = (Array.isArray(expandedJob?.milestones)
-      ? expandedJob.milestones
-      : []
-    )
+    const deliveredIndexes = (Array.isArray(expandedJob?.milestones) ? expandedJob.milestones : [])
       .filter((m) => m.status === "Delivered")
       .map((m) => m.index);
 
@@ -641,7 +619,11 @@ export default function Dashboard() {
               </button>
             </form>
 
-            <div className="flex flex-wrap gap-2 sm:gap-3" role="tablist" aria-label="Filter jobs by role">
+            <div
+              className="flex flex-wrap gap-2 sm:gap-3"
+              role="tablist"
+              aria-label="Filter jobs by role"
+            >
               {roleFilterLabels.map((role) => {
                 const active = roleFilter === role.id;
                 return (
@@ -719,7 +701,11 @@ export default function Dashboard() {
                     Filtering this page ({filteredJobs.length} of {jobs.length})
                   </p>
                 )}
-                <div className="border border-gray-800 rounded-lg sm:rounded-xl bg-gray-900 overflow-hidden overflow-x-auto" role="region" aria-label="Jobs list">
+                <div
+                  className="border border-gray-800 rounded-lg sm:rounded-xl bg-gray-900 overflow-hidden overflow-x-auto"
+                  role="region"
+                  aria-label="Jobs list"
+                >
                   {filteredJobs.map((job) => {
                     const isExpanded = expandedJobId === job.id;
                     const isUpdating = updatingJobIds.has(job.id);
@@ -752,7 +738,10 @@ export default function Dashboard() {
                               <p className="text-xs text-gray-400 mt-0.5 sm:mt-1">
                                 {job.funded ? "Funded" : "Not funded"}
                               </p>
-                              <p className="text-xs text-gray-500 mt-0.5" data-testid="job-row-summary">
+                              <p
+                                className="text-xs text-gray-500 mt-0.5"
+                                data-testid="job-row-summary"
+                              >
                                 {[
                                   counterparty ? `with ${shortAddress(counterparty)}` : null,
                                   progress,
@@ -785,7 +774,10 @@ export default function Dashboard() {
                                   {badge}
                                 </span>
                               ))}
-                              <span className="text-xs text-indigo-300 whitespace-nowrap" aria-hidden="true">
+                              <span
+                                className="text-xs text-indigo-300 whitespace-nowrap"
+                                aria-hidden="true"
+                              >
                                 {isExpanded ? "Collapse" : "Expand"}
                               </span>
                             </div>
@@ -818,34 +810,66 @@ export default function Dashboard() {
                             {detailsLoading[job.id] ? (
                               <LoadingSkeleton />
                             ) : !expandedJob ? (
-                              <p className="text-xs sm:text-sm text-gray-400" role="status">Unable to load job details.</p>
+                              <p className="text-xs sm:text-sm text-gray-400" role="status">
+                                Unable to load job details.
+                              </p>
                             ) : (
                               <>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 text-xs sm:text-sm">
                                   <div className="bg-gray-800 rounded-lg p-2 sm:p-3 min-w-0">
                                     <div className="flex items-center justify-between gap-2 mb-1">
                                       <p className="text-gray-400 text-xs font-semibold">Client</p>
-                                      <CopyButton value={expandedJob.client} label="Client address" />
+                                      <CopyButton
+                                        value={expandedJob.client}
+                                        label="Client address"
+                                      />
                                     </div>
-                                    <p className="font-mono text-xs break-all" aria-label={`Client address: ${expandedJob.client}`}>{expandedJob.client}</p>
+                                    <p
+                                      className="font-mono text-xs break-all"
+                                      aria-label={`Client address: ${expandedJob.client}`}
+                                    >
+                                      {expandedJob.client}
+                                    </p>
                                   </div>
                                   <div className="bg-gray-800 rounded-lg p-2 sm:p-3 min-w-0">
                                     <div className="flex items-center justify-between gap-2 mb-1">
-                                      <p className="text-gray-400 text-xs font-semibold">Freelancer</p>
-                                      <CopyButton value={expandedJob.freelancer} label="Freelancer address" />
+                                      <p className="text-gray-400 text-xs font-semibold">
+                                        Freelancer
+                                      </p>
+                                      <CopyButton
+                                        value={expandedJob.freelancer}
+                                        label="Freelancer address"
+                                      />
                                     </div>
-                                    <p className="font-mono text-xs break-all" aria-label={`Freelancer address: ${expandedJob.freelancer}`}>{expandedJob.freelancer}</p>
+                                    <p
+                                      className="font-mono text-xs break-all"
+                                      aria-label={`Freelancer address: ${expandedJob.freelancer}`}
+                                    >
+                                      {expandedJob.freelancer}
+                                    </p>
                                   </div>
                                   <div className="bg-gray-800 rounded-lg p-2 sm:p-3 min-w-0">
                                     <div className="flex items-center justify-between gap-2 mb-1">
                                       <p className="text-gray-400 text-xs font-semibold">Arbiter</p>
-                                      <CopyButton value={expandedJob.arbiter} label="Arbiter address" />
+                                      <CopyButton
+                                        value={expandedJob.arbiter}
+                                        label="Arbiter address"
+                                      />
                                     </div>
-                                    <p className="font-mono text-xs break-all" aria-label={`Arbiter address: ${expandedJob.arbiter}`}>{expandedJob.arbiter}</p>
+                                    <p
+                                      className="font-mono text-xs break-all"
+                                      aria-label={`Arbiter address: ${expandedJob.arbiter}`}
+                                    >
+                                      {expandedJob.arbiter}
+                                    </p>
                                   </div>
                                 </div>
 
-                                <div className="space-y-3 sm:space-y-4" role="region" aria-label="Milestones">
+                                <div
+                                  className="space-y-3 sm:space-y-4"
+                                  role="region"
+                                  aria-label="Milestones"
+                                >
                                   {showArbiterNoDisputes && (
                                     <ArbiterPanelPlaceholder variant="no-disputes" />
                                   )}
@@ -898,7 +922,10 @@ export default function Dashboard() {
                   })}
                 </div>
 
-                <nav className="flex flex-col xs:flex-row items-center justify-between gap-3 overflow-x-auto" aria-label="Pagination navigation">
+                <nav
+                  className="flex flex-col xs:flex-row items-center justify-between gap-3 overflow-x-auto"
+                  aria-label="Pagination navigation"
+                >
                   <button
                     type="button"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -909,7 +936,11 @@ export default function Dashboard() {
                     Previous
                   </button>
 
-                  <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto" aria-label="Pagination buttons" role="group">
+                  <div
+                    className="flex items-center gap-1 sm:gap-2 overflow-x-auto"
+                    aria-label="Pagination buttons"
+                    role="group"
+                  >
                     {paginationButtons.map((value) => {
                       const active = value === page;
                       return (
@@ -918,7 +949,9 @@ export default function Dashboard() {
                           type="button"
                           onClick={() => setPage(value)}
                           aria-current={active ? "page" : undefined}
-                          aria-label={active ? `Current page, page ${value}` : `Go to page ${value}`}
+                          aria-label={
+                            active ? `Current page, page ${value}` : `Go to page ${value}`
+                          }
                           className={`h-8 min-w-8 px-1.5 sm:px-2 rounded-md text-xs sm:text-sm border whitespace-nowrap transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${
                             active
                               ? "bg-indigo-600 border-indigo-500 text-white focus-visible:ring-indigo-400"

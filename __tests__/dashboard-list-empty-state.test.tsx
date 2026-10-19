@@ -363,9 +363,7 @@ describe("Dashboard — empty state placeholder UI", () => {
 
       render(<Dashboard />);
 
-      expect(
-        screen.getByText(/Connect your wallet to view your jobs/)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Connect your wallet to view your jobs/)).toBeInTheDocument();
     });
   });
 

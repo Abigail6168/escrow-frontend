@@ -81,7 +81,10 @@ export function formatRelativeTime(at: string | number, now: number = Date.now()
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-export function formatLatestActivity(job: JobSummaryInput, now: number = Date.now()): string | null {
+export function formatLatestActivity(
+  job: JobSummaryInput,
+  now: number = Date.now()
+): string | null {
   if (!job.latestEventType) return null;
   const label = humanizeEventType(job.latestEventType);
   if (!label) return null;

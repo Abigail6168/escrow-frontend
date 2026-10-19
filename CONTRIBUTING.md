@@ -57,6 +57,7 @@ For on-chain testnet work, install Freighter and switch it to Stellar testnet (t
 ## Code Style
 
 Follow the project's existing code style and use ESLint to check:
+
 ```bash
 npm run lint
 ```
@@ -105,7 +106,7 @@ import { fetchWhitelistedTokens } from "@/app/lib/whitelist";
 import { fetchWhitelistedTokens } from "../whitelist";
 ```
 
-A check script enforces this convention.  Run it before opening a PR:
+A check script enforces this convention. Run it before opening a PR:
 
 ```bash
 npm run check-test-locations
@@ -151,6 +152,7 @@ When you add fixtures, match real backend response shapes rather than inventing 
 ## Reporting Issues
 
 If you find a bug or have a feature request, please open an issue on GitHub with clear details:
+
 - Steps to reproduce the problem (if bug)
 - Expected behavior
 - Actual behavior

@@ -29,21 +29,16 @@ const routes = [
   {
     path: "/",
     check: (page: Page) =>
-      expect(page.getByRole("heading", { level: 1 })).toContainText(
-        "Escrow that",
-      ),
+      expect(page.getByRole("heading", { level: 1 })).toContainText("Escrow that"),
   },
   {
     path: "/dashboard",
     check: (page: Page) =>
-      expect(
-        page.getByText("Connect your wallet to view your jobs"),
-      ).toBeVisible(),
+      expect(page.getByText("Connect your wallet to view your jobs")).toBeVisible(),
   },
   {
     path: "/create",
-    check: (page: Page) =>
-      expect(page.getByTestId("wizard-step-list")).toBeVisible(),
+    check: (page: Page) => expect(page.getByTestId("wizard-step-list")).toBeVisible(),
   },
 ];
 

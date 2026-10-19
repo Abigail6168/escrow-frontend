@@ -27,7 +27,7 @@ describe("Response Deadline validation and features", () => {
           success: true,
           data: [{ address: "CTOKEN", symbol: "USDC" }],
         }),
-      }),
+      })
     );
     mockUseWallet.mockReturnValue({
       address: "GTEST",
@@ -55,9 +55,7 @@ describe("Response Deadline validation and features", () => {
     it("sets the input value when a preset is clicked", () => {
       render(<CreateJob />);
 
-      const input = screen.getByLabelText(
-        "Response Deadline (days)",
-      ) as HTMLInputElement;
+      const input = screen.getByLabelText("Response Deadline (days)") as HTMLInputElement;
       const fourteenDayButton = screen.getByRole("button", { name: "14 days" });
 
       fireEvent.click(fourteenDayButton);
@@ -109,9 +107,7 @@ describe("Response Deadline validation and features", () => {
       fireEvent.blur(input);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("Response deadline is required"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Response deadline is required")).toBeInTheDocument();
       });
     });
 
@@ -124,9 +120,7 @@ describe("Response Deadline validation and features", () => {
       fireEvent.blur(input);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("Must be a whole number of days"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Must be a whole number of days")).toBeInTheDocument();
       });
     });
 
@@ -165,9 +159,7 @@ describe("Response Deadline validation and features", () => {
       fireEvent.blur(input);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("Must be at most 365 days"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Must be at most 365 days")).toBeInTheDocument();
       });
     });
 
@@ -180,18 +172,10 @@ describe("Response Deadline validation and features", () => {
       fireEvent.blur(input);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText("Response deadline is required"),
-        ).not.toBeInTheDocument();
-        expect(
-          screen.queryByText("Must be a whole number of days"),
-        ).not.toBeInTheDocument();
-        expect(
-          screen.queryByText("Must be at least 1 day"),
-        ).not.toBeInTheDocument();
-        expect(
-          screen.queryByText("Must be at most 365 days"),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText("Response deadline is required")).not.toBeInTheDocument();
+        expect(screen.queryByText("Must be a whole number of days")).not.toBeInTheDocument();
+        expect(screen.queryByText("Must be at least 1 day")).not.toBeInTheDocument();
+        expect(screen.queryByText("Must be at most 365 days")).not.toBeInTheDocument();
       });
     });
 
@@ -231,9 +215,7 @@ describe("Response Deadline validation and features", () => {
       fireEvent.blur(input);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("Must be at most 365 days"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Must be at most 365 days")).toBeInTheDocument();
       });
 
       // Now enter a valid value
@@ -241,9 +223,7 @@ describe("Response Deadline validation and features", () => {
       fireEvent.blur(input);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText("Must be at most 365 days"),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText("Must be at most 365 days")).not.toBeInTheDocument();
       });
     });
   });
@@ -253,7 +233,7 @@ describe("Response Deadline validation and features", () => {
       render(<CreateJob />);
 
       const preview = screen.getByText(
-        /Freelancer can claim funds automatically after 7 days if you do not respond/,
+        /Freelancer can claim funds automatically after 7 days if you do not respond/
       );
       expect(preview).toBeInTheDocument();
     });
@@ -268,8 +248,8 @@ describe("Response Deadline validation and features", () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            /Freelancer can claim funds automatically after 30 days if you do not respond/,
-          ),
+            /Freelancer can claim funds automatically after 30 days if you do not respond/
+          )
         ).toBeInTheDocument();
       });
     });
@@ -284,8 +264,8 @@ describe("Response Deadline validation and features", () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            /Freelancer can claim funds automatically after 1 day if you do not respond/,
-          ),
+            /Freelancer can claim funds automatically after 1 day if you do not respond/
+          )
         ).toBeInTheDocument();
       });
     });
@@ -300,7 +280,7 @@ describe("Response Deadline validation and features", () => {
 
       await waitFor(() => {
         expect(
-          screen.queryByText(/Freelancer can claim funds automatically/),
+          screen.queryByText(/Freelancer can claim funds automatically/)
         ).not.toBeInTheDocument();
       });
     });
@@ -329,11 +309,9 @@ describe("Response Deadline validation and features", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Please fix the response deadline before creating a job."),
+          screen.getByText("Please fix the response deadline before creating a job.")
         ).toBeInTheDocument();
-        expect(
-          screen.getByText("Must be at most 365 days"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Must be at most 365 days")).toBeInTheDocument();
       });
     });
 
@@ -356,11 +334,9 @@ describe("Response Deadline validation and features", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Please fix the response deadline before creating a job."),
+          screen.getByText("Please fix the response deadline before creating a job.")
         ).toBeInTheDocument();
-        expect(
-          screen.getByText("Response deadline is required"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Response deadline is required")).toBeInTheDocument();
       });
     });
   });

@@ -1,8 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import CountdownTimer, {
-  formatAbsoluteDeadline,
-} from "@/app/components/CountdownTimer";
+import CountdownTimer, { formatAbsoluteDeadline } from "@/app/components/CountdownTimer";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -40,9 +38,7 @@ describe("CountdownTimer — absolute date (issue #683)", () => {
     expect(timeEl).toHaveAttribute("dateTime");
     // dateTime should be a valid ISO 8601 string
     const iso = timeEl.getAttribute("dateTime");
-    expect(iso).toMatch(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
-    );
+    expect(iso).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
   });
 
   it("renders formatted absolute date text starting with 'Releases'", () => {
@@ -75,9 +71,6 @@ describe("CountdownTimer — absolute date (issue #683)", () => {
     render(<CountdownTimer deadline={deadline} />);
 
     const timeEl = screen.getByTestId("countdown-absolute");
-    expect(timeEl).toHaveAttribute(
-      "dateTime",
-      new Date(deadline).toISOString()
-    );
+    expect(timeEl).toHaveAttribute("dateTime", new Date(deadline).toISOString());
   });
 });

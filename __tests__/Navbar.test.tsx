@@ -18,9 +18,7 @@ const setSelectedWalletId = vi.fn();
 let walletState: Record<string, unknown>;
 
 vi.mock("@/app/context/WalletContext", async () => {
-  const actual = await vi.importActual<Record<string, unknown>>(
-    "@/app/context/WalletContext",
-  );
+  const actual = await vi.importActual<Record<string, unknown>>("@/app/context/WalletContext");
   return {
     ...actual,
     useWallet: () => walletState,
@@ -108,8 +106,6 @@ describe("Navbar owns the bell and the wallet controls", () => {
   it("surfaces a network mismatch as an alert", () => {
     walletState.networkMismatchMessage = "Wallet is on PUBLIC, app expects TESTNET";
     render(<Navbar />);
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      /Wallet is on PUBLIC, app expects TESTNET/,
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent(/Wallet is on PUBLIC, app expects TESTNET/);
   });
 });

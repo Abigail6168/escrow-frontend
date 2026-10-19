@@ -21,9 +21,7 @@ const kb = (n) => `${(n / 1024).toFixed(1)} kB`;
 
 function firstLoadJs(htmlFile) {
   const html = readFileSync(join(OUT, htmlFile), "utf8");
-  const srcs = new Set(
-    [...html.matchAll(/<script[^>]+src="([^"]+\.js)"/g)].map((m) => m[1]),
-  );
+  const srcs = new Set([...html.matchAll(/<script[^>]+src="([^"]+\.js)"/g)].map((m) => m[1]));
   let total = 0;
   for (const src of srcs) {
     total += gzipSync(readFileSync(join(OUT, src.split("?")[0]))).length;
@@ -32,21 +30,17 @@ function firstLoadJs(htmlFile) {
 }
 
 const sizes = Object.fromEntries(
-  Object.entries(ROUTES).map(([route, file]) => [route, firstLoadJs(file)]),
+  Object.entries(ROUTES).map(([route, file]) => [route, firstLoadJs(file)])
 );
 
 if (process.argv.includes("--update")) {
-  const budget = Object.fromEntries(
-    Object.entries(sizes).map(([r, s]) => [r, Math.ceil(s * 1.1)]),
-  );
+  const budget = Object.fromEntries(Object.entries(sizes).map(([r, s]) => [r, Math.ceil(s * 1.1)]));
   writeFileSync(BUDGET_FILE, JSON.stringify(budget, null, 2) + "\n");
   console.log(`Wrote ${BUDGET_FILE}`);
   process.exit(0);
 }
 
-const budget = existsSync(BUDGET_FILE)
-  ? JSON.parse(readFileSync(BUDGET_FILE, "utf8"))
-  : {};
+const budget = existsSync(BUDGET_FILE) ? JSON.parse(readFileSync(BUDGET_FILE, "utf8")) : {};
 let failed = false;
 const rows = Object.entries(sizes).map(([route, size]) => {
   const limit = budget[route];
@@ -69,7 +63,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
 }
 if (failed) {
   console.error(
-    `First-load JS exceeds ${BUDGET_FILE}. If the increase is intended, run \`node scripts/bundle-size.mjs --update\` after a build.`,
+    `First-load JS exceeds ${BUDGET_FILE}. If the increase is intended, run \`node scripts/bundle-size.mjs --update\` after a build.`
   );
   process.exit(1);
 }

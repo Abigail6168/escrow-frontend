@@ -6,7 +6,10 @@
  * timeouts, rejection parsing, network checks) is handled by the kit.
  */
 
-import { getAddress as getFreighterAddress, isConnected as isFreighterConnected } from "@stellar/freighter-api";
+import {
+  getAddress as getFreighterAddress,
+  isConnected as isFreighterConnected,
+} from "@stellar/freighter-api";
 import { withWalletLoader } from "@/app/lib/wallet_state_context";
 
 const LOG_PREFIX = "[wallet_session]";
@@ -64,7 +67,10 @@ export class FreighterActiveAddressStore {
         this.storage.removeItem(FREIGHTER_ACTIVE_ADDRESS_STORAGE_KEY);
       }
     } catch (err) {
-      console.warn(`${LOG_PREFIX} REHYDRATE FAILED`, err instanceof Error ? err.message : String(err));
+      console.warn(
+        `${LOG_PREFIX} REHYDRATE FAILED`,
+        err instanceof Error ? err.message : String(err)
+      );
       this.clear();
     }
   }
@@ -82,7 +88,10 @@ export class FreighterActiveAddressStore {
         JSON.stringify({ version: SCHEMA_VERSION, ...this.activeAddress })
       );
     } catch (err) {
-      console.warn(`${LOG_PREFIX} PERSIST FAILED`, err instanceof Error ? err.message : String(err));
+      console.warn(
+        `${LOG_PREFIX} PERSIST FAILED`,
+        err instanceof Error ? err.message : String(err)
+      );
     }
   }
 
@@ -118,10 +127,14 @@ export async function verifyAndRehydrateFreighterAddress(
     try {
       const conn = await isConnectedFn();
       const connected =
-        typeof conn === "boolean" ? conn : Boolean((conn as { isConnected?: unknown } | null)?.isConnected);
+        typeof conn === "boolean"
+          ? conn
+          : Boolean((conn as { isConnected?: unknown } | null)?.isConnected);
       const live = connected ? await getAddressFn() : null;
       const liveAddress =
-        typeof live === "string" ? live : String((live as { address?: unknown } | null)?.address ?? "");
+        typeof live === "string"
+          ? live
+          : String((live as { address?: unknown } | null)?.address ?? "");
 
       if (liveAddress && liveAddress === persisted.address) return liveAddress;
     } catch (err) {

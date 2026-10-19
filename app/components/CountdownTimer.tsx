@@ -63,9 +63,7 @@ export function formatRemaining(msRemaining: number): string {
  */
 export function formatAbsoluteDeadline(deadlineMs: number): string {
   const locale =
-    typeof navigator !== "undefined" && navigator.language
-      ? navigator.language
-      : "en-US";
+    typeof navigator !== "undefined" && navigator.language ? navigator.language : "en-US";
 
   const formatter = new Intl.DateTimeFormat(locale, {
     weekday: "short",

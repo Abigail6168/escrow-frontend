@@ -45,7 +45,11 @@ describe("job_list_summary", () => {
   it("formats milestone progress", () => {
     expect(formatMilestoneProgress(summary)).toBe("2 of 4 released");
     expect(
-      formatMilestoneProgress({ ...summary, releasedCount: undefined, milestones: [{ status: "Released" }, { status: "Funded" }] })
+      formatMilestoneProgress({
+        ...summary,
+        releasedCount: undefined,
+        milestones: [{ status: "Released" }, { status: "Funded" }],
+      })
     ).toBe("1 of 2 released");
     expect(formatMilestoneProgress({ ...summary, milestoneCount: 0 })).toBeNull();
   });
@@ -53,7 +57,9 @@ describe("job_list_summary", () => {
   it("formats latest activity in human terms", () => {
     const now = Date.parse("2026-10-18T12:00:00Z");
     expect(formatLatestActivity(summary, now)).toBe("Delivered 2h ago");
-    expect(formatLatestActivity({ ...summary, latestEventAt: undefined }, now)).toBe("Delivered at ledger 123");
+    expect(formatLatestActivity({ ...summary, latestEventAt: undefined }, now)).toBe(
+      "Delivered at ledger 123"
+    );
   });
 
   it("stores and clears a local label", () => {

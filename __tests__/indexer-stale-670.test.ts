@@ -52,8 +52,7 @@ function makeUpdatingPoller(opts?: { maxMs?: number; backoff?: number[] }) {
         stop();
         return;
       }
-      const delay =
-        BACKOFF_STEPS_MS[Math.min(stepIndex, BACKOFF_STEPS_MS.length - 1)];
+      const delay = BACKOFF_STEPS_MS[Math.min(stepIndex, BACKOFF_STEPS_MS.length - 1)];
       stepIndex += 1;
       timerId = setTimeout(async () => {
         if (cancelled) return;
@@ -162,7 +161,10 @@ describe("Issue #670 – Updating… indicator after actions", () => {
     });
 
     const firstFetch = vi.fn().mockImplementation(
-      () => new Promise<void>(() => { /* never resolves */ })
+      () =>
+        new Promise<void>(() => {
+          /* never resolves */
+        })
     );
     const secondFetch = vi.fn().mockResolvedValue(undefined);
 

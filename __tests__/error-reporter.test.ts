@@ -1,9 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  reportApiResponse,
-  scrubErrorText,
-} from "@/app/lib/errorReporter";
+import { reportApiResponse, scrubErrorText } from "@/app/lib/errorReporter";
 
 const ADDRESS = "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H";
 

@@ -51,8 +51,11 @@ describe("Create job draft persistence", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({ success: true, data: { tokens: [{ address: "CTOKEN", symbol: "USDC" }] } }),
-      }),
+        json: async () => ({
+          success: true,
+          data: { tokens: [{ address: "CTOKEN", symbol: "USDC" }] },
+        }),
+      })
     );
   });
 
@@ -69,7 +72,7 @@ describe("Create job draft persistence", () => {
     render(<CreateJob />);
 
     expect(await screen.findByTestId("create-job-draft-banner")).toHaveTextContent(
-      "Restored your draft",
+      "Restored your draft"
     );
     expect(screen.getByLabelText("Freelancer Address")).toHaveValue(FREELANCER);
     expect(screen.getByLabelText("Arbiter Address")).toHaveValue(ARBITER);
@@ -87,7 +90,7 @@ describe("Create job draft persistence", () => {
         acceptedAssets: [],
         requirements: [],
         milestones: [{ amount: "100" }],
-      }),
+      })
     );
     render(<CreateJob />);
 

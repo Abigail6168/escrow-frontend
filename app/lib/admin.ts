@@ -11,7 +11,7 @@ import { AdminResponseSchema, validateResponse } from "@/app/lib/api_schemas";
  */
 export async function fetchAdminAddress(
   contractId: string,
-  options?: { signal?: AbortSignal },
+  options?: { signal?: AbortSignal }
 ): Promise<string | null> {
   const endpoint = "/api/jobs/query";
   try {
@@ -74,7 +74,7 @@ export async function fetchAdminAddress(
 export async function isAdmin(
   walletAddress: string | null,
   contractId: string,
-  options?: { signal?: AbortSignal },
+  options?: { signal?: AbortSignal }
 ): Promise<boolean> {
   if (!walletAddress) return false;
 
