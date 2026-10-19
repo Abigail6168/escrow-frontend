@@ -114,10 +114,24 @@ const walletTracker = new WalletTransactionTracker();
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [selectedWalletId, setSelectedWalletId] = useState<SupportedWalletId>(() => {
-    const persisted = walletStateStore.getActiveState();
-    return persisted?.selectedWalletId as SupportedWalletId ?? SUPPORTED_WALLETS[0].id;
-  });
+  // Start from the static default so prerendered markup and the first client
+  // render match; the persisted choice is restored after mount below.
+  const [selectedWalletId, setSelectedWalletId] = useState<SupportedWalletId>(
+    SUPPORTED_WALLETS[0].id
+  );
+
+  useEffect(() => {
+    let active = true;
+    Promise.resolve().then(() => {
+      const persisted = walletStateStore.getActiveState();
+      if (active && persisted?.selectedWalletId) {
+        setSelectedWalletId(persisted.selectedWalletId as SupportedWalletId);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
   const [networkMismatchMessage, setNetworkMismatchMessage] = useState<
     string | null
   >(null);
