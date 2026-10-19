@@ -76,9 +76,9 @@ describe("Issue #671 – batch deadline fetches", () => {
     const controller = new AbortController();
     controller.abort();
 
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(
-      new DOMException("Aborted", "AbortError")
-    );
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockRejectedValueOnce(new DOMException("Aborted", "AbortError"));
 
     const result = await fetchAllAutoReleaseDeadlines("job-abc", [0], {
       signal: controller.signal,

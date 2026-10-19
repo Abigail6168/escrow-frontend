@@ -33,7 +33,7 @@ export class ApiShapeError extends Error {
       `Unexpected response from server at ${endpoint}: ${zodError.issues
         .slice(0, 3)
         .map((i) => `${i.path.join(".")}: ${i.message}`)
-        .join("; ")}`,
+        .join("; ")}`
     );
     this.name = "ApiShapeError";
     this.cause = zodError;
@@ -79,12 +79,33 @@ export const JobSchema = z.object({
   tokenDecimals: z.number().finite().optional(),
   // By-wallet summary fields shown on the dashboard rows (#638). The backend
   // may send null for unknown values, which is treated as absent.
-  role: z.string().nullish().transform((v) => v ?? undefined),
-  milestoneCount: z.number().finite().nullish().transform((v) => v ?? undefined),
-  releasedCount: z.number().finite().nullish().transform((v) => v ?? undefined),
-  latestEventType: z.string().nullish().transform((v) => v ?? undefined),
-  latestEventAt: z.union([z.string(), z.number()]).nullish().transform((v) => v ?? undefined),
-  latestLedger: z.number().finite().nullish().transform((v) => v ?? undefined),
+  role: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? undefined),
+  milestoneCount: z
+    .number()
+    .finite()
+    .nullish()
+    .transform((v) => v ?? undefined),
+  releasedCount: z
+    .number()
+    .finite()
+    .nullish()
+    .transform((v) => v ?? undefined),
+  latestEventType: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? undefined),
+  latestEventAt: z
+    .union([z.string(), z.number()])
+    .nullish()
+    .transform((v) => v ?? undefined),
+  latestLedger: z
+    .number()
+    .finite()
+    .nullish()
+    .transform((v) => v ?? undefined),
 });
 
 export type Job = z.infer<typeof JobSchema>;
@@ -213,11 +234,7 @@ export type AutoReleaseResponse = z.infer<typeof AutoReleaseResponseSchema>;
  * @example
  * const validated = validateResponse(JobListResponseSchema, rawJson, '/api/jobs/by-wallet/…');
  */
-export function validateResponse<T>(
-  schema: z.ZodSchema<T>,
-  data: unknown,
-  endpoint: string,
-): T {
+export function validateResponse<T>(schema: z.ZodSchema<T>, data: unknown, endpoint: string): T {
   const result = schema.safeParse(data);
   if (!result.success) {
     throw new ApiShapeError(endpoint, result.error);

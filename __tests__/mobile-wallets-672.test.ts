@@ -33,7 +33,9 @@ describe("Issue #672 – mobile wallet network mismatch messages", () => {
 
   it("every supported wallet gets a mismatch message, and none when networks match", () => {
     for (const { label } of SUPPORTED_WALLETS) {
-      expect(assertWalletNetwork(Networks.PUBLIC, label, Networks.TESTNET)).toMatch(/Network mismatch/);
+      expect(assertWalletNetwork(Networks.PUBLIC, label, Networks.TESTNET)).toMatch(
+        /Network mismatch/
+      );
       expect(assertWalletNetwork(Networks.TESTNET, label, Networks.TESTNET)).toBeNull();
     }
   });

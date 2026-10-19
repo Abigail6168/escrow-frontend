@@ -67,9 +67,12 @@ describe("app/lib/config.ts", () => {
   });
 
   it("exports no transaction builders", () => {
-    ["function getContract", "function buildTx", "function addressToScVal", "function i128ToScVal"].forEach(
-      (name) => expect(source).not.toContain(name),
-    );
+    [
+      "function getContract",
+      "function buildTx",
+      "function addressToScVal",
+      "function i128ToScVal",
+    ].forEach((name) => expect(source).not.toContain(name));
   });
 
   it("never constructs an RPC Server at module scope", () => {

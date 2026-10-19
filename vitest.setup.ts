@@ -15,7 +15,7 @@ expect.extend({
           .map(
             (v) =>
               `${v.id} (${v.impact ?? "unknown"}): ${v.help}\n` +
-              v.nodes.map((n) => `  ${n.target.join(" ")}`).join("\n"),
+              v.nodes.map((n) => `  ${n.target.join(" ")}`).join("\n")
           )
           .join("\n\n") || "Expected axe violations, found none",
     };
@@ -58,10 +58,7 @@ if (typeof window !== "undefined") {
   // Defined on both `globalThis` and `window`: they are usually the same object
   // under jsdom, but tests reach for either name and the fallback should not
   // depend on that holding.
-  if (
-    typeof globalThis.localStorage === "undefined" ||
-    !window.localStorage
-  ) {
+  if (typeof globalThis.localStorage === "undefined" || !window.localStorage) {
     const createMemoryStorage = (): Storage => {
       const store = new Map<string, string>();
       return {

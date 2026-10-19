@@ -95,7 +95,9 @@ lines.push("");
 for (const [name, value] of tokens) {
   const camel = toCamel(name);
   lines.push(`/** CSS: --color-${name}: ${value} */`);
-  lines.push(`export const color${camel.charAt(0).toUpperCase() + camel.slice(1)} = "${value}" as const;`);
+  lines.push(
+    `export const color${camel.charAt(0).toUpperCase() + camel.slice(1)} = "${value}" as const;`
+  );
   lines.push("");
 }
 

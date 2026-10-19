@@ -53,13 +53,12 @@ function normalizeToken(item: unknown): WhitelistToken | null {
  */
 export async function fetchWhitelistedTokens(
   contractId: string,
-  options?: { signal?: AbortSignal },
+  options?: { signal?: AbortSignal }
 ): Promise<WhitelistToken[]> {
   const endpoint = `/api/jobs/${contractId}/whitelist`;
-  const res = await fetch(
-    `${BACKEND_URL}/api/jobs/${encodeURIComponent(contractId)}/whitelist`,
-    { signal: options?.signal },
-  );
+  const res = await fetch(`${BACKEND_URL}/api/jobs/${encodeURIComponent(contractId)}/whitelist`, {
+    signal: options?.signal,
+  });
   if (!res.ok) {
     throw new Error(`Whitelist request failed with status ${res.status}`);
   }
@@ -68,9 +67,7 @@ export async function fetchWhitelistedTokens(
   const body = validateResponse(WhitelistResponseSchema, rawBody, endpoint);
   const list: unknown[] = body.data.tokens;
 
-  return list
-    .map(normalizeToken)
-    .filter((token): token is WhitelistToken => token !== null);
+  return list.map(normalizeToken).filter((token): token is WhitelistToken => token !== null);
 }
 
 /** Human-readable label: symbol, else name, else a truncated address. */

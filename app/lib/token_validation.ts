@@ -63,9 +63,7 @@ async function simulateTokenCall(tokenAddress: string, method: string): Promise<
  * `decimals()` calls. Returns a structured result so the UI can show the
  * token info or an error.
  */
-export async function validateTokenContract(
-  tokenAddress: string,
-): Promise<TokenValidationResult> {
+export async function validateTokenContract(tokenAddress: string): Promise<TokenValidationResult> {
   try {
     const [symbolResult, decimalsResult] = await Promise.all([
       simulateTokenCall(tokenAddress, "symbol"),

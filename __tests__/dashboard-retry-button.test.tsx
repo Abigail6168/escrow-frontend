@@ -59,10 +59,7 @@ describe("Dashboard — error retry button (issue #682)", () => {
   });
 
   it("shows a Retry button when the fetch fails", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("Failed to connect to backend"))
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Failed to connect to backend")));
 
     render(<Dashboard />);
 
@@ -71,9 +68,7 @@ describe("Dashboard — error retry button (issue #682)", () => {
     });
     expect(screen.getByTestId("dashboard-retry-button")).toBeInTheDocument();
     expect(screen.getByText("Error loading jobs")).toBeInTheDocument();
-    expect(
-      screen.getByText("Failed to connect to backend")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Failed to connect to backend")).toBeInTheDocument();
   });
 
   it("clicking Retry reloads jobs after a transient failure", async () => {
@@ -131,9 +126,7 @@ describe("Dashboard — error retry button (issue #682)", () => {
     // The error should clear and the job list should render.
     await waitFor(() => {
       expect(screen.queryByTestId("dashboard-error-alert")).not.toBeInTheDocument();
-      expect(
-        screen.getAllByTestId("dashboard-list-item").length
-      ).toBeGreaterThan(0);
+      expect(screen.getAllByTestId("dashboard-list-item").length).toBeGreaterThan(0);
     });
   });
 
@@ -172,9 +165,7 @@ describe("Dashboard — error retry button (issue #682)", () => {
     });
 
     // Click Retry — the fetch hangs.
-    const retryButton = screen.getByTestId(
-      "dashboard-retry-button"
-    ) as HTMLButtonElement;
+    const retryButton = screen.getByTestId("dashboard-retry-button") as HTMLButtonElement;
     fireEvent.click(retryButton);
 
     // While the fetch is in-flight, the button should be disabled and show
@@ -197,10 +188,7 @@ describe("Dashboard — error retry button (issue #682)", () => {
   });
 
   it("shows Retry button for a 429 rate-limit response", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ status: 429, json: async () => ({}) })
-    );
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ status: 429, json: async () => ({}) }));
 
     render(<Dashboard />);
 

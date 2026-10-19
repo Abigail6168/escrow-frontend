@@ -17,7 +17,7 @@ describe("contract error codes (#600)", () => {
 
   it("falls back to the generic message with the code for unknown codes", () => {
     expect(formatTxError(revert(999))).toBe(
-      "The contract rejected this transaction (error code 999). Check the job state and try again.",
+      "The contract rejected this transaction (error code 999). Check the job state and try again."
     );
   });
 

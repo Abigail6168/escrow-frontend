@@ -53,6 +53,57 @@ export class WalletRejectedError extends Error {
   }
 }
 
+// =============================================================================
+// Per-wallet availability error (#687)
+// =============================================================================
+
+/** Metadata for each supported wallet. */
+interface WalletInfo {
+  label: string;
+  installUrl: string;
+}
+
+const WALLET_INFO: Record<string, WalletInfo> = {
+  freighter: {
+    label: "Freighter",
+    installUrl: "https://www.freighter.app/",
+  },
+  albedo: {
+    label: "Albedo",
+    installUrl: "https://albedo.link/",
+  },
+  xbull: {
+    label: "xBull",
+    installUrl: "https://xbull.app/",
+  },
+  hana: {
+    label: "Hana",
+    installUrl: "https://hanastellar.com/",
+  },
+  lobstr: {
+    label: "LOBSTR",
+    installUrl: "https://lobstr.co/",
+  },
+};
+
+/**
+ * Thrown when the selected wallet extension is missing or locked.
+ *
+ * Carrying the `walletId` allows {@link formatTxError} to produce a
+ * wallet-specific install link instead of always naming Freighter.
+ */
+export class WalletUnavailableError extends Error {
+  readonly walletId: string;
+
+  constructor(walletId: string) {
+    const info = WALLET_INFO[walletId.toLowerCase()];
+    const label = info?.label ?? walletId;
+    super(`${label} isn't available. Make sure the extension is installed and unlocked.`);
+    this.name = "WalletUnavailableError";
+    this.walletId = walletId.toLowerCase();
+  }
+}
+
 /**
  * Detects whether an error was thrown by the wallet layer (user rejected the
  * signing prompt). Deliberately does NOT match backend error messages such as
@@ -86,6 +137,10 @@ export function isWalletRejectedError(err: unknown): boolean {
 }
 
 export function isWalletAvailabilityError(err: unknown): boolean {
+  if (err instanceof WalletUnavailableError) {
+    return true;
+  }
+
   if (!(err instanceof Error)) {
     return false;
   }
@@ -97,7 +152,8 @@ export function isWalletAvailabilityError(err: unknown): boolean {
     message.includes("wallet extension") ||
     message.includes("extension not installed") ||
     message.includes("no wallet") ||
-    message.includes("wallet unavailable")
+    message.includes("wallet unavailable") ||
+    message.includes("isn't available")
   );
 }
 
@@ -129,13 +185,17 @@ export function parseContractErrorCode(message: string): number | null {
  *
  * Resolution order:
  * 1. WalletRejectedError instance → wallet decline message
- * 2. Wallet availability error → install-wallet message
+ * 2. Wallet availability error → install link for the wallet in use
  * 3. Backend contract error code → specific ERROR_MESSAGES entry (or generic
  *    with code shown for unknown codes)
  * 4. Network / connectivity errors
  * 5. Raw error message as last resort
+ *
+ * @param walletId - Optional wallet identifier ("freighter", "xbull", ...)
+ *   used for the install link when `err` doesn't carry one itself. A
+ *   {@link WalletUnavailableError}'s own `walletId` takes precedence.
  */
-export function formatTxError(err: unknown): string {
+export function formatTxError(err: unknown, walletId?: string): string {
   if (isWalletRejectedError(err)) {
     return "You declined the transaction in your wallet.";
   }
@@ -144,9 +204,13 @@ export function formatTxError(err: unknown): string {
     return "Signature request timed out. Check your wallet and try again.";
   }
 
+  if (err instanceof WalletUnavailableError) {
+    return buildWalletUnavailableMessage(err.walletId);
+  }
+
   if (err instanceof Error) {
     if (isWalletAvailabilityError(err)) {
-      return "Wallet not available. Install Freighter and connect your wallet.";
+      return buildWalletUnavailableMessage(walletId);
     }
 
     // Parse contract error code from backend message first — before any
@@ -187,4 +251,17 @@ export function formatTxError(err: unknown): string {
 
   reportClientError({ source: "tx", message: String(err) });
   return "Something went wrong. Please try again.";
+}
+
+/** Builds the wallet-specific unavailability message with an install link. */
+function buildWalletUnavailableMessage(walletId?: string): string {
+  const key = (walletId ?? "").toLowerCase();
+  const info = WALLET_INFO[key];
+
+  if (info) {
+    return `${info.label} isn't available. Make sure the extension is installed and unlocked. Install at ${info.installUrl}`;
+  }
+
+  // Unknown or no wallet id — fall back to a generic message.
+  return "Wallet not available. Make sure the extension is installed and unlocked.";
 }

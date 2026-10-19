@@ -10,13 +10,8 @@ import LandingLogo from "./LandingLogo";
 import WalletBadge, { formatAddress } from "@/app/components/WalletBadge";
 
 export default function Navbar() {
-  const {
-    address,
-    disconnect,
-    isConnecting,
-    networkMismatchMessage,
-    selectedWalletId,
-  } = useWallet();
+  const { address, disconnect, isConnecting, networkMismatchMessage, selectedWalletId } =
+    useWallet();
   const { isAdminUser } = useIsAdmin(address);
 
   const focusRing =

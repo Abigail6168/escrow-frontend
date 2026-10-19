@@ -48,15 +48,13 @@ if (misplaced.length === 0) {
   console.log("✓ All test files are in __tests__/");
   process.exit(0);
 } else {
-  console.error(
-    `\n✗ ${misplaced.length} test file(s) found outside __tests__/:\n`,
-  );
+  console.error(`\n✗ ${misplaced.length} test file(s) found outside __tests__/:\n`);
   for (const f of misplaced) {
     console.error(`  ${f}`);
   }
   console.error(
     "\nMove them to __tests__/ and update their imports to use @/app/... aliases.\n" +
-    "See CONTRIBUTING.md for the test file convention.\n",
+      "See CONTRIBUTING.md for the test file convention.\n"
   );
   process.exit(1);
 }

@@ -59,22 +59,23 @@ export function parseCspReport(body: unknown): {
 } {
   const report = (body as CspReportBody)?.["csp-report"] ?? {};
   return {
-    violatedDirective: typeof report["violated-directive"] === "string"
-      ? report["violated-directive"]
-      : "unknown",
-    blockedUri: typeof report["blocked-uri"] === "string"
-      ? report["blocked-uri"]
-      : "unknown",
-    page: typeof report["document-uri"] === "string"
-      ? stripQueryString(report["document-uri"])
-      : "unknown",
+    violatedDirective:
+      typeof report["violated-directive"] === "string" ? report["violated-directive"] : "unknown",
+    blockedUri: typeof report["blocked-uri"] === "string" ? report["blocked-uri"] : "unknown",
+    page:
+      typeof report["document-uri"] === "string"
+        ? stripQueryString(report["document-uri"])
+        : "unknown",
   };
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
   // Validate Content-Type — the CSP spec sends application/csp-report.
   const contentType = request.headers.get("content-type") ?? "";
-  if (!contentType.includes("application/csp-report") && !contentType.includes("application/json")) {
+  if (
+    !contentType.includes("application/csp-report") &&
+    !contentType.includes("application/json")
+  ) {
     return new Response("Unsupported Media Type", { status: 415 });
   }
 

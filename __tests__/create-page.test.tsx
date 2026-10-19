@@ -35,8 +35,11 @@ describe("Create page", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({ success: true, data: { tokens: [{ address: "CTOKEN", symbol: "USDC" }] } }),
-      }),
+        json: async () => ({
+          success: true,
+          data: { tokens: [{ address: "CTOKEN", symbol: "USDC" }] },
+        }),
+      })
     );
     mockUseWallet.mockReturnValue({
       address: "GCLIENTADDRESS",
@@ -61,9 +64,7 @@ describe("Create page", () => {
     const submitButton = screen.getByRole("button", { name: "Create Job" });
     expect(submitButton).toBeDisabled();
     expect(submitButton).toHaveClass("disabled:cursor-not-allowed");
-    expect(
-      screen.getByText("Complete each milestone amount to continue.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Complete each milestone amount to continue.")).toBeInTheDocument();
   });
 
   it("supports keyboard focus cues and wizard section selection", () => {
@@ -92,9 +93,7 @@ describe("Create page", () => {
     expect(screen.getByText("No milestones available.")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Add first milestone" }));
-    expect(
-      screen.getByLabelText("Milestone 1 amount in stroops")
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Milestone 1 amount in stroops")).toBeInTheDocument();
   });
 
   it("renders asset and requirement placeholders for empty list data and recovers from them", () => {
@@ -157,10 +156,9 @@ describe("Create page", () => {
       target: { value: "G" + "B".repeat(55) },
     });
     await screen.findByRole("option", { name: "USDC" });
-    fireEvent.change(
-      screen.getByLabelText("Token Contract Address", { selector: "select" }),
-      { target: { value: "CTOKEN" } },
-    );
+    fireEvent.change(screen.getByLabelText("Token Contract Address", { selector: "select" }), {
+      target: { value: "CTOKEN" },
+    });
     fireEvent.change(screen.getByLabelText("Milestone 1 amount in stroops"), {
       target: { value: "100" },
     });
@@ -168,10 +166,9 @@ describe("Create page", () => {
     fireEvent.click(screen.getByRole("button", { name: "Create Job" }));
 
     expect(await screen.findByText("Job Created!")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /View transaction on Stellar Expert/ })).toHaveAttribute(
-      "href",
-      "https://stellar.expert/explorer/testnet/tx/ABC123TXHASH"
-    );
+    expect(
+      screen.getByRole("link", { name: /View transaction on Stellar Expert/ })
+    ).toHaveAttribute("href", "https://stellar.expert/explorer/testnet/tx/ABC123TXHASH");
     expect(screen.getByRole("button", { name: "Go to Dashboard" })).toBeInTheDocument();
     expect(mockShowToast).toHaveBeenCalledWith("Job created successfully!", "success");
     expect(alertSpy).not.toHaveBeenCalled();

@@ -5,8 +5,8 @@ import { HIGH_FEE_THRESHOLD_STROOPS } from "@/app/lib/wallet_session";
 
 // -------------------------------------------------------------------------------------
 
-// Integration note: verify WalletContext derives gasWarning correctly from 
-// setSimulationResult so the banner reflects real context state changes. 
+// Integration note: verify WalletContext derives gasWarning correctly from
+// setSimulationResult so the banner reflects real context state changes.
 // -------------------------------------------------------------------------------------
 
 // Minimal stubs needed by WalletProvider internals.
@@ -14,7 +14,9 @@ vi.mock("@creit.tech/stellar-wallets-kit", () => ({
   Networks: { TESTNET: "Test SDF Network ; September 2015" },
   StellarWalletsKit: {
     init: vi.fn(),
-    getNetwork: vi.fn().mockResolvedValue({ networkPassphrase: "Test SDF Network ; September 2015" }),
+    getNetwork: vi
+      .fn()
+      .mockResolvedValue({ networkPassphrase: "Test SDF Network ; September 2015" }),
     getAddress: vi.fn().mockResolvedValue({ address: null }),
     authModal: vi.fn(),
     setWallet: vi.fn(),

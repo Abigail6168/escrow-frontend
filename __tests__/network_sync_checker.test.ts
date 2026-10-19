@@ -23,21 +23,11 @@ describe("network_sync_checker user rejection handling", () => {
   });
 
   it("detects user rejected transaction exceptions", () => {
-    expect(isNetworkSyncUserRejected(new NetworkSyncUserRejectedError())).toBe(
-      true
-    );
-    expect(isNetworkSyncUserRejected(new Error("user rejected transaction"))).toBe(
-      true
-    );
-    expect(
-      isNetworkSyncUserRejected(new Error("User Declined the request"))
-    ).toBe(true);
-    expect(isNetworkSyncUserRejected(new Error("request rejected"))).toBe(
-      true
-    );
-    expect(
-      isNetworkSyncUserRejected(new Error("denied by the user"))
-    ).toBe(true);
+    expect(isNetworkSyncUserRejected(new NetworkSyncUserRejectedError())).toBe(true);
+    expect(isNetworkSyncUserRejected(new Error("user rejected transaction"))).toBe(true);
+    expect(isNetworkSyncUserRejected(new Error("User Declined the request"))).toBe(true);
+    expect(isNetworkSyncUserRejected(new Error("request rejected"))).toBe(true);
+    expect(isNetworkSyncUserRejected(new Error("denied by the user"))).toBe(true);
     expect(isNetworkSyncUserRejected(new Error("rpc timeout"))).toBe(false);
   });
 
@@ -74,10 +64,7 @@ describe("network_sync_checker user rejection handling", () => {
 
   it("returns the signed payload when the user approves", async () => {
     const showToast = vi.fn();
-    const result = await runNetworkSyncSign(
-      async () => ({ hash: "abc123" }),
-      showToast
-    );
+    const result = await runNetworkSyncSign(async () => ({ hash: "abc123" }), showToast);
     expect(result).toEqual({ hash: "abc123" });
     expect(showToast).not.toHaveBeenCalled();
   });
@@ -116,12 +103,7 @@ describe("validateNetworkSyncWithSignature", () => {
     const showToast = vi.fn();
     const signFn = vi.fn();
 
-    const result = await validateNetworkSyncWithSignature(
-      "mainnet",
-      "testnet",
-      signFn,
-      showToast
-    );
+    const result = await validateNetworkSyncWithSignature("mainnet", "testnet", signFn, showToast);
 
     expect(result).toBeNull();
     expect(signFn).not.toHaveBeenCalled();
@@ -178,7 +160,7 @@ describe("network_sync_checker state serialization", () => {
   it("saves and loads active session state correctly on reload", () => {
     const state = { activeAddress: "GABC123", lastSyncedAt: 1234567890 };
     saveNetworkSyncSession(state);
-    
+
     const loaded = loadNetworkSyncSession();
     expect(loaded).toEqual(state);
   });
@@ -190,7 +172,7 @@ describe("network_sync_checker state serialization", () => {
   it("handles malformed session storage gracefully", () => {
     sessionStorage.setItem("network_sync_active_address_state", "not valid json");
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    
+
     expect(loadNetworkSyncSession()).toBeNull();
     expect(warnSpy).toHaveBeenCalled();
     warnSpy.mockRestore();
@@ -200,7 +182,7 @@ describe("network_sync_checker state serialization", () => {
     const state = { activeAddress: "GABC123", lastSyncedAt: 1234567890 };
     saveNetworkSyncSession(state);
     clearNetworkSyncSession();
-    
+
     expect(loadNetworkSyncSession()).toBeNull();
   });
 });

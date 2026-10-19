@@ -184,9 +184,7 @@ describe("Dashboard — client-side search filter (issue #684)", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("dashboard-filter-hint")).toBeInTheDocument();
-      expect(screen.getByTestId("dashboard-filter-hint")).toHaveTextContent(
-        /Filtering this page/
-      );
+      expect(screen.getByTestId("dashboard-filter-hint")).toHaveTextContent(/Filtering this page/);
     });
   });
 
@@ -201,9 +199,7 @@ describe("Dashboard — client-side search filter (issue #684)", () => {
     await typeAndSearch("NONEXISTENT_QUERY_XYZ");
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("dashboard-filter-empty-state")
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("dashboard-filter-empty-state")).toBeInTheDocument();
       expect(screen.getByText("No matching jobs")).toBeInTheDocument();
     });
   });

@@ -10,10 +10,7 @@ import { parseCspReport, POST } from "@/app/api/csp-report/route";
  */
 
 /** Minimal Request-like helper for the POST route handler. */
-function makeRequest(
-  body: unknown,
-  contentType = "application/csp-report"
-): Request {
+function makeRequest(body: unknown, contentType = "application/csp-report"): Request {
   return new Request("https://milestonepay.app/api/csp-report", {
     method: "POST",
     headers: { "Content-Type": contentType },
@@ -163,9 +160,7 @@ describe("POST /api/csp-report (issue #685)", () => {
   it("returns 415 for an unsupported content type", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    const response = await POST(
-      makeRequest({}, "text/plain") as never
-    );
+    const response = await POST(makeRequest({}, "text/plain") as never);
 
     expect(response.status).toBe(415);
     expect(warnSpy).not.toHaveBeenCalled();

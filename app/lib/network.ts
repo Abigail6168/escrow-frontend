@@ -60,7 +60,7 @@ function networkDisplayName(passphrase: string): string {
 export function buildNetworkMismatchMessage(
   walletPassphrase: string,
   walletName = "wallet",
-  appPassphrase: string = NETWORK_PASSPHRASE,
+  appPassphrase: string = NETWORK_PASSPHRASE
 ): string {
   return `Network mismatch: your ${walletName} is on ${networkDisplayName(walletPassphrase)} but this app expects Stellar ${networkDisplayName(appPassphrase)}. Please switch networks.`;
 }
@@ -72,7 +72,7 @@ export function buildNetworkMismatchMessage(
 export function assertWalletNetwork(
   walletPassphrase: string,
   walletName?: string,
-  appPassphrase: string = NETWORK_PASSPHRASE,
+  appPassphrase: string = NETWORK_PASSPHRASE
 ): string | null {
   return walletPassphrase === appPassphrase
     ? null
@@ -85,10 +85,7 @@ export function assertWalletNetwork(
  * Mainnet's path segment is "public", not "mainnet". Stellar Expert has no
  * futurenet explorer, so that case returns null rather than a link that 404s.
  */
-export function stellarExpertContractUrl(
-  contractId: string,
-  passphrase: string,
-): string | null {
+export function stellarExpertContractUrl(contractId: string, passphrase: string): string | null {
   if (!contractId) return null;
   const kind = networkKind(passphrase);
   if (kind === "public") {

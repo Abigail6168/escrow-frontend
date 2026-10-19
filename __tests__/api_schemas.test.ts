@@ -51,9 +51,9 @@ describe("validateResponse", () => {
   });
 
   it("throws ApiShapeError on an invalid payload", () => {
-    expect(() =>
-      validateResponse(JobSchema, { funded: "yes" }, "/api/jobs/bad"),
-    ).toThrow(ApiShapeError);
+    expect(() => validateResponse(JobSchema, { funded: "yes" }, "/api/jobs/bad")).toThrow(
+      ApiShapeError
+    );
   });
 
   it("includes the endpoint in the error message", () => {
@@ -127,7 +127,7 @@ describe("JobSchema", () => {
 
   it("rejects malformed milestones", () => {
     expect(() =>
-      JobSchema.parse({ ...validJob, milestones: [{ index: "zero", amount: "0", status: "" }] }),
+      JobSchema.parse({ ...validJob, milestones: [{ index: "zero", amount: "0", status: "" }] })
     ).toThrow();
   });
 });
@@ -243,25 +243,25 @@ describe("AutoReleaseResponseSchema", () => {
 describe("malformed payload produces ApiShapeError, not empty data", () => {
   it("throws ApiShapeError for JobListResponse when given a plain string", () => {
     expect(() =>
-      validateResponse(JobListResponseSchema, "unexpected string", "/api/jobs/by-wallet/G…"),
+      validateResponse(JobListResponseSchema, "unexpected string", "/api/jobs/by-wallet/G…")
     ).toThrow(ApiShapeError);
   });
 
   it("throws ApiShapeError for JobDetail when given an array", () => {
-    expect(() =>
-      validateResponse(JobDetailResponseSchema, [], "/api/jobs/job-123"),
-    ).toThrow(ApiShapeError);
+    expect(() => validateResponse(JobDetailResponseSchema, [], "/api/jobs/job-123")).toThrow(
+      ApiShapeError
+    );
   });
 
   it("throws ApiShapeError for Whitelist when given a number", () => {
-    expect(() =>
-      validateResponse(WhitelistResponseSchema, 0, "/api/jobs/cid/whitelist"),
-    ).toThrow(ApiShapeError);
+    expect(() => validateResponse(WhitelistResponseSchema, 0, "/api/jobs/cid/whitelist")).toThrow(
+      ApiShapeError
+    );
   });
 
   it("throws ApiShapeError for AutoRelease when given true", () => {
     expect(() =>
-      validateResponse(AutoReleaseResponseSchema, true, "/api/jobs/j/milestones/0/auto-release"),
+      validateResponse(AutoReleaseResponseSchema, true, "/api/jobs/j/milestones/0/auto-release")
     ).toThrow(ApiShapeError);
   });
 });

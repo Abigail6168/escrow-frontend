@@ -31,9 +31,7 @@ describe("signWalletWithTimeout — single timeout source (#628)", () => {
     const signFn = vi.fn(() => new Promise<string>(() => {}));
     const promise = signWalletWithTimeout({ xdr: "XDR" }, signFn, 1_000);
 
-    const assertion = expect(promise).rejects.toBeInstanceOf(
-      WalletSignatureTimeoutError
-    );
+    const assertion = expect(promise).rejects.toBeInstanceOf(WalletSignatureTimeoutError);
     await vi.advanceTimersByTimeAsync(1_000);
     await assertion;
 
@@ -82,7 +80,13 @@ describe("signWalletWithTimeout — single timeout source (#628)", () => {
     await vi.advanceTimersByTimeAsync(DEFAULT_WALLET_SIGNATURE_TIMEOUT_MS - 1);
 
     let settled = false;
-    promise.then(() => { settled = true; }).catch(() => { settled = true; });
+    promise
+      .then(() => {
+        settled = true;
+      })
+      .catch(() => {
+        settled = true;
+      });
     await Promise.resolve();
     expect(settled).toBe(false);
 

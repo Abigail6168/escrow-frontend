@@ -47,8 +47,11 @@ describe("Create form arbiter selector (Issue #658)", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({ success: true, data: { tokens: [{ address: "CTOKEN", symbol: "USDC" }] } }),
-      }),
+        json: async () => ({
+          success: true,
+          data: { tokens: [{ address: "CTOKEN", symbol: "USDC" }] },
+        }),
+      })
     );
   });
 

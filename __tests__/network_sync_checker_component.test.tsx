@@ -24,17 +24,11 @@ describe("NetworkSyncChecker component (#162)", () => {
   // -------------------------------------------------------------------------
 
   it("renders its trigger action and an initial idle status without errors", () => {
-    render(
-      <NetworkSyncChecker walletNetwork="testnet" appNetwork="testnet" />
-    );
+    render(<NetworkSyncChecker walletNetwork="testnet" appNetwork="testnet" />);
 
     expect(screen.getByTestId("network-sync-checker")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Run network sync probe" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("network-sync-probe-status")
-    ).toHaveAttribute("data-status", "idle");
+    expect(screen.getByRole("button", { name: "Run network sync probe" })).toBeInTheDocument();
+    expect(screen.getByTestId("network-sync-probe-status")).toHaveAttribute("data-status", "idle");
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
@@ -59,14 +53,13 @@ describe("NetworkSyncChecker component (#162)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run network sync probe" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("network-sync-probe-status")
-      ).toHaveAttribute("data-status", "blocked");
+      expect(screen.getByTestId("network-sync-probe-status")).toHaveAttribute(
+        "data-status",
+        "blocked"
+      );
     });
 
-    expect(
-      screen.getByTestId("network-sync-network-warning-bar")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("network-sync-network-warning-bar")).toBeInTheDocument();
     expect(showToast).toHaveBeenCalledWith(
       expect.stringContaining("Network out of sync"),
       "warning"
@@ -96,17 +89,17 @@ describe("NetworkSyncChecker component (#162)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run network sync probe" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("network-sync-probe-status")
-      ).toHaveAttribute("data-status", "blocked");
+      expect(screen.getByTestId("network-sync-probe-status")).toHaveAttribute(
+        "data-status",
+        "blocked"
+      );
     });
 
-    expect(
-      screen.getByTestId("network-sync-wallet-warning-banner")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("network-sync-wallet-install-link")
-    ).toHaveAttribute("href", "https://www.freighter.app/");
+    expect(screen.getByTestId("network-sync-wallet-warning-banner")).toBeInTheDocument();
+    expect(screen.getByTestId("network-sync-wallet-install-link")).toHaveAttribute(
+      "href",
+      "https://www.freighter.app/"
+    );
     expect(showToast).toHaveBeenCalledWith(
       expect.stringContaining("No wallet extension detected"),
       "warning"
@@ -116,19 +109,16 @@ describe("NetworkSyncChecker component (#162)", () => {
 
   it("does not attempt a probe when no signer is wired even if the wallet is available", async () => {
     render(
-      <NetworkSyncChecker
-        walletNetwork="testnet"
-        appNetwork="testnet"
-        detector={() => true}
-      />
+      <NetworkSyncChecker walletNetwork="testnet" appNetwork="testnet" detector={() => true} />
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Run network sync probe" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("network-sync-probe-status")
-      ).toHaveAttribute("data-status", "blocked");
+      expect(screen.getByTestId("network-sync-probe-status")).toHaveAttribute(
+        "data-status",
+        "blocked"
+      );
     });
   });
 
@@ -153,14 +143,13 @@ describe("NetworkSyncChecker component (#162)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run network sync probe" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("network-sync-probe-status")
-      ).toHaveAttribute("data-status", "synced");
+      expect(screen.getByTestId("network-sync-probe-status")).toHaveAttribute(
+        "data-status",
+        "synced"
+      );
     });
 
-    expect(
-      screen.getByTestId("network-sync-probe-status")
-    ).toHaveTextContent("signature accepted");
+    expect(screen.getByTestId("network-sync-probe-status")).toHaveTextContent("signature accepted");
     expect(onSign).toHaveBeenCalledTimes(1);
     expect(showToast).not.toHaveBeenCalled();
     expect(warnSpy).not.toHaveBeenCalled();
@@ -172,9 +161,7 @@ describe("NetworkSyncChecker component (#162)", () => {
 
   it("transitions to cancelled and surfaces the rejection message when the user declines", async () => {
     const showToast = vi.fn();
-    const onSign = vi
-      .fn()
-      .mockRejectedValue(new NetworkSyncUserRejectedError());
+    const onSign = vi.fn().mockRejectedValue(new NetworkSyncUserRejectedError());
 
     render(
       <NetworkSyncChecker
@@ -189,14 +176,15 @@ describe("NetworkSyncChecker component (#162)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run network sync probe" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("network-sync-probe-status")
-      ).toHaveAttribute("data-status", "cancelled");
+      expect(screen.getByTestId("network-sync-probe-status")).toHaveAttribute(
+        "data-status",
+        "cancelled"
+      );
     });
 
-    expect(
-      screen.getByTestId("network-sync-probe-status")
-    ).toHaveTextContent("you rejected the signature");
+    expect(screen.getByTestId("network-sync-probe-status")).toHaveTextContent(
+      "you rejected the signature"
+    );
     expect(showToast).toHaveBeenCalledWith(
       expect.stringContaining("you rejected the signature"),
       "warning"
@@ -223,9 +211,10 @@ describe("NetworkSyncChecker component (#162)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run network sync probe" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("network-sync-probe-status")
-      ).toHaveAttribute("data-status", "cancelled");
+      expect(screen.getByTestId("network-sync-probe-status")).toHaveAttribute(
+        "data-status",
+        "cancelled"
+      );
     });
   });
 
@@ -249,14 +238,13 @@ describe("NetworkSyncChecker component (#162)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run network sync probe" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("network-sync-probe-status")
-      ).toHaveAttribute("data-status", "error");
+      expect(screen.getByTestId("network-sync-probe-status")).toHaveAttribute(
+        "data-status",
+        "error"
+      );
     });
 
-    expect(
-      screen.getByTestId("network-sync-probe-status")
-    ).toHaveTextContent("probe failed");
+    expect(screen.getByTestId("network-sync-probe-status")).toHaveTextContent("probe failed");
   });
 
   // -------------------------------------------------------------------------
@@ -286,9 +274,10 @@ describe("NetworkSyncChecker component (#162)", () => {
     );
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId("network-sync-probe-status")
-      ).toHaveAttribute("data-status", "synced");
+      expect(screen.getByTestId("network-sync-probe-status")).toHaveAttribute(
+        "data-status",
+        "synced"
+      );
     });
 
     expect(button).toBeEnabled();

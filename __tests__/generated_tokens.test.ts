@@ -19,7 +19,7 @@ import { ARBITER_PANEL_TOKENS } from "@/app/lib/arbiter_action_panel";
 import { parseThemeColourTokens } from "@/app/lib/theme_tokens";
 
 const cssTokens = parseThemeColourTokens(
-  readFileSync(resolve(__dirname, "../app/globals.css"), "utf8"),
+  readFileSync(resolve(__dirname, "../app/globals.css"), "utf8")
 );
 
 // ---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ describe("ARBITER_PANEL_TOKENS: derived from THEME_TOKENS", () => {
   it("every value matches the corresponding THEME_TOKENS entry", () => {
     for (const [token, value] of Object.entries(ARBITER_PANEL_TOKENS)) {
       expect(value, `ARBITER_PANEL_TOKENS["${token}"] should equal THEME_TOKENS["${token}"]`).toBe(
-        THEME_TOKENS[token as keyof typeof THEME_TOKENS],
+        THEME_TOKENS[token as keyof typeof THEME_TOKENS]
       );
     }
   });
@@ -94,7 +94,7 @@ describe("single source of truth invariant", () => {
         if (cssValue !== undefined) {
           expect(
             value,
-            `${tableName}["${token}"] = "${value}" but globals.css has "${cssValue}" — re-run npm run generate-tokens`,
+            `${tableName}["${token}"] = "${value}" but globals.css has "${cssValue}" — re-run npm run generate-tokens`
           ).toBe(cssValue);
         }
       }

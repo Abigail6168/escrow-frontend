@@ -93,7 +93,8 @@ describe("Navbar wallet selector", () => {
       connect: vi.fn(),
       disconnect: vi.fn(),
       isConnecting: false,
-      networkMismatchMessage: "Network mismatch: your Freighter is on Mainnet but this app expects Stellar Testnet.",
+      networkMismatchMessage:
+        "Network mismatch: your Freighter is on Mainnet but this app expects Stellar Testnet.",
       selectedWalletId: "freighter",
       setSelectedWalletId: vi.fn(),
     });

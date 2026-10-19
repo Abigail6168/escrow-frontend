@@ -101,7 +101,7 @@ export default function JobActivityTimeline({ contractId }: { contractId: string
     const load = async (backendPage: number): Promise<HistoryResponse> => {
       const res = await fetch(
         `${BACKEND_URL}/api/jobs/${encodeURIComponent(contractId)}/history?page=${backendPage}&limit=${PAGE_SIZE}`,
-        { signal: controller.signal },
+        { signal: controller.signal }
       );
       reportApiResponse(res, "/api/jobs/:contractId/history");
       const payload = (await res.json()) as HistoryResponse;
@@ -150,11 +150,17 @@ export default function JobActivityTimeline({ contractId }: { contractId: string
       <h3 className="text-sm font-semibold text-gray-300">Activity</h3>
 
       {loading ? (
-        <p className="text-xs text-gray-400" role="status">Loading activity…</p>
+        <p className="text-xs text-gray-400" role="status">
+          Loading activity…
+        </p>
       ) : error ? (
-        <p className="text-xs text-red-400" role="alert">{error}</p>
+        <p className="text-xs text-red-400" role="alert">
+          {error}
+        </p>
       ) : events.length === 0 ? (
-        <p className="text-xs text-gray-400" role="status">No activity yet.</p>
+        <p className="text-xs text-gray-400" role="status">
+          No activity yet.
+        </p>
       ) : (
         <ol className="space-y-2 border-l border-gray-800 pl-3">
           {events.map((event) => {
@@ -169,7 +175,9 @@ export default function JobActivityTimeline({ contractId }: { contractId: string
                 <p className="text-gray-400 flex flex-wrap gap-x-2">
                   <span>{relativeTime(event.timestamp)}</span>
                   {actor && (
-                    <span className="font-mono" title={actor}>by {shortAddress(actor)}</span>
+                    <span className="font-mono" title={actor}>
+                      by {shortAddress(actor)}
+                    </span>
                   )}
                   {event.tx_hash && (
                     <a

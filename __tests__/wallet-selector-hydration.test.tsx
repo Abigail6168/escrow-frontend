@@ -96,9 +96,7 @@ describe("wallet selector hydration", () => {
     });
 
     expect(recoverable).not.toHaveBeenCalled();
-    expect(
-      errorSpy.mock.calls.some((args) => /hydrat/i.test(String(args[0])))
-    ).toBe(false);
+    expect(errorSpy.mock.calls.some((args) => /hydrat/i.test(String(args[0])))).toBe(false);
     expect(container.querySelector("select")!.value).toBe("albedo");
   });
 

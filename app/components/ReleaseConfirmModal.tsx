@@ -58,9 +58,7 @@ export default function ReleaseConfirmModal({
   const copy = ACTION_COPY[action];
   const amountHuman = formatBaseUnits(amountStroops, { decimals });
   const remainingHuman =
-    remainingBalanceStroops != null
-      ? formatBaseUnits(remainingBalanceStroops, { decimals })
-      : null;
+    remainingBalanceStroops != null ? formatBaseUnits(remainingBalanceStroops, { decimals }) : null;
 
   if (!isOpen) return null;
 
@@ -83,23 +81,14 @@ export default function ReleaseConfirmModal({
           {copy.title}
         </h2>
 
-        <p
-          data-testid="release-confirm-modal-warning"
-          className="mb-4 text-sm text-text-secondary"
-        >
+        <p data-testid="release-confirm-modal-warning" className="mb-4 text-sm text-text-secondary">
           This will release funds to the freelancer. This cannot be undone.
         </p>
 
-        <dl
-          data-testid="release-confirm-modal-summary"
-          className="mb-4 space-y-2 text-sm"
-        >
+        <dl data-testid="release-confirm-modal-summary" className="mb-4 space-y-2 text-sm">
           <div className="flex justify-between border-b border-border-subtle pb-1">
             <dt className="text-text-muted">Amount</dt>
-            <dd
-              data-testid="release-confirm-modal-amount"
-              className="font-mono text-text-primary"
-            >
+            <dd data-testid="release-confirm-modal-amount" className="font-mono text-text-primary">
               {amountHuman} {symbol}
             </dd>
           </div>

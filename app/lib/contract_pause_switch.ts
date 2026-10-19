@@ -42,9 +42,7 @@ export const CONTRACT_PAUSE_DESKTOP_MIN_WIDTH = 1024;
  * Non-finite or negative widths fall back to `"mobile"`: the narrowest layout
  * is the safe default, since it never overflows a wider screen.
  */
-export function classifyContractPauseViewport(
-  width: number,
-): ContractPauseViewport {
+export function classifyContractPauseViewport(width: number): ContractPauseViewport {
   if (typeof width !== "number" || !Number.isFinite(width) || width < 0) {
     return "mobile";
   }
@@ -82,7 +80,7 @@ export interface ContractPauseGridLayout {
  * control wrapping out of bounds on wide screens.
  */
 export function getContractPauseGridLayout(
-  viewport: ContractPauseViewport,
+  viewport: ContractPauseViewport
 ): ContractPauseGridLayout {
   switch (viewport) {
     case "desktop":
@@ -122,9 +120,7 @@ export function getContractPauseGridLayout(
  * Convenience wrapper so callers that already track a viewport width do not
  * have to classify it first.
  */
-export function getContractPauseGridLayoutForWidth(
-  width: number,
-): ContractPauseGridLayout {
+export function getContractPauseGridLayoutForWidth(width: number): ContractPauseGridLayout {
   return getContractPauseGridLayout(classifyContractPauseViewport(width));
 }
 
@@ -148,8 +144,7 @@ export const CONTRACT_PAUSE_GRID_CLASSES = {
     "sm:p-5 lg:p-6",
 
   /** Panel header row — title and description stack on narrow screens. */
-  header:
-    "mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4",
+  header: "mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4",
 
   /** Panel title. */
   title: "text-sm font-semibold text-text-primary sm:text-base",
@@ -174,8 +169,7 @@ export const CONTRACT_PAUSE_GRID_CLASSES = {
   statusCell: "min-w-0 rounded-lg bg-surface-field px-3 py-2.5",
 
   /** Readout label. */
-  statusLabel:
-    "block text-[11px] font-medium uppercase tracking-wide text-text-secondary",
+  statusLabel: "block text-[11px] font-medium uppercase tracking-wide text-text-secondary",
 
   /** Readout value — wraps instead of overflowing the cell. */
   statusValue: "mt-1 block min-w-0 break-words text-sm text-text-primary",
@@ -199,8 +193,7 @@ export const CONTRACT_PAUSE_GRID_CLASSES = {
    * target; `sm:w-auto` hands it back to the content so it cannot be stretched
    * past the capped panel on wider screens.
    */
-  toggle:
-    "w-full min-h-[44px] sm:w-auto sm:min-w-[180px] sm:px-5",
+  toggle: "w-full min-h-[44px] sm:w-auto sm:min-w-[180px] sm:px-5",
 
   /** Loading placeholder block shown while the freeze state resolves. */
   loadingCell: "h-14 animate-pulse rounded-lg bg-surface-field",
@@ -267,10 +260,7 @@ export const CONTRACT_PAUSE_BADGES: Record<ContractPauseStatus, ContractPauseBad
 };
 
 /** Returns the badge that matches the current freeze state. */
-export function getContractPauseBadge(
-  paused: boolean,
-  isPending: boolean,
-): ContractPauseBadge {
+export function getContractPauseBadge(paused: boolean, isPending: boolean): ContractPauseBadge {
   if (isPending) return CONTRACT_PAUSE_BADGES.pending;
   return paused ? CONTRACT_PAUSE_BADGES.frozen : CONTRACT_PAUSE_BADGES.active;
 }
@@ -351,9 +341,7 @@ export const MOCK_CONTRACT_PAUSE_TRANSITIONS: ContractPauseTransition[] = [
 ];
 
 /** Narrows an unknown value to a `ContractPauseState`. */
-export function isContractPauseState(
-  value: unknown,
-): value is ContractPauseState {
+export function isContractPauseState(value: unknown): value is ContractPauseState {
   if (typeof value !== "object" || value === null) return false;
   const candidate = value as Record<string, unknown>;
   return (
@@ -431,29 +419,21 @@ export async function fetchContractPauseState(options?: {
       // The backend may return the snapshot bare or wrapped in a success
       // envelope; accept either, but only when the payload is complete.
       const payload =
-        typeof data === "object" &&
-        data !== null &&
-        "success" in data &&
-        "data" in data
+        typeof data === "object" && data !== null && "success" in data && "data" in data
           ? (data as { data: unknown }).data
           : data;
 
       if (isContractPauseState(payload)) {
         return payload;
       }
-      console.warn(
-        `${LOG_PREFIX} pause state response missing fields, returning null`
-      );
+      console.warn(`${LOG_PREFIX} pause state response missing fields, returning null`);
     } else {
       console.warn(
         `${LOG_PREFIX} pause state request failed with status ${res.status}, returning null`
       );
     }
   } catch (err) {
-    console.warn(
-      `${LOG_PREFIX} pause state request threw, returning null`,
-      err
-    );
+    console.warn(`${LOG_PREFIX} pause state request threw, returning null`, err);
   }
 
   return null;

@@ -17,11 +17,7 @@ import {
   submitContractTransaction,
   TxPhase,
 } from "@/app/lib/transactions";
-import {
-  fetchWhitelistedTokens,
-  tokenLabel,
-  WhitelistToken,
-} from "@/app/lib/whitelist";
+import { fetchWhitelistedTokens, tokenLabel, WhitelistToken } from "@/app/lib/whitelist";
 import { agreementLines } from "@/app/lib/escrow_agreement";
 import { validateTokenContract, TokenValidationResult } from "@/app/lib/token_validation";
 import { formatTxError } from "@/app/lib/errors";
@@ -84,8 +80,7 @@ export default function CreateJob() {
   const [arbiterMode, setArbiterMode] = useState<"default" | "custom">(
     defaultArbiter ? "default" : "custom"
   );
-  const effectiveArbiter =
-    arbiterMode === "default" && defaultArbiter ? defaultArbiter : arbiter;
+  const effectiveArbiter = arbiterMode === "default" && defaultArbiter ? defaultArbiter : arbiter;
   const [token, setToken] = useState("");
   const [freelancerError, setFreelancerError] = useState("");
   const [arbiterError, setArbiterError] = useState("");
@@ -211,8 +206,7 @@ export default function CreateJob() {
   // when a valid-format contract address is entered and it's not on the
   // whitelist. Debounced so we don't fire on every keystroke.
   const tokenNeedsValidation =
-    /^C[A-Z2-7]{55}$/.test(token) &&
-    !whitelist.some((option) => option.address === token);
+    /^C[A-Z2-7]{55}$/.test(token) && !whitelist.some((option) => option.address === token);
   const tokenValidation = tokenCheck?.token === token ? tokenCheck.result : null;
   const tokenValidating = tokenNeedsValidation && tokenValidation === null;
   const nonWhitelistConfirmed = confirmedToken === token;
@@ -239,9 +233,7 @@ export default function CreateJob() {
 
   const addAcceptedAsset = () => setAcceptedAssets([...acceptedAssets, ""]);
   const removeAcceptedAsset = (index: number) =>
-    setAcceptedAssets(
-      acceptedAssets.filter((_, currentIndex) => currentIndex !== index),
-    );
+    setAcceptedAssets(acceptedAssets.filter((_, currentIndex) => currentIndex !== index));
   const updateAcceptedAsset = (index: number, value: string) => {
     const updated = [...acceptedAssets];
     updated[index] = value;
@@ -250,9 +242,7 @@ export default function CreateJob() {
 
   const addRequirement = () => setRequirements([...requirements, ""]);
   const removeRequirement = (index: number) =>
-    setRequirements(
-      requirements.filter((_, currentIndex) => currentIndex !== index),
-    );
+    setRequirements(requirements.filter((_, currentIndex) => currentIndex !== index));
   const updateRequirement = (index: number, value: string) => {
     const updated = [...requirements];
     updated[index] = value;
@@ -263,8 +253,7 @@ export default function CreateJob() {
     if (isMilestoneCapReached(milestones.length)) return;
     setMilestones([...milestones, { amount: "" }]);
   };
-  const removeMilestone = (i: number) =>
-    setMilestones(milestones.filter((_, idx) => idx !== i));
+  const removeMilestone = (i: number) => setMilestones(milestones.filter((_, idx) => idx !== i));
   const updateMilestone = (i: number, val: string) => {
     const updated = [...milestones];
     updated[i].amount = val;
@@ -272,19 +261,15 @@ export default function CreateJob() {
   };
 
   const normalizedMilestones = milestones.filter(
-    (m): m is { amount: string } => !!m && typeof m.amount === "string",
+    (m): m is { amount: string } => !!m && typeof m.amount === "string"
   );
-  const normalizedAssets = acceptedAssets.filter(
-    (asset) => asset.trim().length > 0,
-  );
+  const normalizedAssets = acceptedAssets.filter((asset) => asset.trim().length > 0);
   const normalizedRequirements = requirements.filter(
-    (requirement) => requirement.trim().length > 0,
+    (requirement) => requirement.trim().length > 0
   );
   const hasNoMilestones = normalizedMilestones.length === 0;
-  const hasPartialMilestones = normalizedMilestones.some(
-    (m) => m.amount.trim().length === 0
-  );
-  const hasInvalidMilestones = normalizedMilestones.some(m => {
+  const hasPartialMilestones = normalizedMilestones.some((m) => m.amount.trim().length === 0);
+  const hasInvalidMilestones = normalizedMilestones.some((m) => {
     const trimmed = m.amount.trim();
     if (trimmed.length === 0) return false;
     return validateMilestoneAmount(trimmed) !== null;
@@ -300,7 +285,14 @@ export default function CreateJob() {
     (tokenValidating ||
       (tokenValidation && !tokenValidation.valid) ||
       (tokenValidation?.valid && !nonWhitelistConfirmed));
-  const isSubmitDisabled = loading || !address || hasNoMilestones || hasPartialMilestones || hasValidationErrors || hasTokenIssue || !agreed;
+  const isSubmitDisabled =
+    loading ||
+    !address ||
+    hasNoMilestones ||
+    hasPartialMilestones ||
+    hasValidationErrors ||
+    hasTokenIssue ||
+    !agreed;
 
   const validateFreelancer = (val: string) => {
     if (val && !/^G[A-Z2-7]{55}$/.test(val)) {
@@ -357,7 +349,13 @@ export default function CreateJob() {
   };
 
   // Wizard tab sections config
-  const wizardSections: { id: WizardSection; label: string; helper: string; panelId: string; tabId: string }[] = [
+  const wizardSections: {
+    id: WizardSection;
+    label: string;
+    helper: string;
+    panelId: string;
+    tabId: string;
+  }[] = [
     {
       id: "details",
       label: "1. Details",
@@ -385,10 +383,7 @@ export default function CreateJob() {
    * Keyboard handler for the tablist — implements ARIA tab pattern:
    * ArrowLeft/ArrowRight cycle through tabs and move focus.
    */
-  const handleTabKeyDown = (
-    e: React.KeyboardEvent<HTMLButtonElement>,
-    currentIndex: number
-  ) => {
+  const handleTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
     const count = wizardSections.length;
     let nextIndex: number | null = null;
     if (e.key === "ArrowRight") nextIndex = (currentIndex + 1) % count;
@@ -449,7 +444,12 @@ export default function CreateJob() {
     }
     validateFreelancer(freelancer);
     validateArbiter(effectiveArbiter);
-    if (!freelancer || !effectiveArbiter || !/^G[A-Z2-7]{55}$/.test(freelancer) || !/^G[A-Z2-7]{55}$/.test(effectiveArbiter)) {
+    if (
+      !freelancer ||
+      !effectiveArbiter ||
+      !/^G[A-Z2-7]{55}$/.test(freelancer) ||
+      !/^G[A-Z2-7]{55}$/.test(effectiveArbiter)
+    ) {
       if (!freelancer) setFreelancerError("This field is required.");
       if (!effectiveArbiter) setArbiterError("This field is required.");
       setError("Please fix the address fields before creating a job.");
@@ -468,8 +468,7 @@ export default function CreateJob() {
         }
         return BigInt(trimmed);
       });
-      const autoReleaseSeconds =
-        BigInt(autoReleaseDays) * BigInt(24) * BigInt(60) * BigInt(60);
+      const autoReleaseSeconds = BigInt(autoReleaseDays) * BigInt(24) * BigInt(60) * BigInt(60);
 
       const txHash = await submitContractTransaction({
         method: "initialize",
@@ -561,8 +560,8 @@ export default function CreateJob() {
             Create New Job
           </h1>
           <p className="mb-6 text-sm leading-6 text-text-muted">
-            Configure counterparties, funding structure, and delivery
-            expectations before publishing the escrow job.
+            Configure counterparties, funding structure, and delivery expectations before publishing
+            the escrow job.
           </p>
 
           {draftRestored && (
@@ -615,9 +614,7 @@ export default function CreateJob() {
                   }`}
                 >
                   <span>{section.label}</span>
-                  <span className="text-xs font-normal text-text-muted">
-                    {section.helper}
-                  </span>
+                  <span className="text-xs font-normal text-text-muted">{section.helper}</span>
                 </button>
               );
             })}
@@ -668,9 +665,7 @@ export default function CreateJob() {
             >
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-semibold text-text-primary">
-                    Job details
-                  </h2>
+                  <h2 className="text-base font-semibold text-text-primary">Job details</h2>
                   <p className="text-xs text-text-muted">
                     Specify the counterparties and core escrow timing.
                   </p>
@@ -702,7 +697,7 @@ export default function CreateJob() {
                     autoComplete="off"
                     spellCheck={false}
                     aria-required="true"
-                    className={`${inputClassName} ${freelancerError ? '!border-danger' : ''}`}
+                    className={`${inputClassName} ${freelancerError ? "!border-danger" : ""}`}
                     value={freelancer}
                     onChange={(e) => {
                       setFreelancer(e.target.value);
@@ -714,16 +709,16 @@ export default function CreateJob() {
                     required
                     disabled={loading}
                   />
-                  {freelancerError && <p className="text-sm text-danger-soft mt-1">{freelancerError}</p>}
+                  {freelancerError && (
+                    <p className="text-sm text-danger-soft mt-1">{freelancerError}</p>
+                  )}
                 </div>
 
                 {/* Arbiter Address */}
                 <div>
                   {defaultArbiter && (
                     <fieldset className="mb-3" disabled={loading}>
-                      <legend className="block text-sm text-text-muted mb-1">
-                        Arbiter
-                      </legend>
+                      <legend className="block text-sm text-text-muted mb-1">Arbiter</legend>
                       <label className="flex items-center gap-2 text-sm text-text-primary">
                         <input
                           type="radio"
@@ -750,39 +745,38 @@ export default function CreateJob() {
                     </fieldset>
                   )}
                   <p className="text-xs text-text-muted mb-2">
-                    The arbiter resolves disputes and can split or refund
-                    escrowed funds.{" "}
+                    The arbiter resolves disputes and can split or refund escrowed funds.{" "}
                     <Link href="/#security" className="underline hover:text-text-primary">
                       Learn more
                     </Link>
                   </p>
                   {arbiterMode === "custom" && (
-                  <>
-                  <label
-                    htmlFor="arbiter-address"
-                    className="block text-sm text-text-muted mb-1"
-                  >
-                    Arbiter Address
-                  </label>
-                  <input
-                    id="arbiter-address"
-                    type="text"
-                    autoComplete="off"
-                    spellCheck={false}
-                    aria-required="true"
-                    className={`${inputClassName} ${arbiterError ? '!border-danger' : ''}`}
-                    value={arbiter}
-                    onChange={(e) => {
-                      setArbiter(e.target.value);
-                      validateArbiter(e.target.value);
-                    }}
-                    onBlur={(e) => validateArbiter(e.target.value)}
-                    onFocus={() => setActiveSection("details")}
-                    placeholder="G..."
-                    required
-                    disabled={loading}
-                  />
-                  </>
+                    <>
+                      <label
+                        htmlFor="arbiter-address"
+                        className="block text-sm text-text-muted mb-1"
+                      >
+                        Arbiter Address
+                      </label>
+                      <input
+                        id="arbiter-address"
+                        type="text"
+                        autoComplete="off"
+                        spellCheck={false}
+                        aria-required="true"
+                        className={`${inputClassName} ${arbiterError ? "!border-danger" : ""}`}
+                        value={arbiter}
+                        onChange={(e) => {
+                          setArbiter(e.target.value);
+                          validateArbiter(e.target.value);
+                        }}
+                        onBlur={(e) => validateArbiter(e.target.value)}
+                        onFocus={() => setActiveSection("details")}
+                        placeholder="G..."
+                        required
+                        disabled={loading}
+                      />
+                    </>
                   )}
                   {arbiterError && <p className="text-sm text-danger-soft mt-1">{arbiterError}</p>}
                 </div>
@@ -852,8 +846,8 @@ export default function CreateJob() {
                       className="mt-1 text-sm text-text-muted"
                       aria-live="polite"
                     >
-                      No accepted tokens are configured for this contract yet.
-                      Ask an admin to whitelist a token before creating a job.
+                      No accepted tokens are configured for this contract yet. Ask an admin to
+                      whitelist a token before creating a job.
                     </p>
                   ) : (
                     <select
@@ -904,8 +898,8 @@ export default function CreateJob() {
                         Token: {tokenValidation.symbol} ({tokenValidation.decimals} decimals)
                       </p>
                       <p className="mt-1 text-xs text-text-muted">
-                        The contract auto-whitelists any token passed to it. Verify
-                        this is the token you intend before proceeding.
+                        The contract auto-whitelists any token passed to it. Verify this is the
+                        token you intend before proceeding.
                       </p>
                       <label className="mt-2 flex items-start gap-2 text-sm text-text-secondary">
                         <input
@@ -916,34 +910,30 @@ export default function CreateJob() {
                           data-testid="token-confirm-checkbox"
                           className="mt-0.5 h-4 w-4 rounded border-border-subtle accent-accent"
                         />
-                        <span>
-                          I confirm this is the correct token contract.
-                        </span>
+                        <span>I confirm this is the correct token contract.</span>
                       </label>
                     </div>
                   )}
-                  {!tokenValidating && tokenValidation && !tokenValidation.valid && !isTokenWhitelisted && (
-                    <div
-                      className="mt-2 rounded-lg border border-danger-soft/40 bg-danger/10 p-3"
-                      data-testid="token-validation-error"
-                      role="alert"
-                    >
-                      <p className="text-sm font-medium text-danger-soft">
-                        This address is not a valid token contract
-                      </p>
-                      <p className="mt-1 text-xs text-text-secondary">
-                        {tokenValidation.error}
-                      </p>
-                    </div>
-                  )}
+                  {!tokenValidating &&
+                    tokenValidation &&
+                    !tokenValidation.valid &&
+                    !isTokenWhitelisted && (
+                      <div
+                        className="mt-2 rounded-lg border border-danger-soft/40 bg-danger/10 p-3"
+                        data-testid="token-validation-error"
+                        role="alert"
+                      >
+                        <p className="text-sm font-medium text-danger-soft">
+                          This address is not a valid token contract
+                        </p>
+                        <p className="mt-1 text-xs text-text-secondary">{tokenValidation.error}</p>
+                      </div>
+                    )}
                 </div>
 
                 {/* Response Deadline */}
                 <div>
-                  <label
-                    htmlFor="response-deadline"
-                    className="block text-sm text-text-muted mb-1"
-                  >
+                  <label htmlFor="response-deadline" className="block text-sm text-text-muted mb-1">
                     Response Deadline (days)
                   </label>
                   <div
@@ -980,9 +970,7 @@ export default function CreateJob() {
                     required
                     disabled={loading}
                     aria-invalid={!!deadlineError}
-                    aria-describedby={
-                      deadlineError ? "deadline-error" : "deadline-hint"
-                    }
+                    aria-describedby={deadlineError ? "deadline-error" : "deadline-hint"}
                   />
                   {deadlineError ? (
                     <p
@@ -1047,10 +1035,7 @@ export default function CreateJob() {
                      * This <span> labels the group visually; the list inputs
                      * each carry their own aria-label so no htmlFor is needed.
                      */}
-                    <span
-                      id="accepted-assets-label"
-                      className="block text-sm text-text-muted"
-                    >
+                    <span id="accepted-assets-label" className="block text-sm text-text-muted">
                       Accepted assets
                     </span>
                     <button
@@ -1078,17 +1063,12 @@ export default function CreateJob() {
                       aria-labelledby="accepted-assets-label"
                     >
                       {acceptedAssets.map((asset, index) => (
-                        <div
-                          key={`asset-${index}`}
-                          className="flex items-center gap-2"
-                        >
+                        <div key={`asset-${index}`} className="flex items-center gap-2">
                           <input
                             id={`asset-input-${index}`}
                             className={`${inputClassName} flex-1 min-w-0`}
                             value={asset}
-                            onChange={(e) =>
-                              updateAcceptedAsset(index, e.target.value)
-                            }
+                            onChange={(e) => updateAcceptedAsset(index, e.target.value)}
                             onFocus={() => setActiveSection("milestones")}
                             placeholder={`Accepted asset ${index + 1}`}
                             aria-label={`Accepted asset ${index + 1}`}
@@ -1112,10 +1092,7 @@ export default function CreateJob() {
                 {/* Requirements */}
                 <div>
                   <div className="mb-2 flex items-center justify-between gap-3">
-                    <span
-                      id="requirements-label"
-                      className="block text-sm text-text-muted"
-                    >
+                    <span id="requirements-label" className="block text-sm text-text-muted">
                       Requirements
                     </span>
                     <button
@@ -1143,17 +1120,12 @@ export default function CreateJob() {
                       aria-labelledby="requirements-label"
                     >
                       {requirements.map((requirement, index) => (
-                        <div
-                          key={`requirement-${index}`}
-                          className="flex items-center gap-2"
-                        >
+                        <div key={`requirement-${index}`} className="flex items-center gap-2">
                           <input
                             id={`requirement-input-${index}`}
                             className={`${inputClassName} flex-1 min-w-0`}
                             value={requirement}
-                            onChange={(e) =>
-                              updateRequirement(index, e.target.value)
-                            }
+                            onChange={(e) => updateRequirement(index, e.target.value)}
                             onFocus={() => setActiveSection("milestones")}
                             placeholder={`Requirement ${index + 1}`}
                             aria-label={`Requirement ${index + 1}`}
@@ -1175,7 +1147,11 @@ export default function CreateJob() {
                 </div>
 
                 {/* Milestones */}
-                <fieldset aria-describedby={hasPartialMilestones && !hasNoMilestones ? "milestone-warning" : undefined}>
+                <fieldset
+                  aria-describedby={
+                    hasPartialMilestones && !hasNoMilestones ? "milestone-warning" : undefined
+                  }
+                >
                   <legend className="block text-sm text-text-muted mb-2">Milestones</legend>
                   <div className="mb-2 flex items-center justify-end">
                     <button
@@ -1188,10 +1164,7 @@ export default function CreateJob() {
                       + Add Milestone
                     </button>
                   </div>
-                  <p
-                    className="mb-2 text-xs text-text-muted"
-                    data-testid="milestone-limit-hint"
-                  >
+                  <p className="mb-2 text-xs text-text-muted" data-testid="milestone-limit-hint">
                     {milestoneLimitHint()}
                   </p>
                   {hasNoMilestones ? (
@@ -1260,7 +1233,9 @@ export default function CreateJob() {
                     aria-live="polite"
                     aria-atomic="true"
                     className={`mt-2 text-xs text-warning-soft transition-opacity duration-150 ${
-                      hasPartialMilestones && !hasNoMilestones ? "opacity-100" : "opacity-0 pointer-events-none"
+                      hasPartialMilestones && !hasNoMilestones
+                        ? "opacity-100"
+                        : "opacity-0 pointer-events-none"
                     }`}
                   >
                     {hasPartialMilestones && !hasNoMilestones
@@ -1282,12 +1257,9 @@ export default function CreateJob() {
             >
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-semibold text-text-primary">
-                    Review
-                  </h2>
+                  <h2 className="text-base font-semibold text-text-primary">Review</h2>
                   <p className="text-xs text-text-muted">
-                    Confirm the job has enough structure before sending the
-                    transaction.
+                    Confirm the job has enough structure before sending the transaction.
                   </p>
                 </div>
                 <button
@@ -1308,9 +1280,7 @@ export default function CreateJob() {
               >
                 <div className="rounded-xl border border-border-subtle bg-surface-field px-4 py-3">
                   <dt className="text-text-muted">Accepted assets</dt>
-                  <dd className="mt-1 font-medium text-text-primary">
-                    {normalizedAssets.length}
-                  </dd>
+                  <dd className="mt-1 font-medium text-text-primary">{normalizedAssets.length}</dd>
                 </div>
                 <div className="rounded-xl border border-border-subtle bg-surface-field px-4 py-3">
                   <dt className="text-text-muted">Requirements</dt>
@@ -1343,9 +1313,7 @@ export default function CreateJob() {
                 <ul className="mt-3 space-y-2 text-xs leading-5 text-text-secondary">
                   {agreementLines({ autoReleaseDays, arbiter }).map((line) => (
                     <li key={line.label} className="flex gap-2">
-                      <span
-                        className="font-semibold text-text-primary shrink-0"
-                      >
+                      <span className="font-semibold text-text-primary shrink-0">
                         {line.label}:
                       </span>
                       <span>{line.text}</span>
@@ -1363,8 +1331,7 @@ export default function CreateJob() {
                     className="mt-0.5 h-4 w-4 rounded border-border-subtle accent-accent"
                   />
                   <span>
-                    I have read and understand the escrow rules above before
-                    creating this job.
+                    I have read and understand the escrow rules above before creating this job.
                   </span>
                 </label>
               </div>
@@ -1385,15 +1352,15 @@ export default function CreateJob() {
               </p>
             )}
 
-            {address && !agreed && !hasNoMilestones && !hasPartialMilestones && !hasValidationErrors && (
-              <p
-                className="text-center text-sm text-text-muted"
-                role="status"
-                aria-live="polite"
-              >
-                Confirm the agreement in the review step to create a job.
-              </p>
-            )}
+            {address &&
+              !agreed &&
+              !hasNoMilestones &&
+              !hasPartialMilestones &&
+              !hasValidationErrors && (
+                <p className="text-center text-sm text-text-muted" role="status" aria-live="polite">
+                  Confirm the agreement in the review step to create a job.
+                </p>
+              )}
 
             {/*
              * Sticky footer on mobile so the submit button stays visible

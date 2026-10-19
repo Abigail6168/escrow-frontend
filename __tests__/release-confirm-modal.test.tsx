@@ -20,9 +20,7 @@ describe("ReleaseConfirmModal", () => {
 
   it("renders the modal when isOpen is true", () => {
     render(<ReleaseConfirmModal {...defaultProps} />);
-    expect(
-      screen.getByRole("dialog", { name: /confirm approve & release/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /confirm approve & release/i })).toBeInTheDocument();
   });
 
   it("does not render when isOpen is false", () => {
@@ -40,9 +38,7 @@ describe("ReleaseConfirmModal", () => {
   });
 
   it("renders the partial release title", () => {
-    render(
-      <ReleaseConfirmModal {...defaultProps} action="partial-release" />
-    );
+    render(<ReleaseConfirmModal {...defaultProps} action="partial-release" />);
     expect(screen.getByTestId("release-confirm-modal-title")).toHaveTextContent(
       /confirm partial release/i
     );
@@ -51,16 +47,12 @@ describe("ReleaseConfirmModal", () => {
   it("shows the amount in human-readable token units", () => {
     // 10000000 stroops with 7 decimals = 1 XLM
     render(<ReleaseConfirmModal {...defaultProps} amountStroops="10000000" />);
-    expect(screen.getByTestId("release-confirm-modal-amount")).toHaveTextContent(
-      "1 XLM"
-    );
+    expect(screen.getByTestId("release-confirm-modal-amount")).toHaveTextContent("1 XLM");
   });
 
   it("shows the recipient's short address", () => {
     render(<ReleaseConfirmModal {...defaultProps} />);
-    expect(
-      screen.getByTestId("release-confirm-modal-recipient")
-    ).toHaveTextContent("GAAA...AAAA");
+    expect(screen.getByTestId("release-confirm-modal-recipient")).toHaveTextContent("GAAA...AAAA");
   });
 
   it("shows the remaining balance after release", () => {
@@ -71,24 +63,20 @@ describe("ReleaseConfirmModal", () => {
         remainingBalanceStroops="60000000"
       />
     );
-    expect(
-      screen.getByTestId("release-confirm-modal-remaining")
-    ).toHaveTextContent("6 XLM");
+    expect(screen.getByTestId("release-confirm-modal-remaining")).toHaveTextContent("6 XLM");
   });
 
   it("shows the irreversibility warning", () => {
     render(<ReleaseConfirmModal {...defaultProps} />);
-    expect(
-      screen.getByTestId("release-confirm-modal-warning")
-    ).toHaveTextContent(/cannot be undone/i);
+    expect(screen.getByTestId("release-confirm-modal-warning")).toHaveTextContent(
+      /cannot be undone/i
+    );
   });
 
   it("renders Cancel and Confirm buttons", () => {
     render(<ReleaseConfirmModal {...defaultProps} />);
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /approve & release/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /approve & release/i })).toBeInTheDocument();
   });
 
   it("calls onClose when Cancel is clicked", () => {
@@ -107,17 +95,11 @@ describe("ReleaseConfirmModal", () => {
 
   it("disables Confirm while confirming", () => {
     render(<ReleaseConfirmModal {...defaultProps} isConfirming={true} />);
-    expect(
-      screen.getByRole("button", { name: /releasing…/i })
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: /releasing…/i })).toBeDisabled();
   });
 
   it("renders the partial release confirm label", () => {
-    render(
-      <ReleaseConfirmModal {...defaultProps} action="partial-release" />
-    );
-    expect(
-      screen.getByRole("button", { name: /release amount/i })
-    ).toBeInTheDocument();
+    render(<ReleaseConfirmModal {...defaultProps} action="partial-release" />);
+    expect(screen.getByRole("button", { name: /release amount/i })).toBeInTheDocument();
   });
 });

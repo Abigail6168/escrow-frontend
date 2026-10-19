@@ -38,7 +38,7 @@ describe("Dashboard – disconnected wallet state", () => {
 
     expect(screen.getByRole("link", { name: "How it works" })).toHaveAttribute(
       "href",
-      "/#how-it-works",
+      "/#how-it-works"
     );
   });
 

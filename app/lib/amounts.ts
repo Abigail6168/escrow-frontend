@@ -25,9 +25,7 @@ export function parseDecimalToBaseUnits(value: string, decimals?: number): bigin
   }
 
   const whole = BigInt(wholePart || "0") * getScale(resolvedDecimals);
-  const fraction = fractionPart
-    ? BigInt(fractionPart.padEnd(resolvedDecimals, "0"))
-    : BigInt(0);
+  const fraction = fractionPart ? BigInt(fractionPart.padEnd(resolvedDecimals, "0")) : BigInt(0);
 
   return whole + fraction;
 }

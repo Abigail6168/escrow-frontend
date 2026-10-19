@@ -101,7 +101,8 @@ describe("GasEstimationWarningBanner", () => {
         hasWarning: true,
         highFee: true,
         simulationError: false,
-        warningMessage: "Estimated fee is unusually high (1000001 stroops / 0.1000001 XLM). Review before signing.",
+        warningMessage:
+          "Estimated fee is unusually high (1000001 stroops / 0.1000001 XLM). Review before signing.",
       },
     });
 

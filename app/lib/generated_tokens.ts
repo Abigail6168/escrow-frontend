@@ -14,8 +14,8 @@
 // ---------------------------------------------------------------------------
 
 export const THEME_TOKENS = {
-  "background": "var(--background)",
-  "foreground": "var(--foreground)",
+  background: "var(--background)",
+  foreground: "var(--foreground)",
   "surface-page": "#030712",
   "surface-card": "#111827",
   "surface-field": "#1f2937",
@@ -25,19 +25,19 @@ export const THEME_TOKENS = {
   "text-secondary": "#d1d5db",
   "text-muted": "#9ca3af",
   "text-disabled": "#6b7280",
-  "accent": "#4f46e5",
+  accent: "#4f46e5",
   "accent-hover": "#6366f1",
   "accent-soft": "#818cf8",
   "accent-soft-hover": "#a5b4fc",
-  "success": "#16a34a",
+  success: "#16a34a",
   "success-soft": "#4ade80",
   "success-soft-hover": "#86efac",
-  "danger": "#991b1b",
+  danger: "#991b1b",
   "danger-soft": "#f87171",
   "danger-soft-hover": "#fca5a5",
   "warning-soft": "#facc15",
   "info-soft": "#60a5fa",
-  "partial": "#fb923c",
+  partial: "#fb923c",
   "partial-soft": "#fdba74",
 } as const;
 

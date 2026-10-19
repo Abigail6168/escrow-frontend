@@ -59,7 +59,9 @@ describe("MilestoneCard", () => {
     );
 
     expect(screen.getByTestId("milestone-card")).toHaveClass("bg-surface-card");
-    expect(screen.getByRole("button", { name: /mark milestone \d+ as delivered/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /mark milestone \d+ as delivered/i })
+    ).toBeInTheDocument();
   });
 
   it("renders the Dispute button for client on a PartiallyReleased milestone", () => {
@@ -120,9 +122,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.queryByRole("button", { name: /dispute milestone 1/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /dispute milestone 1/i })).not.toBeInTheDocument();
   });
 
   it("disables the Dispute button when onDispute is absent on a PartiallyReleased milestone", () => {
@@ -138,9 +138,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.getByRole("button", { name: /dispute milestone 2/i })
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: /dispute milestone 2/i })).toBeDisabled();
   });
 
   describe("Approve / partial release confirmation", () => {
@@ -252,12 +250,8 @@ describe("MilestoneCard", () => {
       fireEvent.change(input, { target: { value: "30000000" } });
       fireEvent.click(screen.getByRole("button", { name: /release partial amount/i }));
 
-      expect(
-        screen.getByRole("dialog", { name: /confirm partial release/i })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByTestId("release-confirm-modal-amount")
-      ).toHaveTextContent("3 XLM");
+      expect(screen.getByRole("dialog", { name: /confirm partial release/i })).toBeInTheDocument();
+      expect(screen.getByTestId("release-confirm-modal-amount")).toHaveTextContent("3 XLM");
       expect(onPartialRelease).not.toHaveBeenCalled();
     });
 
@@ -351,9 +345,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.getByRole("button", { name: /claim auto-release/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /claim auto-release/i })).toBeInTheDocument();
   });
 
   it("does NOT render 'Claim Auto-Release' for client when deadline has elapsed", () => {
@@ -371,9 +363,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.queryByRole("button", { name: /claim auto-release/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /claim auto-release/i })).not.toBeInTheDocument();
   });
 
   it("does NOT render 'Claim Auto-Release' when deadline has NOT elapsed", () => {
@@ -391,9 +381,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.queryByRole("button", { name: /claim auto-release/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /claim auto-release/i })).not.toBeInTheDocument();
   });
 
   it("disables 'Claim Auto-Release' button when handler is absent", () => {
@@ -410,9 +398,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.getByRole("button", { name: /claim auto-release/i })
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: /claim auto-release/i })).toBeDisabled();
   });
 
   it("shows 'Claiming...' text when claim is pending", () => {
@@ -448,9 +434,7 @@ describe("MilestoneCard", () => {
       />
     );
 
-    expect(
-      screen.queryByRole("button", { name: /claim auto-release/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /claim auto-release/i })).not.toBeInTheDocument();
   });
 
   it("renders the deadline warning badge when within 24 hours of the deadline", () => {
