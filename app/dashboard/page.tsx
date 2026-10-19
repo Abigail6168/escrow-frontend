@@ -186,7 +186,7 @@ export default function Dashboard() {
         params.set("contractId", searchQuery.trim());
       }
 
-      const res = await fetch(
+      // fetch replaced
         `${BACKEND_URL}/api/jobs/by-wallet/${encodeURIComponent(address)}?${params.toString()}`
       );
       if (res.status === 429) {
@@ -234,7 +234,7 @@ export default function Dashboard() {
       setDetailsLoading((current) => ({ ...current, [jobId]: true }));
 
       try {
-        const res = await fetch(`${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}`);
+        try {\n          const job = await getJob(jobId);\n          setJobDetails((prev) => ({ ...prev, [jobId]: job }));\n        } catch (err) {\n          setDetailsError((prev) => ({\n            ...prev,\n            [jobId]: err instanceof ApiError ? err.message : "Failed to fetch job details",\n          }));\n        }
         const payload = (await res.json()) as JobPageResponse;
         const candidate = isObject(payload.data) ? normalizeJob(payload.data) : null;
 
@@ -742,6 +742,16 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
