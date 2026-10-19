@@ -31,11 +31,13 @@ ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL \
     NEXT_PUBLIC_SOROBAN_RPC_URL=$NEXT_PUBLIC_SOROBAN_RPC_URL \
     NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE=$NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE
 
-# Fail loudly rather than shipping a bundle pointing at localhost:3001.
-# The || fallback in app/lib/transactions.ts makes an unset value silent,
-# so catch it here where it's still cheap to catch.
-RUN test -n "$NEXT_PUBLIC_BACKEND_URL" \
-      || (echo "ERROR: NEXT_PUBLIC_BACKEND_URL must be set at build time" && exit 1)
+# Reject a plain-HTTP remote backend (mixed content on the HTTPS site).
+# Empty is allowed: the app uses same-origin relative /api (nginx proxies it).
+# Local http:// loopback URLs are allowed for local docker/dev builds.
+RUN case "$NEXT_PUBLIC_BACKEND_URL" in \
+      ""|https://*|http://localhost|http://localhost:*|http://localhost/*|http://127.0.0.1|http://127.0.0.1:*|http://127.0.0.1/*|http://\[::1\]|http://\[::1\]:*|http://\[::1\]/*) ;; \
+      *) echo "ERROR: NEXT_PUBLIC_BACKEND_URL must start with https:// (got \"$NEXT_PUBLIC_BACKEND_URL\"). Use https://, a localhost URL for local dev, or leave it empty to use same-origin /api." && exit 1 ;; \
+    esac
 RUN test -n "$NEXT_PUBLIC_CONTRACT_ID" \
       || (echo "ERROR: NEXT_PUBLIC_CONTRACT_ID must be set at build time" && exit 1)
 

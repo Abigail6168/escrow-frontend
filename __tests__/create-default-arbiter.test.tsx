@@ -66,6 +66,7 @@ describe("Create form arbiter selector (Issue #658)", () => {
     expect(screen.getByRole("link", { name: "Learn more" })).toHaveAttribute("href", "/#security");
 
     await fillRequiredFields();
+    fireEvent.click(screen.getByTestId("agreement-checkbox"));
     fireEvent.click(screen.getByRole("button", { name: "Create Job" }));
 
     await waitFor(() => expect(mockSubmit).toHaveBeenCalled());
@@ -84,6 +85,7 @@ describe("Create form arbiter selector (Issue #658)", () => {
     const custom = "G" + "B".repeat(55);
     fireEvent.change(input, { target: { value: custom } });
     await fillRequiredFields();
+    fireEvent.click(screen.getByTestId("agreement-checkbox"));
     fireEvent.click(screen.getByRole("button", { name: "Create Job" }));
 
     await waitFor(() => expect(mockSubmit).toHaveBeenCalled());

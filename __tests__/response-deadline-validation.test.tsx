@@ -311,6 +311,7 @@ describe("Response Deadline validation and features", () => {
       render(<CreateJob />);
 
       const input = screen.getByLabelText("Response Deadline (days)");
+      fireEvent.click(screen.getByTestId("agreement-checkbox"));
       const submitButton = screen.getByRole("button", { name: /create job/i });
 
       // Fill the milestone amount so the deadline check (which runs first
@@ -340,6 +341,7 @@ describe("Response Deadline validation and features", () => {
       render(<CreateJob />);
 
       const input = screen.getByLabelText("Response Deadline (days)");
+      fireEvent.click(screen.getByTestId("agreement-checkbox"));
       const submitButton = screen.getByRole("button", { name: /create job/i });
 
       fireEvent.change(screen.getByLabelText("Milestone 1 amount in stroops"), {

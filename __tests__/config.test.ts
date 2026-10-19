@@ -22,6 +22,7 @@ import {
   NETWORK_PASSPHRASE,
   RPC_URL,
   createRpcServer,
+  validateBackendUrl,
 } from "@/app/lib/config";
 
 const REPO_ROOT = resolve(__dirname, "..");
@@ -85,5 +86,43 @@ describe("createRpcServer", () => {
   it("builds a client on demand rather than at import time", async () => {
     const server = await createRpcServer();
     expect(typeof server.getAccount).toBe("function");
+  });
+});
+
+describe("validateBackendUrl", () => {
+  it("accepts https URLs", () => {
+    expect(validateBackendUrl("https://api.example.com")).toEqual({ ok: true });
+  });
+
+  it("accepts http://localhost:3001", () => {
+    expect(validateBackendUrl("http://localhost:3001")).toEqual({ ok: true });
+  });
+
+  it("accepts http://127.0.0.1", () => {
+    expect(validateBackendUrl("http://127.0.0.1")).toEqual({ ok: true });
+  });
+
+  it("accepts http://[::1]:3001", () => {
+    expect(validateBackendUrl("http://[::1]:3001")).toEqual({ ok: true });
+  });
+
+  it("accepts an empty string", () => {
+    expect(validateBackendUrl("")).toEqual({ ok: true });
+  });
+
+  it("accepts undefined", () => {
+    expect(validateBackendUrl(undefined)).toEqual({ ok: true });
+  });
+
+  it("rejects http://example.com", () => {
+    const result = validateBackendUrl("http://example.com");
+    expect(result.ok).toBe(false);
+    expect(result.reason).toContain("http://example.com");
+  });
+
+  it("rejects ftp://x", () => {
+    const result = validateBackendUrl("ftp://x");
+    expect(result.ok).toBe(false);
+    expect(result.reason).toContain("ftp://x");
   });
 });
