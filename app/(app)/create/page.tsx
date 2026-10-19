@@ -1,7 +1,7 @@
 "use client";
-import { isMilestoneCapReached, milestoneLimitHint } from "../lib/milestone_limits";
-import { validateMilestoneAmount } from "../lib/milestone_amount_validation";
-import { getDefaultArbiter } from "../lib/default_arbiter";
+import { isMilestoneCapReached, milestoneLimitHint } from "../../lib/milestone_limits";
+import { validateMilestoneAmount } from "../../lib/milestone_amount_validation";
+import { getDefaultArbiter } from "../../lib/default_arbiter";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/app/context/ToastContext";
 import { useWallet } from "@/app/context/WalletContext";

@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import CreateJob from "@/app/create/page";
+import CreateJob from "@/app/(app)/create/page";
 
 const DEFAULT_ARBITER = "G" + "D".repeat(55);
 const mockSubmit = vi.hoisted(() => vi.fn());

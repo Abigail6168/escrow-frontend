@@ -29,6 +29,16 @@ import {
   type Job,
 } from "@/app/lib/api_schemas";
 import { reportApiResponse } from "@/app/lib/errorReporter";
+import {
+  formatLatestActivity,
+  formatMilestoneProgress,
+  getCounterparty,
+  getJobLabel,
+  getJobRoles,
+  roleLabel,
+  setJobLabel,
+  shortAddress,
+} from "@/app/lib/job_list_summary";
 
 type RoleFilter = "all" | "client" | "freelancer" | "arbiter";
 
@@ -38,8 +48,26 @@ type RoleFilter = "all" | "client" | "freelancer" | "arbiter";
  * empty data — it returns `null` so the caller can show an error or fall
  * back gracefully.
  */
+/** snake_case fields the by-wallet summary sends, mapped to the Job schema (#638). */
+const SUMMARY_FIELD_ALIASES: Record<string, string> = {
+  contract_id: "id",
+  milestone_count: "milestoneCount",
+  released_count: "releasedCount",
+  latest_event_type: "latestEventType",
+  latest_event_at: "latestEventAt",
+  latest_ledger: "latestLedger",
+};
+
 function normalizeJob(item: unknown): Job | null {
-  const result = JobSchema.safeParse(item);
+  let input = item;
+  if (typeof item === "object" && item !== null && !Array.isArray(item)) {
+    const mapped: Record<string, unknown> = { ...(item as Record<string, unknown>) };
+    for (const [from, to] of Object.entries(SUMMARY_FIELD_ALIASES)) {
+      if (mapped[to] === undefined && mapped[from] !== undefined) mapped[to] = mapped[from];
+    }
+    input = mapped;
+  }
+  const result = JobSchema.safeParse(input);
   return result.success ? result.data : null;
 }
 
@@ -107,6 +135,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
+  const [jobLabels, setJobLabels] = useState<Record<string, string>>({});
   const [jobDetails, setJobDetails] = useState<Record<string, Job>>({});
   const [detailsLoading, setDetailsLoading] = useState<Record<string, boolean>>({});
   const [page, setPage] = useState(1);
@@ -694,11 +723,12 @@ export default function Dashboard() {
                   {filteredJobs.map((job) => {
                     const isExpanded = expandedJobId === job.id;
                     const isUpdating = updatingJobIds.has(job.id);
-                    const roleBadges = [
-                      address === job.client ? "Client" : null,
-                      address === job.freelancer ? "Freelancer" : null,
-                      address === job.arbiter ? "Arbiter" : null,
-                    ].filter(Boolean) as string[];
+                    const roles = getJobRoles(job, address);
+                    const roleBadges = roles.map(roleLabel);
+                    const counterparty = getCounterparty(job, roles);
+                    const progress = formatMilestoneProgress(job);
+                    const activity = formatLatestActivity(job);
+                    const label = jobLabels[job.id] ?? getJobLabel(job.id);
 
                     return (
                       <div
@@ -716,9 +746,20 @@ export default function Dashboard() {
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                             <div className="min-w-0">
-                              <p className="font-semibold text-sm sm:text-base truncate">Job #{job.id.slice(0, 8)}</p>
+                              <p className="font-semibold text-sm sm:text-base truncate">
+                                {label || `Job #${job.id.slice(0, 8)}`}
+                              </p>
                               <p className="text-xs text-gray-400 mt-0.5 sm:mt-1">
                                 {job.funded ? "Funded" : "Not funded"}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-0.5" data-testid="job-row-summary">
+                                {[
+                                  counterparty ? `with ${shortAddress(counterparty)}` : null,
+                                  progress,
+                                  activity,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" · ")}
                               </p>
                             </div>
                             <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2">
@@ -759,6 +800,21 @@ export default function Dashboard() {
                             role="region"
                             aria-label={`Details for job #${job.id.slice(0, 8)}`}
                           >
+                            <label className="block mb-3 text-xs text-gray-400">
+                              Label (saved on this device)
+                              <input
+                                type="text"
+                                value={label}
+                                maxLength={60}
+                                placeholder={`Job #${job.id.slice(0, 8)}`}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setJobLabels((prev) => ({ ...prev, [job.id]: value }));
+                                  setJobLabel(job.id, value);
+                                }}
+                                className="mt-1 block w-full rounded border border-gray-700 bg-gray-800 px-2 py-1 text-sm text-gray-100"
+                              />
+                            </label>
                             {detailsLoading[job.id] ? (
                               <LoadingSkeleton />
                             ) : !expandedJob ? (

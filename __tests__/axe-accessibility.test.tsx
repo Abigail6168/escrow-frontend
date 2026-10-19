@@ -17,9 +17,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import axe from "axe-core";
 
 import Home from "@/app/page";
-import Dashboard from "@/app/dashboard/page";
-import CreateJob from "@/app/create/page";
-import AdminPage from "@/app/admin/page";
+import Dashboard from "@/app/(app)/dashboard/page";
+import CreateJob from "@/app/(app)/create/page";
+import AdminPage from "@/app/(app)/admin/page";
 
 // ---------------------------------------------------------------------------
 // Shared mocks

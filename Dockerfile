@@ -23,8 +23,10 @@ COPY . .
 # environment, and a contract redeploy means a rebuild, not a restart.
 ARG NEXT_PUBLIC_BACKEND_URL
 ARG NEXT_PUBLIC_CONTRACT_ID
-ARG NEXT_PUBLIC_SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
-ARG NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+# No defaults for the network pair: a mainnet build that forgot them would
+# otherwise silently ship a testnet-wired bundle.
+ARG NEXT_PUBLIC_SOROBAN_RPC_URL
+ARG NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE
 
 ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL \
     NEXT_PUBLIC_CONTRACT_ID=$NEXT_PUBLIC_CONTRACT_ID \
@@ -40,6 +42,20 @@ RUN case "$NEXT_PUBLIC_BACKEND_URL" in \
     esac
 RUN test -n "$NEXT_PUBLIC_CONTRACT_ID" \
       || (echo "ERROR: NEXT_PUBLIC_CONTRACT_ID must be set at build time" && exit 1)
+RUN test -n "$NEXT_PUBLIC_SOROBAN_RPC_URL" \
+      || (echo "ERROR: NEXT_PUBLIC_SOROBAN_RPC_URL must be set at build time" && exit 1)
+RUN test -n "$NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE" \
+      || (echo "ERROR: NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE must be set at build time" && exit 1)
+# The passphrase must be a known network, and the RPC host must agree with it.
+RUN case "$NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE" in \
+      "Test SDF Network ; September 2015") \
+        echo "$NEXT_PUBLIC_SOROBAN_RPC_URL" | grep -q testnet \
+          || (echo "ERROR: testnet passphrase but RPC URL is not a testnet host" && exit 1) ;; \
+      "Public Global Stellar Network ; September 2015") \
+        ! echo "$NEXT_PUBLIC_SOROBAN_RPC_URL" | grep -q testnet \
+          || (echo "ERROR: public passphrase but RPC URL is a testnet host" && exit 1) ;; \
+      *) echo "ERROR: unknown NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE" && exit 1 ;; \
+    esac
 
 RUN npm run build
 
