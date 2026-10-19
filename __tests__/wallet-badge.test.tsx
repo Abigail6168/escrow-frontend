@@ -168,3 +168,13 @@ describe("WalletBadge", () => {
     });
   });
 });
+
+describe("WalletBadge error announcement", () => {
+  it("renders the error text inside the status region without aria-invalid", () => {
+    render(<WalletBadge address={SAMPLE_ADDRESS} error="Network mismatch" />);
+    const status = screen.getByRole("status");
+    expect(status).not.toHaveAttribute("aria-invalid");
+    expect(status).toContainElement(screen.getByRole("alert"));
+    expect(screen.getByRole("alert")).toHaveTextContent("Network mismatch");
+  });
+});

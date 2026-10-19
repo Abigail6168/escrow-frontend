@@ -414,20 +414,3 @@ describe("Dashboard — jobs list (dashboard_list) rendering", () => {
     });
   });
 });
-
-function mockJob(overrides = {}) {
-  return {
-    id: "job-1234567890abcdef",
-    client: "GCLIENTADDRESS1234567890123456789012345678901234",
-    freelancer: "GFREELANCERADDRESS12345678901234567890123456",
-    arbiter: "GARBITERADDRESS12345678901234567890123456789012",
-    funded: true,
-    milestones: [
-      { index: 0, amount: "250000000", status: "Pending" },
-      { index: 1, amount: "500000000", status: "Delivered" },
-    ],
-    tokenSymbol: "USDC",
-    tokenDecimals: 7,
-    ...overrides,
-  };
-}

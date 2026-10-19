@@ -152,7 +152,7 @@ describe("WalletBadge — validation field errors & indicators", () => {
     );
 
     const badge = screen.getByTestId("wallet-badge");
-    expect(badge).toHaveAttribute("aria-invalid", "true");
+    expect(badge).not.toHaveAttribute("aria-invalid");
 
     const fieldError = screen.getByTestId("wallet-field-error");
     expect(fieldError).toBeInTheDocument();
@@ -181,7 +181,7 @@ describe("WalletBadge — validation field errors & indicators", () => {
     render(<WalletBadge address="G123INVALID" validateAddress={true} />);
 
     const badge = screen.getByTestId("wallet-badge");
-    expect(badge).toHaveAttribute("aria-invalid", "true");
+    expect(badge).not.toHaveAttribute("aria-invalid");
     expect(screen.getByTestId("wallet-field-error")).toBeInTheDocument();
     expect(screen.getByTestId("wallet-error-text")).toHaveTextContent("Invalid Stellar address");
   });

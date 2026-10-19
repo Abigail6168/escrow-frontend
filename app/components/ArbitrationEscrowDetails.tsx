@@ -27,10 +27,6 @@ import {
   ARBITRATION_SKELETON_ARIA,
   getArbitrationSkeleton,
 } from "@/app/lib/arbitration_escrow_details_skeleton";
-import {
-  arbitrationContainsCodeTags,
-  sanitizeArbitrationComment,
-} from "@/app/lib/arbitration_escrow_details_sanitize";
 
 export interface ArbitrationEscrowDetailsProps {
   /** Dispute whose locked escrow should be shown. */

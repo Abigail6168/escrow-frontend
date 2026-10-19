@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  ARBITRATION_ESCROW_ENDPOINT,
   MOCK_ARBITRATION_DATASET,
   fetchArbitrationDataset,
   mapArbitrationPayload,
