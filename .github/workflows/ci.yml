@@ -24,6 +24,9 @@ jobs:
       - name: Audit runtime dependencies
         run: npm audit --omit=dev --audit-level=high
 
+      - name: Format check
+        run: npm run format:check
+
       - name: Lint
         run: npm run lint -- --max-warnings=0
 
