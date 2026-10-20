@@ -102,7 +102,7 @@ export async function fetchAutoReleaseInfo(
   const now = options?.now ?? Date.now;
   const endpoint = `/api/jobs/${jobId}/milestones/${milestoneIndex}/auto-release`;
   try {
-    const res = await fetch(
+
       `${BACKEND_URL}/api/jobs/${encodeURIComponent(jobId)}/milestones/${milestoneIndex}/auto-release`,
       { signal: options?.signal }
     );
@@ -133,3 +133,6 @@ export async function fetchAutoReleaseInfo(
     return { deadlineMs: null, eligible: false };
   }
 }
+
+
+

@@ -225,7 +225,7 @@ export async function submitContractTransaction({
 }): Promise<string> {
   onPhase?.("building");
 
-  const buildTxRes = await fetch(`${BACKEND_URL}/api/jobs/build-tx`, {
+
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -267,7 +267,7 @@ export async function submitContractTransaction({
 
   onPhase?.("submitting");
 
-  const submitRes = await fetch(`${BACKEND_URL}/api/jobs/submit`, {
+
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ signedXdr }),
@@ -320,3 +320,9 @@ export async function runContractAction(
     return null;
   }
 }
+
+
+
+
+
+

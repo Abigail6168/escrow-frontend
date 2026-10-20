@@ -75,7 +75,7 @@ export function tokenLabel(token: WhitelistToken): string {
   if (token.symbol) return token.symbol;
   if (token.name) return token.name;
   return token.address.length > 12
-    ? `${token.address.slice(0, 4)}…${token.address.slice(-4)}`
+    ? `${token.address.slice(0, 4)}â€¦${token.address.slice(-4)}`
     : token.address;
 }
 
