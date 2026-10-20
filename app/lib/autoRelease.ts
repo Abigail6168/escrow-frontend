@@ -1,4 +1,4 @@
-import { BACKEND_URL } from "@/app/lib/transactions";
+﻿import { BACKEND_URL } from "@/app/lib/transactions";
 import { AutoReleaseResponseSchema, validateResponse } from "@/app/lib/api_schemas";
 
 /**
@@ -33,7 +33,7 @@ function toEpochMs(value: number | string): number | null {
  * returns a non-OK status, so the UI degrades gracefully when the backend
  * hasn't deployed the new route yet.
  *
- * Returns a map of milestoneIndex → deadlineMs (or null).
+ * Returns a map of milestoneIndex â†’ deadlineMs (or null).
  */
 export async function fetchAllAutoReleaseDeadlines(
   jobId: string,
@@ -133,6 +133,7 @@ export async function fetchAutoReleaseInfo(
     return { deadlineMs: null, eligible: false };
   }
 }
+
 
 
 

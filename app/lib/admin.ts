@@ -1,4 +1,4 @@
-import { BACKEND_URL } from "@/app/lib/transactions";
+﻿import { BACKEND_URL } from "@/app/lib/transactions";
 import { AdminResponseSchema, validateResponse } from "@/app/lib/api_schemas";
 
 /**
@@ -105,3 +105,4 @@ export async function fetchEscrowFunded(
     return null;
   }
 }
+
